@@ -492,7 +492,6 @@ cy.ready(() => {
       !memo.nodePairsSelections.length &&
       !memo.lastSelection.id
     ) {
-      memo.lastSelection.id = null;
       deselectIndex();
       clearSelection();
       const zoom = cy.zoom();
