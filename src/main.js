@@ -574,6 +574,14 @@ cy.ready(() => {
   });
   // elements.load.addEventListener('click', () => loadFile());
   document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      elements.commentsSection.style.display = 'none';
+      clearSelection();
+      deselectIndex();
+      consoleElement.value = '';
+    }
     if (elements.commentsSection.style.display === 'none') {
       if (e.key.toLowerCase() === 's' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
