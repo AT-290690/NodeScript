@@ -2,7 +2,6 @@ import { cell } from './parser.js';
 import { tokens } from './tokens.js';
 import {
   STD,
-  deps,
   consoleElement,
   print,
   protolessModule
@@ -11,8 +10,8 @@ export const correctFilePath = filename => {
   if (!filename) return '';
   return '/' + filename.split('/').filter(Boolean).join('/');
 };
+
 export const State = {
-  list: {},
   selectedRealm: 'realm0',
   lsHistory: '/',
   lastVisitedDir: '/',
@@ -45,6 +44,7 @@ const dfs = ast => {
   }
   return out;
 };
+
 export const printErrors = (errors, args) => {
   if (!State.isErrored) {
     consoleElement.classList.remove('info_line');
@@ -66,6 +66,10 @@ export const printErrors = (errors, args) => {
     }
   }
 };
+export const extractComments = source =>
+  source
+    .match(/[ ]+(?=[^"]*(?:"[^"]*"[^"]*)*$)+|\n|\t|;;.+/g)
+    .filter(x => x[0] === ';' && x[1] === ';');
 export const removeNoCode = source =>
   source.replace(/[ ]+(?=[^"]*(?:"[^"]*"[^"]*)*$)+|\n|\t|;;.+/g, '');
 export const wrapInBody = source => `=>[${source}]`;
@@ -78,8 +82,7 @@ export const wrapInBody = source => `=>[${source}]`;
 // }
 //cell({ ...std })(`=>()`);
 export const exe = source => {
-  State.list = { ...STD, ...State.list };
-  const ENV = protolessModule(State.list);
+  const ENV = protolessModule(STD);
   ENV[';;tokens'] = protolessModule(tokens);
   try {
     const { result, AST, env } = cell(ENV)(wrapInBody(source));
@@ -140,50 +143,51 @@ export const prettier = str => addSpace(str);
 // .join('; ')
 // .split('(')
 // .join(' (');
-export const depResolution = source => {
-  const List = {};
-  source.match(/<-(.*)\[(.[A-Z"]+)\];/g)?.forEach(methods => {
-    const list = methods
-      .split('];')
-      .filter(x => x[0] === '<' && x[1] === '-' && x[2] === '[')
-      .join('];')
-      .replace(/\]|\[|<-+/g, ';')
-      .split(';')
-      .filter(Boolean)
-      .reduce(
-        (acc, item) => {
-          if (item[0] !== '"') {
-            acc._temp.push(item);
-          } else {
-            acc[item.substring(1, item.length - 1)] = [...acc._temp];
-            acc._temp = [];
-          }
-          return acc;
-        },
-        { _temp: [] }
-      );
-    delete list._temp;
-    for (const dep in list) {
-      list[dep].forEach(m => {
-        if (!List[dep]) List[dep] = {};
-        if (!deps[dep]) {
-          printErrors(`Module ${dep} does not exist`);
-          throw new SyntaxError(`Module ${dep} does not exist`);
-        } else if (deps[dep][m] === undefined) {
-          printErrors(
-            `Reference error Module ${dep} does not provide an export named ${m}`
-          );
-          throw new SyntaxError(
-            `Module ${dep} does not provide an export named ${m}`
-          );
-        } else {
-          List[dep][m] = deps[dep][m];
-        }
-      });
-    }
-  });
-  return List;
-};
+// export const depResolution = source => {
+//   const List = {};
+//   source.match(/<-(.*)\[(.[A-Z"]+)\];/g)?.forEach(methods => {
+//     const list = methods
+//       .split('];')
+//       .filter(x => x[0] === '<' && x[1] === '-' && x[2] === '[')
+//       .join('];')
+//       .replace(/\]|\[|<-+/g, ';')
+//       .split(';')
+//       .filter(Boolean)
+//       .reduce(
+//         (acc, item) => {
+//           if (item[0] !== '"') {
+//             acc._temp.push(item);
+//           } else {
+//             acc[item.substring(1, item.length - 1)] = [...acc._temp];
+//             acc._temp = [];
+//           }
+//           return acc;
+//         },
+//         { _temp: [] }
+//       );
+//     delete list._temp;
+//     for (const dep in list) {
+//       list[dep].forEach(m => {
+//         if (!List[dep]) List[dep] = {};
+//         if (!deps[dep]) {
+//           printErrors(`Module ${dep} does not exist`);
+//           throw new SyntaxError(`Module ${dep} does not exist`);
+//         } else if (deps[dep][m] === undefined) {
+//           printErrors(
+//             `Reference error Module ${dep} does not provide an export named ${m}`
+//           );
+//           throw new SyntaxError(
+//             `Module ${dep} does not provide an export named ${m}`
+//           );
+//         } else {
+//           List[dep][m] = deps[dep][m];
+//         }
+//       });
+//     }
+//   });
+//   return List;
+// };
+
 export const run = source => {
   State.isErrored = false;
   consoleElement.classList.add('info_line');
@@ -191,8 +195,9 @@ export const run = source => {
   consoleElement.value = '';
   // const cursor = editor.getCursor();
   source = source.trim();
+  // const comments = extractComments(source);
   const sourceCode = removeNoCode(source);
-  State.list = depResolution(sourceCode);
+
   const parenMatcher = isBalancedParenthesis(sourceCode);
   if (parenMatcher.diff === 0) {
     print(exe(sourceCode));
@@ -210,7 +215,7 @@ export const pruneDep = () => {
     ...['!', '^', '>>>', '>>', '<<', '~', '|', '&'],
     ...['+', '-', '*', '/', '==', '!=', '>', '<', '>=', '<=', '%', '**']
   ];
-  const list = State.list;
+  const list = { ...STD };
   ignore.forEach(op => {
     delete list[op];
   });

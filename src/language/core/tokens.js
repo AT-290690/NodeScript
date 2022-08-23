@@ -498,11 +498,10 @@ const tokens = {
       printErrors(err, args);
     }
   },
-  ['.:']: (args, env) => {
-    return args.map(item =>
+  ['.:']: (args, env) =>
+    args.map(item =>
       item.type === 'value' ? item.value : evaluate(item, env)
-    );
-  },
+    ),
   // [':']: (args, env) => {
   //   if (!args.length || (args[0].type !== 'apply' && args[0].type !== 'word')) {
   //     printErrors('SyntaxError Invalid number of arguments to :', args);
@@ -514,7 +513,7 @@ const tokens = {
   // },
   ['<-']: (args, env) => exp =>
     args.forEach(arg => {
-      env[arg.name] = env[exp][arg.name];
+      env[arg.value] = exp[arg.value];
     }) ?? VOID,
   ['|>']: (args, env) => {
     const [param, ...rest] = args;

@@ -171,8 +171,6 @@ const dfs = (tree, locals) => {
         const res = dfs(tree.args[0], locals);
         return '_tco(' + res + ')';
       }
-      case '<-':
-        return '';
       case '...':
         return `_spread([${tree.args.map(x => dfs(x, locals)).join(',')}])`;
       case '|>': {
@@ -260,16 +258,16 @@ const dfs = (tree, locals) => {
         } else {
           if (
             tree.operator.operator.name === '<-' &&
-            tree.args[0].type === 'value'
+            tree.args[0].type === 'word'
           ) {
-            const imp = tree.args[0].value;
-            const methods = tree.operator.args.map(x => x.name);
+            const imp = tree.args[0].name;
+            const methods = tree.operator.args.map(x => x.value);
             return methods
               .map(x => {
                 if (x) {
                   locals.add(x);
                 }
-                return `${x} = STD["${imp}"]["${x}"];`;
+                return `${x} = ${imp}["${x}"];`;
               })
               .join('');
           } else if (

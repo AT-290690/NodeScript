@@ -7,7 +7,10 @@ import {
   wrapInBody
 } from './language/core/utils.js';
 import { BinaryArray } from './language/extentions/BinaryArray.js';
-import { consoleElement } from './language/extentions/extentions.js';
+import {
+  consoleElement,
+  StandartLibrary
+} from './language/extentions/extentions.js';
 const _seciton = document.getElementById('comments-section');
 const editor = CodeMirror(_seciton);
 editor.setSize(window.innerWidth - 5, window.innerHeight - 5);
@@ -268,6 +271,7 @@ const openAppWindow = () => {
   memo.app.document.write(
     `<script>\n${BinaryArray.toString()}
     </script>
+    <script>\n${StandartLibrary.toString()}</script>
     <script>\n${toJavasScript({
       source: wrapInBody(removeNoCode(getPredecessorCode())),
       env: pruneDep()
