@@ -41,9 +41,9 @@ const pipeArgs = expr => {
     first,
     ...rest.map(arg => ({
       args: [
-        { type: 'word', name: '$*' },
+        { type: 'word', name: '__' },
         {
-          args: [{ type: 'word', name: '$*' }, ...(arg.args ?? [])],
+          args: [{ type: 'word', name: '__' }, ...(arg.args ?? [])],
           class: 'function',
           type: 'apply',
           operator: { name: arg.operator.name.substring(1), type: 'word' }

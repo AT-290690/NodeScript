@@ -206,7 +206,7 @@ export const run = source => {
 };
 export const pruneDep = () => {
   const ignore = [
-    ...['#', 'tco', 'void', 'VOID', 'NULL', 'null', ';;tokens'],
+    ...['_', 'tco', 'void', 'VOID', 'NULL', 'null', ';;tokens'],
     ...['!', '^', '>>>', '>>', '<<', '~', '|', '&'],
     ...['+', '-', '*', '/', '==', '!=', '>', '<', '>=', '<=', '%', '**']
   ];

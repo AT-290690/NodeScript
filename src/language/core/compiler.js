@@ -155,7 +155,11 @@ const dfs = (tree, locals) => {
             .map(x => dfs(x, locals))
             .reduce((acc, item, index) => {
               if (index % 2 === 0) {
-                acc += `"${item.replaceAll('"', '')}":`;
+                const key = item.replace(';', '');
+                acc +=
+                  key[0] === '"'
+                    ? `"${key.replaceAll('"', '')}":`
+                    : `[${key}]:`;
               } else {
                 acc += `${item},`;
               }
@@ -290,8 +294,6 @@ const dfs = (tree, locals) => {
       case 'void':
       case 'VOID':
         return 'null';
-      case '$*':
-        return '_$';
       default:
         return tree.name;
     }

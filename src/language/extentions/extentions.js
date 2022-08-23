@@ -284,6 +284,7 @@ const DOM = {
 export const STD = {
   void: VOID,
   VOID,
+  _: VOID,
   null: VOID,
   NULL: VOID,
   tco:
@@ -295,7 +296,6 @@ export const STD = {
       }
       return result;
     },
-  '#': args => void print(args) ?? args,
   ...bitwise,
   ...operations
 };
@@ -349,7 +349,7 @@ const math = {
   negative: n => -n,
   PI: Math.PI,
   parseInt: (number, base) => parseInt(number.toString(), base),
-  toNumber: string => Number(string)
+  number: string => Number(string)
 };
 const request = {
   maybeJson: (url, callback) =>
@@ -483,7 +483,7 @@ const ARRAY = {
   },
   at: (entity, index) => entity.at(index)
 };
-const HL = {
+const BA = {
   ['remake1']: (entity, callback) =>
     entity.reduce(acc => callback(acc), new BinaryArray()),
   ['remake2']: (entity, callback) =>
@@ -525,7 +525,7 @@ const HL = {
           entity.map(x =>
             BinaryArray.isBinaryArray(x)
               ? BinaryArray.isBinaryArray(x.get(0))
-                ? HL.clone(x)
+                ? BA.clone(x)
                 : new BinaryArray(x)
               : x
           )
@@ -554,14 +554,14 @@ const HL = {
     entity.reduce((acc, item) => (item > acc ? (acc = item) : acc), -Infinity),
   min: entity =>
     entity.reduce((acc, item) => (item < acc ? (acc = item) : acc), Infinity),
-  toArray: entity => entity.toArray(),
+  array: entity => entity.toArray(),
   printBinaryArray: entity =>
     BinaryArray.isBinaryArray(entity)
       ? entity
           .map(x =>
             BinaryArray.isBinaryArray(x)
               ? BinaryArray.isBinaryArray(x.get(0))
-                ? HL.printBinaryArray(x)
+                ? BA.printBinaryArray(x)
                 : x.toArray()
               : x
           )
@@ -574,6 +574,12 @@ const HL = {
   find: (entity, fn) => entity.find(fn) ?? VOID,
   findIndex: (entity, fn) => entity.findIndex(fn),
   at: (entity, index) => entity.at(index) ?? VOID,
+  update: (entity, index, value) => {
+    if (entity.get(index) !== undefined) {
+      entity.set(index, value);
+    }
+    return entity;
+  },
   join: (entity, separator) => entity.join(separator),
   union: (a, b) => {
     const out = new BinaryArray();
@@ -735,8 +741,18 @@ const HL = {
   },
   slice: (entity, ...args) => entity.slice(...args)
 };
+const CONV = {
+  array: thing =>
+    BinaryArray.isBinaryArray(thing) ? thing.toArray() : [...thing],
+  boolean: thing => Boolean(thing),
+  string: thing => thing.toString(),
+  integer: number => parseInt(number.toString()),
+  float: (number, base = 1) => +Number(number).toFixed(base),
+  number: thing => Number(thing)
+};
 export const deps = {
-  ...prefixDep(HL, 'BINARYARRAY'),
+  ...prefixDep(CONV, 'CONVERT'),
+  ...prefixDep(BA, 'BINARYARRAY'),
   ...prefixDep(time, 'TIME'),
   ...prefixDep(list, 'LIST'),
   ...prefixDep(SetCollection, 'SET'),
@@ -754,9 +770,9 @@ export const deps = {
       interpolate: (...args) =>
         args.reduce((acc, item) => (acc += item.toString()), ''),
       includes: (string, target) => string.includes(target),
-      toString: thing => thing.toString(),
-      toUpperCase: string => string.toUpperCase(),
-      toLowerCase: string => string.toLowerCase(),
+      string: thing => thing.toString(),
+      upperCase: string => string.toUpperCase(),
+      lowerCase: string => string.toLowerCase(),
       trim: string => string.trim(),
       trimStart: string => string.trimStart(),
       trimEnd: string => string.trimEnd(),
@@ -781,6 +797,8 @@ export const deps = {
       isEmpty: item => (Object.keys(item).length === 0 ? 1 : 0),
       true: 1,
       false: 0,
+      isEven: arg => (arg % 2 === 0 ? 1 : 0),
+      isOdd: arg => (arg % 2 !== 0 ? 1 : 0),
       invert: val => +!val,
       isHaving: (obj, ...props) => +props.every(x => x in obj),
       areEqual: (item, ...args) =>
