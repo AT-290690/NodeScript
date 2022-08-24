@@ -73,7 +73,7 @@ const dfs = (tree, locals) => {
       case '+':
       case '-':
       case '*':
-      case '/':
+      case ':':
       case '!=':
       case '&&':
       case '||':
@@ -82,33 +82,12 @@ const dfs = (tree, locals) => {
       case '>':
       case '<':
       case '??':
-      // bitwise
-      case '^':
-      case '>>>':
-      case '>>':
-      case '<<':
-      case '~':
-      case '|':
-      case '&':
-        return (
-          '(' +
-          tree.args.map(x => dfs(x, locals)).join(tree.operator.name) +
-          ')'
-        );
       case '%':
         return (
           '(' +
           dfs(tree.args[0], locals) +
           '%' +
           dfs(tree.args[1], locals) +
-          ')'
-        );
-      case '**':
-        return (
-          '(' +
-          dfs(tree.args[0], locals) +
-          '**' +
-          (dfs(tree.args[1], locals) || 2) +
           ')'
         );
       case '!':
@@ -223,30 +202,6 @@ const dfs = (tree, locals) => {
         const obj = dfs(tree.args[0], locals);
         return `(void(${obj}${path}=${res})||${obj});`;
       }
-
-      case '+=': {
-        const res = tree.args[1] ? dfs(tree.args[1], locals) : 1;
-        const variable = dfs(tree.args[0], locals);
-        return `(void(${variable}+=${res})||${variable});`;
-      }
-
-      case '-=': {
-        const res = tree.args[1] ? dfs(tree.args[1], locals) : 1;
-        const variable = dfs(tree.args[0], locals);
-        return `(void(${variable}-=${res})||${variable});`;
-      }
-
-      case '*=': {
-        const res = tree.args[1] ? dfs(tree.args[1], locals) : 1;
-        const variable = dfs(tree.args[0], locals);
-        return `(void(${variable}*=${res})||${variable});`;
-      }
-
-      // case '++?': {
-      //   const args = tree.args.map((x)=>dfs(x));
-      //   return `_while(() => ${args[0]}, () => ${args[1]})`;
-      // }
-
       default: {
         if (tree.operator.name) {
           return (
@@ -256,12 +211,14 @@ const dfs = (tree, locals) => {
             ');'
           );
         } else {
-          if (
-            tree.operator.operator.name === '<-' &&
-            tree.args[0].type === 'word'
-          ) {
-            const imp = tree.args[0].name;
-            const methods = tree.operator.args.map(x => x.value);
+          if (tree.operator.operator.name === '<-') {
+            const imp =
+              tree.args[0].type === 'word'
+                ? tree.args[0].name
+                : dfs(tree.args[0], locals).slice(0, -1);
+            const methods = tree.operator.args.map(x =>
+              x.type === 'value' ? x.value : dfs(x, locals)
+            );
             return methods
               .map(x => {
                 if (x) {

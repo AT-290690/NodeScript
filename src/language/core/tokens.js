@@ -1,5 +1,7 @@
 import { printErrors } from './utils.js';
 import evaluate from './interpreter.js';
+const extract = (item, env) =>
+  item.type === 'value' ? item.value : evaluate(item, env);
 const isEqual = (a, b) => {
   const typeA = typeof a,
     typeB = typeof b;
@@ -33,23 +35,50 @@ export const pipe =
   x =>
     fns.reduce((v, f) => f(v), x);
 export const parsePath = (arg, env) => {
-  const path =
-    arg.type === 'value'
-      ? arg.value?.toString()
-      : evaluate(arg, env)?.toString();
+  const path = extract(arg, env)?.toString();
   return path ? path.split(';').map(x => x.trim()) : VOID;
 };
 const tokens = {
-  // ["'"]: (args, env) => {},
-  // ['`']: (args, env) => {
-  //   if (args.length <= 1) {
-  //     printErrors('SyntaxError Invalid number of arguments to `', args);
-  //     throw new SyntaxError('Invalid number of arguments to `');
-  //   }
-  //   const caller = evaluate(args[0], env);
-  //   const fn = caller[evaluate(args[1], env)];
-  //   return fn.bind(caller);
-  // },
+  ['+']: (args, env) => {
+    if (args.length < 2) {
+      printErrors('SyntaxError Invalid number of arguments to +', args);
+      throw new SyntaxError('Invalid number of arguments to +');
+    }
+    const [first, ...rest] = args.map(a => evaluate(a, env));
+    return rest.reduce((acc, x) => (acc += x), first);
+  },
+  ['-']: (args, env) => {
+    if (args.length < 2) {
+      printErrors('SyntaxError Invalid number of arguments to -', args);
+      throw new SyntaxError('Invalid number of arguments to -');
+    }
+    const [first, ...rest] = args.map(a => evaluate(a, env));
+    return rest.reduce((acc, x) => (acc -= x), first);
+  },
+  ['*']: (args, env) => {
+    if (args.length < 2) {
+      printErrors('SyntaxError Invalid number of arguments to *', args);
+      throw new SyntaxError('Invalid number of arguments to *');
+    }
+    const [first, ...rest] = args.map(a => evaluate(a, env));
+    return rest.reduce((acc, x) => (acc *= x), first);
+  },
+  [':']: (args, env) => {
+    if (args.length < 2) {
+      printErrors('SyntaxError Invalid number of arguments to :', args);
+      throw new SyntaxError('Invalid number of arguments to :');
+    }
+    const [first, ...rest] = args.map(a => evaluate(a, env));
+    return rest.reduce((acc, x) => (acc /= x), first);
+  },
+  ['%']: (args, env) => {
+    if (args.length !== 2) {
+      printErrors('SyntaxError Invalid number of arguments to %', args);
+      throw new SyntaxError('Invalid number of arguments to %');
+    }
+    const [left, right] = args.map(a => evaluate(a, env));
+    return left % right;
+  },
   ['?']: (args, env) => {
     if (args.length > 3 || args.length <= 1) {
       printErrors('SyntaxError Invalid number of arguments to ?', args);
@@ -62,6 +91,61 @@ const tokens = {
     } else {
       return 0;
     }
+  },
+  ['!']: (args, env) => {
+    if (args.length !== 1) {
+      printErrors('SyntaxError Invalid number of arguments to !', args);
+      throw new SyntaxError('Invalid number of arguments to !');
+    }
+    return +!extract(args[0], env);
+  },
+  ['==']: (args, env) => {
+    if (args.length < 2) {
+      printErrors('SyntaxError Invalid number of arguments to ==', args);
+      throw new SyntaxError('Invalid number of arguments to ==');
+    }
+    const [first, ...rest] = args.map(a => evaluate(a, env));
+    return +rest.every(x => first === x);
+  },
+  ['!=']: (args, env) => {
+    if (args.length < 2) {
+      printErrors('SyntaxError Invalid number of arguments to !=', args);
+      throw new SyntaxError('Invalid number of arguments to !=');
+    }
+    const [first, ...rest] = args.map(a => evaluate(a, env));
+    return +rest.every(x => first !== x);
+  },
+  ['>']: (args, env) => {
+    if (args.length < 2) {
+      printErrors('SyntaxError Invalid number of arguments to >', args);
+      throw new SyntaxError('Invalid number of arguments to >');
+    }
+    const [first, ...rest] = args.map(a => evaluate(a, env));
+    return +rest.every(x => first > x);
+  },
+  ['<']: (args, env) => {
+    if (args.length < 2) {
+      printErrors('SyntaxError Invalid number of arguments to <', args);
+      throw new SyntaxError('Invalid number of arguments to <');
+    }
+    const [first, ...rest] = args.map(a => evaluate(a, env));
+    return +rest.every(x => first < x);
+  },
+  ['>=']: (args, env) => {
+    if (args.length < 2) {
+      printErrors('SyntaxError Invalid number of arguments to >=', args);
+      throw new SyntaxError('Invalid number of arguments to >=');
+    }
+    const [first, ...rest] = args.map(a => evaluate(a, env));
+    return +rest.every(x => first >= x);
+  },
+  ['<=']: (args, env) => {
+    if (args.length < 2) {
+      printErrors('SyntaxError Invalid number of arguments to <=', args);
+      throw new SyntaxError('Invalid number of arguments to <=');
+    }
+    const [first, ...rest] = args.map(a => evaluate(a, env));
+    return +rest.every(x => first <= x);
   },
   ['*?']: (args, env) => {
     if (args.length === 0 || args.length % 2 !== 0) {
@@ -155,18 +239,6 @@ const tokens = {
     }
     return evaluate(args[args.length - 1], env);
   },
-  // ['++?']: (args, env) => {
-  //   if (args.length !== 2) {
-  //     printErrors('SyntaxError Invalid number of arguments to ++?', args);
-  //
-  //       throw new SyntaxError('Invalid number of arguments to ++?');
-  //   }
-  //   while (!!evaluate(args[0], env)) {
-  //     evaluate(args[1], env);
-  //   }
-  //   // since there is no undefined so we return void when there's no meaningful result.
-  //   return VOID;
-  // },
   ['=>']: (args, env) => {
     let value = VOID;
     args.forEach(arg => (value = evaluate(arg, env)));
@@ -182,75 +254,7 @@ const tokens = {
     env[args[0].name] = value;
     return value;
   },
-  ['+=']: (args, env) => {
-    if (args.length === 0 || args[0].type !== 'word') {
-      printErrors('SyntaxError Invalid use of operation +=', args);
-      throw new SyntaxError('Invalid use of operation +=');
-    }
-    const entityName = args[0].name;
-    let value = evaluate(args[0], env);
-    const inc = args[1] ? evaluate(args[1], env) : 1;
-    for (let scope = env; scope; scope = Object.getPrototypeOf(scope)) {
-      if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
-        value += inc;
-        scope[entityName] = value;
-        return value;
-      }
-    }
-    printErrors(
-      `ReferenceError Tried incrementing an undefined variable: ${entityName}`,
-      args
-    );
-    throw new ReferenceError(
-      `Tried incrementing an undefined variable: ${entityName}`
-    );
-  },
-  ['-=']: (args, env) => {
-    if (args.length === 0 || args[0].type !== 'word') {
-      printErrors('SyntaxError Invalid use of operation -=', args);
-      throw new SyntaxError('Invalid use of operation -=');
-    }
-    const entityName = args[0].name;
-    let value = evaluate(args[0], env);
-    const inc = args[1] ? evaluate(args[1], env) : 1;
-    for (let scope = env; scope; scope = Object.getPrototypeOf(scope)) {
-      if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
-        value -= inc;
-        scope[entityName] = value;
-        return value;
-      }
-    }
-    printErrors(
-      `ReferenceError Tried incrementing an undefined variable: ${entityName}`,
-      args
-    );
-    throw new ReferenceError(
-      `Tried incrementing an undefined variable: ${entityName}`
-    );
-  },
-  ['*=']: (args, env) => {
-    if (args.length === 0 || args[0].type !== 'word') {
-      printErrors('SyntaxError Invalid use of operation *=', args);
-      throw new SyntaxError('Invalid use of operation *=');
-    }
-    const entityName = args[0].name;
-    let value = evaluate(args[0], env);
-    const inc = args[1] ? evaluate(args[1], env) : 1;
-    for (let scope = env; scope; scope = Object.getPrototypeOf(scope)) {
-      if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
-        value *= inc;
-        scope[entityName] = value;
-        return value;
-      }
-    }
-    printErrors(
-      `ReferenceError Tried incrementing an undefined variable: ${entityName}`,
-      args
-    );
-    throw new ReferenceError(
-      `Tried incrementing an undefined variable: ${entityName}`
-    );
-  },
+
   ['->']: (args, env) => {
     if (!args.length) {
       printErrors('SyntaxError Functions need a body', args);
@@ -312,11 +316,7 @@ const tokens = {
     const prop = [];
     for (let i = 1; i < args.length - 1; i++) {
       const arg = args[i];
-      prop.push(
-        (arg.type === 'value'
-          ? arg.value?.toString()
-          : evaluate(arg, env)?.toString()) ?? VOID
-      );
+      prop.push(extract(arg, env)?.toString() ?? VOID);
     }
     const value = evaluate(last, env);
     // if (prop.includes('innerHTML')) {
@@ -365,11 +365,7 @@ const tokens = {
     const prop = [];
     for (let i = 1; i < args.length; i++) {
       const arg = args[i];
-      prop.push(
-        (arg.type === 'value'
-          ? arg.value?.toString()
-          : evaluate(arg, env)?.toString()) ?? VOID
-      );
+      prop.push(extract(arg, env)?.toString() ?? VOID);
     }
     const entityName = args[0].name;
     for (let scope = env; scope; scope = Object.getPrototypeOf(scope)) {
@@ -395,11 +391,7 @@ const tokens = {
     const prop = [];
     for (let i = 1; i < args.length; i++) {
       const arg = args[i];
-      prop.push(
-        (arg.type === 'value'
-          ? arg.value?.toString()
-          : evaluate(arg, env)?.toString()) ?? VOID
-      );
+      prop.push(extract(arg, env)?.toString() ?? VOID);
     }
     if (args[0].type === 'apply') {
       env['0_annonymous'] = evaluate(args[0], env);
@@ -473,13 +465,10 @@ const tokens = {
       return Object.fromEntries(
         args.reduce((acc, item, i) => {
           if (i % 2) {
-            acc[count].push(
-              item.type === 'value' ? item.value : evaluate(item, env)
-            );
+            acc[count].push(extract(item, env));
             count++;
           } else {
-            const key =
-              item.type === 'value' ? item.value : evaluate(item, env);
+            const key = extract(item, env);
             if (typeof key !== 'string') {
               printErrors(
                 'SyntaxError Invalid use of operation :: (Only strings can be used as keys)',
@@ -498,19 +487,7 @@ const tokens = {
       printErrors(err, args);
     }
   },
-  ['.:']: (args, env) =>
-    args.map(item =>
-      item.type === 'value' ? item.value : evaluate(item, env)
-    ),
-  // [':']: (args, env) => {
-  //   if (!args.length || (args[0].type !== 'apply' && args[0].type !== 'word')) {
-  //     printErrors('SyntaxError Invalid number of arguments to :', args);
-  //     throw new SyntaxError('Invalid number of arguments to :');
-  //   }
-  //   const [first, ...rest] = args;
-  //   const fn = evaluate(first, env);
-  //   return arg => fn(arg, ...rest.map(x => evaluate(x, env)));
-  // },
+  ['.:']: (args, env) => args.map(item => extract(item, env)),
   ['<-']: (args, env) => exp =>
     args.forEach(arg => {
       env[arg.value] = exp[arg.value];
@@ -523,12 +500,6 @@ const tokens = {
         : param.value
     );
   }
-  // ['|?|']: (args, env) =>
-  //   args[0]
-  //     ? args[0].type === 'word' && env[args[0].name]
-  //       ? typeof env[args[0].name] ?? VOID
-  //       : args[0].class ?? VOID
-  //     : VOID
 };
 tokens['~='] = tokens[':='];
 export { tokens };

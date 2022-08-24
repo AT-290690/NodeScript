@@ -24,30 +24,7 @@ export const protolessModule = methods => {
   }
   return env;
 };
-const bitwise = protolessModule({
-  ['!']: operand => +!operand,
-  ['^']: (left, right) => left ^ right,
-  ['>>>']: (left, right) => left >>> right,
-  ['>>']: (left, right) => left >> right,
-  ['<<']: (left, right) => left << right,
-  ['~']: operand => ~operand,
-  ['|']: (left, right) => left | right,
-  ['&']: (left, right) => left & right
-});
-const operations = protolessModule({
-  ['+']: (first, ...args) => args.reduce((acc, x) => (acc += x), first),
-  ['-']: (first, ...args) => args.reduce((acc, x) => (acc -= x), first),
-  ['*']: (first, ...args) => args.reduce((acc, x) => (acc *= x), first),
-  ['/']: (first, ...args) => args.reduce((acc, x) => (acc /= x), first),
-  ['==']: (first, ...args) => +args.every(x => first === x),
-  ['!=']: (first, ...args) => +args.every(x => first != x),
-  ['>']: (first, ...args) => +args.every(x => first > x),
-  ['<']: (first, ...args) => +args.every(x => first < x),
-  ['>=']: (first, ...args) => +args.every(x => first >= x),
-  ['<=']: (first, ...args) => +args.every(x => first <= x),
-  ['%']: (left, right) => left % right,
-  ['**']: (left, right) => left ** (right ?? 2)
-});
+
 const _isSimilar = (a, b) => {
   const typeA = typeof a,
     typeB = typeof b;
@@ -242,6 +219,7 @@ export class StandartLibrary {
     // get: (entity, prop) => entity[prop] ?? VOID
   };
   MATH = {
+    abs: num => Math.abs(num),
     mod: (left, right) => ((left % right) + right) % right,
     clamp: (num, min, max) => Math.min(Math.max(num, min), max),
     sqrt: num => Math.sqrt(num),
@@ -762,7 +740,6 @@ export class StandartLibrary {
     slice: (entity, ...args) => entity.slice(...args)
   };
 }
-
 export const STD = {
   void: VOID,
   VOID,
@@ -779,7 +756,5 @@ export const STD = {
       }
       return result;
     },
-  ...bitwise,
-  ...operations,
-  STD: new StandartLibrary()
+  LIBRARY: new StandartLibrary()
 };
