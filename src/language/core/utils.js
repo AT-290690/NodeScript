@@ -62,7 +62,7 @@ export const printErrors = (errors, args) => {
       consoleElement.value =
         errors +
         ' ( near ' +
-        (temp.res.type === 'value' ? temp.res.value : temp.res.name) +
+        (temp.res.type === 'value' ? temp.res.value : temp.res.name ?? 'null') +
         (temp.fn ? ' in function ' + temp.fn + ' )  ' : ' )');
     } else {
       consoleElement.value = errors + ' ';
