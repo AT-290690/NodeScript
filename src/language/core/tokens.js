@@ -1,5 +1,12 @@
 import { printErrors } from './utils.js';
 import evaluate from './interpreter.js';
+const name = expr => {
+  if (expr.type !== 'word') {
+    printErrors('TypeError Argument names must be words');
+    throw new TypeError('Argument names must be words');
+  }
+  return expr.name;
+};
 const extract = (item, env) =>
   item.type === 'value' ? item.value : evaluate(item, env);
 const isEqual = (a, b) => {
@@ -260,13 +267,7 @@ const tokens = {
       printErrors('SyntaxError Functions need a body', args);
       throw new SyntaxError('Functions need a body');
     }
-    const name = expr => {
-      if (expr.type !== 'word') {
-        printErrors('SyntaxError Argument names must be words', args);
-        throw new SyntaxError('Argument names must be words');
-      }
-      return expr.name;
-    };
+
     const argNames = args.slice(0, args.length - 1).map(name);
     const body = args[args.length - 1];
     return (...args) => {
