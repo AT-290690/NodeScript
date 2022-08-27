@@ -41,48 +41,48 @@ export const parsePath = (arg, env) => {
 const tokens = {
   ['+']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments to +', args);
-      throw new SyntaxError('Invalid number of arguments to +');
+      printErrors('TypeError Invalid number of arguments to +', args);
+      throw new TypeError('Invalid number of arguments to +');
     }
     const [first, ...rest] = args.map(a => evaluate(a, env));
     return rest.reduce((acc, x) => (acc += x), first);
   },
   ['-']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments to -', args);
-      throw new SyntaxError('Invalid number of arguments to -');
+      printErrors('TypeError Invalid number of arguments to -', args);
+      throw new TypeError('Invalid number of arguments to -');
     }
     const [first, ...rest] = args.map(a => evaluate(a, env));
     return rest.reduce((acc, x) => (acc -= x), first);
   },
   ['*']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments to *', args);
-      throw new SyntaxError('Invalid number of arguments to *');
+      printErrors('TypeError Invalid number of arguments to *', args);
+      throw new TypeError('Invalid number of arguments to *');
     }
     const [first, ...rest] = args.map(a => evaluate(a, env));
     return rest.reduce((acc, x) => (acc *= x), first);
   },
   [':']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments to :', args);
-      throw new SyntaxError('Invalid number of arguments to :');
+      printErrors('TypeError Invalid number of arguments to :', args);
+      throw new TypeError('Invalid number of arguments to :');
     }
     const [first, ...rest] = args.map(a => evaluate(a, env));
     return rest.reduce((acc, x) => (acc /= x), first);
   },
   ['%']: (args, env) => {
     if (args.length !== 2) {
-      printErrors('SyntaxError Invalid number of arguments to %', args);
-      throw new SyntaxError('Invalid number of arguments to %');
+      printErrors('TypeError Invalid number of arguments to %', args);
+      throw new TypeError('Invalid number of arguments to %');
     }
     const [left, right] = args.map(a => evaluate(a, env));
     return left % right;
   },
   ['?']: (args, env) => {
     if (args.length > 3 || args.length <= 1) {
-      printErrors('SyntaxError Invalid number of arguments to ?', args);
-      throw new SyntaxError('Invalid number of arguments to ?');
+      printErrors('TypeError Invalid number of arguments to ?', args);
+      throw new TypeError('Invalid number of arguments to ?');
     }
     if (!!evaluate(args[0], env)) {
       return evaluate(args[1], env);
@@ -94,63 +94,63 @@ const tokens = {
   },
   ['!']: (args, env) => {
     if (args.length !== 1) {
-      printErrors('SyntaxError Invalid number of arguments to !', args);
-      throw new SyntaxError('Invalid number of arguments to !');
+      printErrors('TypeError Invalid number of arguments to !', args);
+      throw new TypeError('Invalid number of arguments to !');
     }
     return +!extract(args[0], env);
   },
   ['==']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments to ==', args);
-      throw new SyntaxError('Invalid number of arguments to ==');
+      printErrors('TypeError Invalid number of arguments to ==', args);
+      throw new TypeError('Invalid number of arguments to ==');
     }
     const [first, ...rest] = args.map(a => evaluate(a, env));
     return +rest.every(x => first === x);
   },
   ['!=']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments to !=', args);
-      throw new SyntaxError('Invalid number of arguments to !=');
+      printErrors('TypeError Invalid number of arguments to !=', args);
+      throw new TypeError('Invalid number of arguments to !=');
     }
     const [first, ...rest] = args.map(a => evaluate(a, env));
     return +rest.every(x => first !== x);
   },
   ['>']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments to >', args);
-      throw new SyntaxError('Invalid number of arguments to >');
+      printErrors('TypeError Invalid number of arguments to >', args);
+      throw new TypeError('Invalid number of arguments to >');
     }
     const [first, ...rest] = args.map(a => evaluate(a, env));
     return +rest.every(x => first > x);
   },
   ['<']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments to <', args);
-      throw new SyntaxError('Invalid number of arguments to <');
+      printErrors('TypeError Invalid number of arguments to <', args);
+      throw new TypeError('Invalid number of arguments to <');
     }
     const [first, ...rest] = args.map(a => evaluate(a, env));
     return +rest.every(x => first < x);
   },
   ['>=']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments to >=', args);
-      throw new SyntaxError('Invalid number of arguments to >=');
+      printErrors('TypeError Invalid number of arguments to >=', args);
+      throw new TypeError('Invalid number of arguments to >=');
     }
     const [first, ...rest] = args.map(a => evaluate(a, env));
     return +rest.every(x => first >= x);
   },
   ['<=']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments to <=', args);
-      throw new SyntaxError('Invalid number of arguments to <=');
+      printErrors('TypeError Invalid number of arguments to <=', args);
+      throw new TypeError('Invalid number of arguments to <=');
     }
     const [first, ...rest] = args.map(a => evaluate(a, env));
     return +rest.every(x => first <= x);
   },
   ['*?']: (args, env) => {
     if (args.length === 0 || args.length % 2 !== 0) {
-      printErrors('SyntaxError Invalid number of arguments to *?', args);
-      throw new SyntaxError('Invalid number of arguments to *?');
+      printErrors('TypeError Invalid number of arguments to *?', args);
+      throw new TypeError('Invalid number of arguments to *?');
     }
     let res = 0;
     for (let i = 0; i < args.length; i += 2) {
@@ -163,8 +163,8 @@ const tokens = {
   },
   ['===']: (args, env) => {
     if (args.length < 2) {
-      printErrors('SyntaxError Invalid number of arguments  to ===', args);
-      throw new SyntaxError('Invalid number of arguments  to ===');
+      printErrors('TypeError Invalid number of arguments  to ===', args);
+      throw new TypeError('Invalid number of arguments  to ===');
     }
     const [first, ...rest] = args;
     let res = 0;
@@ -180,8 +180,8 @@ const tokens = {
       throw new SyntaxError('==* has to end with a default case');
     }
     if (args.length < 4) {
-      printErrors('SyntaxError Invalid number of arguments  to ==*', args);
-      throw new SyntaxError('Invalid number of arguments  to ==*');
+      printErrors('TypeError Invalid number of arguments  to ==*', args);
+      throw new TypeError('Invalid number of arguments  to ==*');
     }
     const [first, ...rest] = args;
     let res = 0;
@@ -199,8 +199,8 @@ const tokens = {
   },
   ['&&']: (args, env) => {
     if (args.length === 0) {
-      printErrors('SyntaxError Invalid number of arguments to &&', args);
-      throw new SyntaxError('Invalid number of arguments to &&');
+      printErrors('TypeError Invalid number of arguments to &&', args);
+      throw new TypeError('Invalid number of arguments to &&');
     }
     for (let i = 0; i < args.length - 1; i++) {
       if (!!evaluate(args[i], env)) {
@@ -213,8 +213,8 @@ const tokens = {
   },
   ['||']: (args, env) => {
     if (args.length === 0) {
-      printErrors('SyntaxError Invalid number of arguments  to ||', args);
-      throw new SyntaxError('Invalid number of arguments  to ||');
+      printErrors('TypeError Invalid number of arguments  to ||', args);
+      throw new TypeError('Invalid number of arguments  to ||');
     }
     for (let i = 0; i < args.length - 1; i++) {
       if (!!evaluate(args[i], env)) {
@@ -227,8 +227,8 @@ const tokens = {
   },
   ['??']: (args, env) => {
     if (args.length === 0) {
-      printErrors('SyntaxError Invalid number of arguments  to ??', args);
-      throw new SyntaxError('Invalid number of arguments  to ??');
+      printErrors('TypeError Invalid number of arguments  to ??', args);
+      throw new TypeError('Invalid number of arguments  to ??');
     }
     for (let i = 0; i < args.length - 1; i++) {
       if (evaluate(args[i], env) !== VOID) {
@@ -262,11 +262,8 @@ const tokens = {
     }
     const name = expr => {
       if (expr.type !== 'word') {
-        printErrors(
-          'SyntaxError Arg names must be words',
-          args.map(x => x.name)
-        );
-        throw new SyntaxError('Arg names must be words');
+        printErrors('SyntaxError Argument names must be words', args);
+        throw new SyntaxError('Argument names must be words');
       }
       return expr.name;
     };
@@ -278,7 +275,7 @@ const tokens = {
           'TypeError Invalid number of arguments near ("' +
             argNames.join('; ') +
             '")',
-          args.map(x => x.name)
+          null
         );
         throw new TypeError('Invalid number of arguments');
       }
@@ -433,8 +430,8 @@ const tokens = {
   },
   ['...']: (args, env) => {
     if (!args.length) {
-      printErrors('SyntaxError Invalid number of arguments to ...', args);
-      throw new SyntaxError('Invalid number of arguments to ...');
+      printErrors('TypeError Invalid number of arguments to ...', args);
+      throw new TypeError('Invalid number of arguments to ...');
     }
     try {
       const [first, ...rest] = args;
