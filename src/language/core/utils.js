@@ -76,14 +76,7 @@ export const extractComments = source =>
 export const removeNoCode = source =>
   source.replace(/[ ]+(?=[^"]*(?:"[^"]*"[^"]*)*$)+|\n|\t|;;.+/g, '');
 export const wrapInBody = source => `=>[${source}]`;
-// ${
-//   params
-//     ? params
-//         .map(([key, val]) => ':=($' + key + ';' + val + ')')
-//         .join(';') + ';'
-//     : ''
-// }
-//cell({ ...std })(`=>()`);
+
 export const exe = source => {
   const ENV = protolessModule(STD);
   ENV[';;tokens'] = protolessModule(tokens);
@@ -99,10 +92,6 @@ export const exe = source => {
   }
 };
 export const addSpace = str => str + '\n';
-// export const stashComments = str => {
-//   State.comments = str.match(/;;.+/g);
-//   return str.replace(/;;.+/g, '##');
-// };
 export const revertComments = str => {
   if (State.comments) {
     const lines = str.split('\n');
@@ -125,80 +114,20 @@ export const isBalancedParenthesis = sourceCode => {
     } else if (str[i] in pairs) {
       if (stack.pop() !== pairs[str[i]]) {
         count++;
-        //if (str[str.length - 1] === ')') {
-        //str = str.substr(str, str.length - 1);
-        //} else if (str[str.length - 1] === ';' && str[str.length - 2] === ')') {
-        // str = str.substr(str, str.length - 2);
-        //}
       }
     }
   }
-  // if (stack.length) {
-  //   for (let i = 0; i < stack.length; i++) {
-  //     str += ')';
-  //   }
-  // }
+
   return { str, diff: count - stack.length };
 };
 export const prettier = str => addSpace(str);
-// .replace(/[ ]+(?=[^"]*(?:"[^"]*"[^"]*)*$)+/g, ' ')
-// .split(';')
-// .join('; ')
-// .split('(')
-// .join(' (');
-// export const depResolution = source => {
-//   const List = {};
-//   source.match(/<-(.*)\[(.[A-Z"]+)\];/g)?.forEach(methods => {
-//     const list = methods
-//       .split('];')
-//       .filter(x => x[0] === '<' && x[1] === '-' && x[2] === '[')
-//       .join('];')
-//       .replace(/\]|\[|<-+/g, ';')
-//       .split(';')
-//       .filter(Boolean)
-//       .reduce(
-//         (acc, item) => {
-//           if (item[0] !== '"') {
-//             acc._temp.push(item);
-//           } else {
-//             acc[item.substring(1, item.length - 1)] = [...acc._temp];
-//             acc._temp = [];
-//           }
-//           return acc;
-//         },
-//         { _temp: [] }
-//       );
-//     delete list._temp;
-//     for (const dep in list) {
-//       list[dep].forEach(m => {
-//         if (!List[dep]) List[dep] = {};
-//         if (!deps[dep]) {
-//           printErrors(`Module ${dep} does not exist`);
-//           throw new SyntaxError(`Module ${dep} does not exist`);
-//         } else if (deps[dep][m] === undefined) {
-//           printErrors(
-//             `Reference error Module ${dep} does not provide an export named ${m}`
-//           );
-//           throw new SyntaxError(
-//             `Module ${dep} does not provide an export named ${m}`
-//           );
-//         } else {
-//           List[dep][m] = deps[dep][m];
-//         }
-//       });
-//     }
-//   });
-//   return List;
-// };
 
 export const run = source => {
   State.isErrored = false;
   consoleElement.classList.add('info_line');
   consoleElement.classList.remove('error_line');
   consoleElement.value = '';
-  // const cursor = editor.getCursor();
   source = source.trim();
-  // const comments = extractComments(source);
   const sourceCode = removeNoCode(source);
 
   const parenMatcher = isBalancedParenthesis(sourceCode);

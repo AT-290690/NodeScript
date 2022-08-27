@@ -120,18 +120,6 @@ const events = {
     void (events.events['keyup'] = e => callback(e)) ??
     window.addEventListener('keyup', events.events['keyup'])
 };
-const request = {
-  maybeJson: (url, callback) =>
-    fetch(url)
-      .then(res => res.json())
-      .then(res => callback(res, VOID))
-      .catch(err => callback(VOID, err)),
-  maybeText: (url, callback) =>
-    fetch(url)
-      .then(res => res.json())
-      .then(res => callback(res, VOID))
-      .catch(err => callback(VOID, err))
-};
 
 // export const deps = {
 //   // ...prefixDep(BA, 'BINARYARRAY'),
@@ -142,6 +130,36 @@ const request = {
 // };
 
 export class StandartLibrary {
+  SKETCH = {
+    setFill: (ctx, color) => {
+      ctx.fillStyle = color;
+      return ctx;
+    },
+    makeRectangle: (ctx, x, y, w, h) => {
+      ctx.fillRect(x, y, w, h);
+      return ctx;
+    },
+    makeCanvas: (w, h) => {
+      const canvas = document.getElementById('sketch');
+      if (canvas) {
+        canvas.width = w;
+        canvas.height = h;
+        return canvas.getContext('2d');
+      }
+    }
+  };
+  REQUEST = {
+    maybeJson: (url, callback) =>
+      fetch(url)
+        .then(res => res.json())
+        .then(res => callback(res, VOID))
+        .catch(err => callback(VOID, err)),
+    maybeText: (url, callback) =>
+      fetch(url)
+        .then(res => res.json())
+        .then(res => callback(res, VOID))
+        .catch(err => callback(VOID, err))
+  };
   TIME = {
     makeDate: date => new Date(date),
     currentTime: () => new Date().getTime(),

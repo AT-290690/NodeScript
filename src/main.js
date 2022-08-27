@@ -269,7 +269,8 @@ const openAppWindow = () => {
   });
   memo.app = window.open('');
   memo.app.document.write(
-    `<script>\n${BinaryArray.toString()}
+    `<canvas id="sketch"></canvas>
+    <script>\n${BinaryArray.toString()}
     </script>
     <script>\n${StandartLibrary.toString()}</script>
     <script>\n${toJavasScript({

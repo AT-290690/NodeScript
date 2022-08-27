@@ -181,14 +181,14 @@ const tokens = {
     });
     return res;
   },
-  ['==*']: (args, env) => {
+  ['=*']: (args, env) => {
     if (args.length % 2 !== 0) {
-      printErrors('SyntaxError ==* has to end with a default case', args);
-      throw new SyntaxError('==* has to end with a default case');
+      printErrors('SyntaxError =* has to end with a default case', args);
+      throw new SyntaxError('=* has to end with a default case');
     }
     if (args.length < 4) {
-      printErrors('TypeError Invalid number of arguments  to ==*', args);
-      throw new TypeError('Invalid number of arguments  to ==*');
+      printErrors('TypeError Invalid number of arguments  to =*', args);
+      throw new TypeError('Invalid number of arguments  to =*');
     }
     const [first, ...rest] = args;
     let res = 0;

@@ -52,7 +52,7 @@ const dfs = (tree, locals) => {
         }
       }
 
-      case '==*': {
+      case '=*': {
         const [first, ...rest] = tree.args;
         const match = dfs(first, locals);
         let output = '';

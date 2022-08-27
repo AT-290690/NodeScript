@@ -25,5 +25,3 @@ export const toJavasScript = ({ source, env }) => {
 `;
   return script;
 };
-const executeHyperScript = args =>
-  new Function(toJavasScript(args))({ HyperList });
