@@ -60,7 +60,10 @@ export const printErrors = (errors, args) => {
     const temp = dfs(args);
     if (temp.fn || temp.res) {
       consoleElement.value =
-        errors + ' [near "' + temp.res + '" in function "' + temp.fn + '"]  ';
+        errors +
+        ' ( near ' +
+        (temp.res.type === 'value' ? temp.res.value : temp.res.name) +
+        (temp.fn ? ' in function ' + temp.fn + ' )  ' : ' )');
     } else {
       consoleElement.value = errors + ' ';
     }
@@ -200,7 +203,8 @@ export const run = source => {
 
   const parenMatcher = isBalancedParenthesis(sourceCode);
   if (parenMatcher.diff === 0) {
-    print(exe(sourceCode));
+    const result = exe(sourceCode);
+    !State.isErrored && print(result);
   } else {
     printErrors(
       `Parenthesis are unbalanced by ${parenMatcher.diff > 0 ? '+' : ''}${
