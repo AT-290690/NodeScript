@@ -341,12 +341,13 @@ body {
   stroke: var(--icons);
 }
 #header {
-  right: 55px;
-  top: 5px;
+  right: 0;
+  top: 15px;
   height: 50px;
+  gap: 10px;
   border: none;
   width: 70px;
-  display: flex;
+  display: grid;
   background-color: transparent;
   position: fixed;
   z-index: 1000;
@@ -394,15 +395,14 @@ input:focus {
 .cm-search {
   background-color: transparent !important;
 }
-
+#console:focus {
+  color: var(--color-fiftly);
+}
 #console {
   outline: none;
-
   resize: none;
-  height: 50px;
   position: absolute;
-  bottom: 0px;
-  pointer-events: none;
+  bottom: 0;
   border: none;
   background: none;
   font-family: var(--font-primary);
