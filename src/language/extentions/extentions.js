@@ -81,47 +81,6 @@ const _isEqual = (a, b) => {
     }
   }
 };
-const list = {
-  node: prev => next => ({ prev, next }),
-  prev: n => n.prev,
-  next: n => n.next,
-  range: low => high =>
-    low > high ? null : list.node(low)(list.range(low + 1)(high)),
-  map: f => n =>
-    n === null ? null : list.node(f(list.prev(n)))(list.map(f)(list.next(n))),
-  nodeToArray: node => {
-    const result = [];
-    while (node !== null) {
-      result.push(list.prev(node));
-      node = list.next(node);
-    }
-    return result;
-  },
-  arrayToNode: arrayLike => {
-    let result = null;
-    const array = Array.from(arrayLike);
-    for (let i = array.length; i >= 0; i--) {
-      result = list.node(array[i])(result);
-    }
-    return result;
-  }
-};
-
-// const events = {
-//   events: {},
-//   makeEvent: (entity, type, callback) => {
-//     entity.renderer.elem.addEventListener(type, callback);
-//   },
-//   click: (entity, callback) => {
-//     entity.renderer.elem.addEventListener('click', callback);
-//   },
-//   keyDown: callback =>
-//     void (events.events['keydown'] = e => callback(e)) ??
-//     window.addEventListener('keydown', events.events['keydown']),
-//   keyUp: callback =>
-//     void (events.events['keyup'] = e => callback(e)) ??
-//     window.addEventListener('keyup', events.events['keyup'])
-// };
 
 export class StandartLibrary {
   COLOR = {

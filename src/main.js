@@ -7,12 +7,26 @@ import {
   StandartLibrary,
   STD
 } from './language/extentions/extentions.js';
-const _seciton = document.getElementById('comments-section');
-const _app = document.getElementById('app');
 
-const editor = CodeMirror(_seciton);
+const elements = {
+  selectedIndex: document.getElementById('selectedIndex'),
+  treeContainer: document.getElementById('tree'),
+  variableInput: document.getElementById('variableInput'),
+  connectionButton: document.getElementById('connection-button'),
+  makeNodeButton: document.getElementById('create-node'),
+  openAppButton: document.getElementById('open-app'),
+  connectionA: document.getElementById('connection-node-A'),
+  connectionB: document.getElementById('connection-node-B'),
+  commentsSection: document.getElementById('comments-section'),
+  close: document.getElementById('close'),
+  save: document.getElementById('key'),
+  downloadSvgButton: document.getElementById('download-svg'),
+  app: document.getElementById('app')
+};
+
+const editor = CodeMirror(elements.commentsSection);
 editor.setSize(window.innerWidth - 5, window.innerHeight - 5);
-_seciton.style.display = 'none';
+elements.commentsSection.style.display = 'none';
 
 const DARK_THEME = {
   type: 'Dark',
@@ -63,18 +77,7 @@ const memo = {
   <script>\n${StandartLibrary.toString()}</script>
   </body>`
 };
-const elements = {
-  selectedIndex: document.getElementById('selectedIndex'),
-  treeContainer: document.getElementById('tree'),
-  variableInput: document.getElementById('variableInput'),
-  connectionButton: document.getElementById('connection-button'),
-  openEditorButton: document.getElementById('open-app'),
-  connectionA: document.getElementById('connection-node-A'),
-  connectionB: document.getElementById('connection-node-B'),
-  commentsSection: document.getElementById('comments-section'),
-  close: document.getElementById('close'),
-  save: document.getElementById('key')
-};
+
 const changeTheme = theme => {
   for (const key in CURRENT_THEME) CURRENT_THEME[key] = theme[key];
   const style = document.documentElement.style;
@@ -273,7 +276,7 @@ const getPredecessorCode = () => {
   );
 };
 const updateApp = () => {
-  const appDocument = _app.contentWindow.document;
+  const appDocument = elements.app.contentWindow.document;
 
   // if (appDocument.body) appDocument.body.innerHTML = '';
   const main = appDocument.getElementById('main');
@@ -302,15 +305,16 @@ const openAppWindow = () => {
   current.data({
     comment: editor.getValue()
   });
-  if (_app.style.display === 'none') {
-    _app.style.display = 'block';
+  if (elements.app.style.display === 'none') {
+    elements.app.style.display = 'block';
     updateApp();
+    consoleElement.value = '';
   } else {
-    const appDocument = _app.contentWindow;
+    const appDocument = elements.app.contentWindow;
     if (appDocument) {
       appDocument.LIBRARY.SKETCH.destroyComposition();
     }
-    _app.style.display = 'none';
+    elements.app.style.display = 'none';
   }
 
   // appDocument.close();
@@ -512,9 +516,61 @@ cy.on('dblclick', 'node', () => {
   elements.commentsSection.style.display = 'block';
   elements.connectionButton.style.display = 'none';
 });
+
 cy.ready(() => {
-  elements.openEditorButton.addEventListener('click', () => {
-    if (memo.lastSelection.id) openAppWindow();
+  elements.downloadSvgButton.addEventListener('click', () => {
+    const a = document.createElement('a');
+    const canvasContainer =
+      elements.app.contentWindow.document.getElementById('canvas-container');
+
+    const temp = canvasContainer.firstChild.style.border;
+    canvasContainer.firstChild.style.border = 'none';
+    a.href = window.URL.createObjectURL(
+      new Blob(
+        [
+          canvasContainer.innerHTML.replace(
+            '<svg',
+            '<svg xmlns="http://www.w3.org/2000/svg"'
+          )
+        ],
+        {
+          type: 'text/svg'
+        }
+      )
+    );
+    a.setAttribute('download', 'gearbit.svg');
+    a.click();
+    window.URL.revokeObjectURL(a.href);
+    canvasContainer.firstChild.style.border = temp;
+  });
+  elements.makeNodeButton.addEventListener('click', () => {
+    if (elements.commentsSection.style.display === 'block') {
+      elements.commentsSection.style.display = 'none';
+    } else if (memo.lastSelection.id) {
+      elements.commentsSection.style.display = 'block';
+      elements.connectionButton.style.display = 'none';
+    } else {
+      const zoom = cy.zoom();
+      const pan = cy.pan();
+      const start = 90;
+      const end = 150;
+      addNode(
+        {
+          x: (Math.floor(start + Math.random() * end) - pan.x) / zoom,
+          y: (Math.floor(start + Math.random() * end) - pan.y) / zoom
+        },
+        DEFAULT_TOKEN
+      );
+    }
+  });
+  elements.openAppButton.addEventListener('click', () => {
+    if (memo.lastSelection.id) {
+      elements.app.style.display = 'block';
+      updateApp();
+      consoleElement.value = '';
+    } else {
+      openAppWindow();
+    }
   });
   elements.connectionButton.addEventListener('click', () => {
     if (memo.nodePairsSelections.length === 2) {
@@ -613,11 +669,11 @@ cy.ready(() => {
     deselectIndex();
     consoleElement.value = '';
     STD.LIBRARY.SKETCH.destroyComposition();
-    const appDocument = _app.contentWindow;
+    const appDocument = elements.app.contentWindow;
     if (appDocument && appDocument.LIBRARY) {
       appDocument.LIBRARY.SKETCH?.destroyComposition();
     }
-    _app.style.display = 'none';
+    elements.app.style.display = 'none';
   };
 
   elements.save.addEventListener('click', () => saveFile());
@@ -627,14 +683,16 @@ cy.ready(() => {
     if (e.key === 'Escape') {
       e.preventDefault();
       e.stopPropagation();
-      onClose();
+      clearSelection();
+      deselectIndex();
+      // onClose();
     }
     if (elements.commentsSection.style.display === 'none') {
       if (e.key.toLowerCase() === 's' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         e.stopPropagation();
         if (memo.lastSelection.id) {
-          if (_app.style.display === 'block') {
+          if (elements.app.style.display === 'block') {
             updateApp();
           } else {
             run(getPredecessorCode());
@@ -679,7 +737,7 @@ cy.ready(() => {
       if (e.key.toLowerCase() === 's' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         e.stopPropagation();
-        if (_app.style.display === 'block') {
+        if (elements.app.style.display === 'block') {
           updateApp();
         } else {
           run(getPredecessorCode());

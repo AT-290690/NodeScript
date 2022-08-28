@@ -363,6 +363,7 @@ body {
   cursor: pointer;
   background: transparent;
   border: none;
+  width: 50px;
 }
 
 input {

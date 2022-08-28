@@ -1,4 +1,5 @@
 const vars = new Set();
+const symbols = { ':': '/' };
 const dfs = (tree, locals) => {
   if (!tree) return '';
   if (tree.type === 'apply') {
@@ -68,6 +69,7 @@ const dfs = (tree, locals) => {
         }
         return output;
       }
+
       case '==':
         return '(' + tree.args.map(x => dfs(x, locals)).join('===') + ')';
       case '+':
@@ -84,7 +86,9 @@ const dfs = (tree, locals) => {
       case '??':
         return (
           '(' +
-          tree.args.map(x => dfs(x, locals)).join(tree.operator.name) +
+          tree.args
+            .map(x => dfs(x, locals))
+            .join(symbols[tree.operator.name] ?? tree.operator.name) +
           ')'
         );
       case '%':
