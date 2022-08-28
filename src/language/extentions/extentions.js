@@ -28,7 +28,9 @@ export const protolessModule = methods => {
 };
 
 export class StandartLibrary {
+  NAME = 'LIBRARY';
   COLOR = {
+    NAME: 'COLOR',
     makeRgbColor: (r, g, b) => `rgb(${r}, ${g}, ${b})`,
     makeRgbAlphaColor: (r, g, b, a = 1) => `rgba(${r}, ${g}, ${b}, ${a})`,
     randomColor: () => `#${Math.floor(Math.random() * 16777215).toString(16)}`,
@@ -45,7 +47,9 @@ export class StandartLibrary {
         .toUpperCase()
   };
   SKETCH = {
+    NAME: 'SKETCH',
     VECTOR: {
+      NAME: 'VECTOR',
       makeVector: (...args) => new Two.Vector(...args),
       zero: Two.Vector.zero,
       left: Two.Vector.left,
@@ -351,20 +355,20 @@ export class StandartLibrary {
     getTranslation: entity => entity.translation,
     getBounds: entity => entity.getBoundingClientRect()
   };
-
-  REQUEST = {
-    maybeJson: (url, callback) =>
-      fetch(url)
-        .then(res => res.json())
-        .then(res => callback(res, VOID))
-        .catch(err => callback(VOID, err)),
-    maybeText: (url, callback) =>
-      fetch(url)
-        .then(res => res.json())
-        .then(res => callback(res, VOID))
-        .catch(err => callback(VOID, err))
-  };
+  // REQUEST = {
+  //   maybeJson: (url, callback) =>
+  //     fetch(url)
+  //       .then(res => res.json())
+  //       .then(res => callback(res, VOID))
+  //       .catch(err => callback(VOID, err)),
+  //   maybeText: (url, callback) =>
+  //     fetch(url)
+  //       .then(res => res.json())
+  //       .then(res => callback(res, VOID))
+  //       .catch(err => callback(VOID, err))
+  // };
   TIME = {
+    NAME: 'TIME',
     makeDate: date => new Date(date),
     currentTime: () => new Date().getTime(),
     currentDate: () => new Date(),
@@ -377,6 +381,7 @@ export class StandartLibrary {
     clearTimeout: id => clearTimeout(id)
   };
   SET = {
+    NAME: 'SET',
     from: arr => new Set(arr),
     makeSet: (...args) => new Set(args),
     has: (entity, item) => +entity.has(item),
@@ -425,6 +430,7 @@ export class StandartLibrary {
     size: entity => entity.size
   };
   OBJECT = {
+    NAME: 'OBJECT',
     jsonString: object => JSON.stringify(object),
     jsonParse: string => JSON.parse(string),
     clone: obj => structuredClone(obj),
@@ -441,6 +447,7 @@ export class StandartLibrary {
     // get: (entity, prop) => entity[prop] ?? VOID
   };
   MATH = {
+    NAME: 'MATH',
     abs: num => Math.abs(num),
     mod: (left, right) => ((left % right) + right) % right,
     clamp: (num, min, max) => Math.min(Math.max(num, min), max),
@@ -479,6 +486,7 @@ export class StandartLibrary {
     number: string => Number(string)
   };
   STRING = {
+    NAME: 'STRING',
     interpolate: (...args) =>
       args.reduce((acc, item) => (acc += item.toString()), ''),
     includes: (string, target) => string.includes(target),
@@ -494,6 +502,7 @@ export class StandartLibrary {
     sp: ' '
   };
   CONVERT = {
+    NAME: 'CONVERT',
     array: thing =>
       BinaryArray.isBinaryArray(thing) ? thing.toArray() : [...thing],
     boolean: thing => Boolean(thing),
@@ -505,9 +514,11 @@ export class StandartLibrary {
   CONSOLE = {
     print,
     printLog: thing => console.log(...print(thing)),
-    consoleLog: thing => console.log(thing)
+    consoleLog: thing => console.log(thing),
+    NAME: 'CONSOLE'
   };
   LOGIC = {
+    NAME: 'LOGIC',
     isTrue: bol => +(!!bol === true),
     isFalse: bol => +(!!bol === false),
     isEqual: (a, b) => {
@@ -580,6 +591,7 @@ export class StandartLibrary {
       +args.every(current => this.LOGIC.isEqual(item, current))
   };
   LOOP = {
+    NAME: 'LOOP',
     generator: function* (entity = [], index = 0) {
       while (true) {
         yield entity[index++];
@@ -629,6 +641,7 @@ export class StandartLibrary {
     }
   };
   ARRAY = {
+    NAME: 'ARRAY',
     ['map1']: (entity, callback) => entity.map(x => callback(x)),
     ['filter1']: (entity, callback) => entity.filter(x => callback(x)),
     ['reduce1']: (entity, callback, acc) =>
@@ -751,6 +764,7 @@ export class StandartLibrary {
     at: (entity, index) => entity.at(index)
   };
   BINARYARRAY = {
+    NAME: 'BINARYARRAY',
     ['remake1']: (entity, callback) =>
       entity.reduce(acc => callback(acc), new BinaryArray()),
     ['remake2']: (entity, callback) =>
@@ -1022,6 +1036,14 @@ export const STD = {
   _: VOID,
   null: VOID,
   NULL: VOID,
+  IMP: module => {
+    prompt(
+      'Copy to clipboard: Ctrl+C, Enter',
+      `<-[${Object.keys(module)
+        .map(x => `"${x}"`)
+        .join(';')}][${module.NAME}]`
+    );
+  },
   LS: module => Object.keys(module),
   tco:
     func =>
