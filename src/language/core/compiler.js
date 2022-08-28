@@ -82,6 +82,11 @@ const dfs = (tree, locals) => {
       case '>':
       case '<':
       case '??':
+        return (
+          '(' +
+          tree.args.map(x => dfs(x, locals)).join(tree.operator.name) +
+          ')'
+        );
       case '%':
         return (
           '(' +

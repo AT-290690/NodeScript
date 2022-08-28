@@ -1,5 +1,5 @@
 import { CodeMirror } from './editor/cell.editor.bundle.js';
-import { toJavasScript } from './language/core/toJs.js';
+import { languageUtilsString, toJavasScript } from './language/core/toJs.js';
 import {
   pruneDep,
   removeNoCode,
@@ -12,6 +12,8 @@ import {
   StandartLibrary
 } from './language/extentions/extentions.js';
 const _seciton = document.getElementById('comments-section');
+const _app = document.getElementById('app');
+
 const editor = CodeMirror(_seciton);
 editor.setSize(window.innerWidth - 5, window.innerHeight - 5);
 _seciton.style.display = 'none';
@@ -53,7 +55,16 @@ const memo = {
   mousePosition: { x: 0, y: 0 },
   nodeIndex: 0,
   edgeIndex: 0,
-  app: null
+  app: `<body><div id="canvas-container"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.8.10/two.min.js" integrity="sha512-D9pUm3+gWPkv/Wl6vd45vRLjdkdEKGje7BxOxYG0N6m4UlEUB7RSljBwpmJNAOuf6txLLtlaRchoKfzngr/bQg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+  const canvasContainer = document.getElementById("canvas-container");
+  ${languageUtilsString}
+  </script>
+  <script>\n${BinaryArray.toString()}
+  </script>
+  <script>\n${StandartLibrary.toString()}</script>
+  </body>`
 };
 const elements = {
   selectedIndex: document.getElementById('selectedIndex'),
@@ -262,22 +273,44 @@ const getPredecessorCode = () => {
       .join('\n') + comment
   );
 };
+const updateApp = () => {
+  const appDocument = _app.contentWindow.document;
+
+  // if (appDocument.body) appDocument.body.innerHTML = '';
+  const main = appDocument.getElementById('main');
+  if (!main) appDocument.write(memo.app);
+  else {
+    // if (LIBRARY?.SKETCH?.engine) {
+    //   LIBRARY.SKETCH.engine.unbind('update', callback);
+    //   LIBRARY.SKETCH.engine.removeEventListener('update');
+    // }
+
+    appDocument.body.removeChild(main);
+  } // appDocument.open();
+  const script = appDocument.createElement('script');
+  script.id = 'main';
+  script.innerHTML = `
+   (() => {
+   \n${toJavasScript({
+     source: wrapInBody(removeNoCode(getPredecessorCode()))
+     // env: pruneDep()
+   })}
+  })()`;
+  if (appDocument.body) appDocument.body.appendChild(script);
+};
 const openAppWindow = () => {
   const current = cy.nodes(`#${memo.lastSelection.id}`);
   current.data({
     comment: editor.getValue()
   });
-  memo.app = window.open('');
-  memo.app.document.write(
-    `<canvas id="sketch"></canvas>
-    <script>\n${BinaryArray.toString()}
-    </script>
-    <script>\n${StandartLibrary.toString()}</script>
-    <script>\n${toJavasScript({
-      source: wrapInBody(removeNoCode(getPredecessorCode())),
-      env: pruneDep()
-    })}</script>`
-  );
+  if (_app.style.display === 'none') {
+    _app.style.display = 'block';
+    updateApp();
+  } else {
+    _app.style.display = 'none';
+  }
+
+  // appDocument.close();
 };
 const connectNodes = (couple = memo.nodePairsSelections, label) => {
   if (!couple[0] && !couple[1]) {
@@ -592,7 +625,11 @@ cy.ready(() => {
         e.preventDefault();
         e.stopPropagation();
         if (memo.lastSelection.id) {
-          run(getPredecessorCode());
+          if (_app.style.display === 'block') {
+            updateApp();
+          } else {
+            run(getPredecessorCode());
+          }
           clearSelection();
           deselectIndex();
         }
@@ -633,7 +670,11 @@ cy.ready(() => {
       if (e.key.toLowerCase() === 's' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         e.stopPropagation();
-        run(getPredecessorCode());
+        if (_app.style.display === 'block') {
+          updateApp();
+        } else {
+          run(getPredecessorCode());
+        }
       }
     }
   });
