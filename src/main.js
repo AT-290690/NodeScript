@@ -614,8 +614,8 @@ cy.ready(() => {
     consoleElement.value = '';
     STD.LIBRARY.SKETCH.destroyComposition();
     const appDocument = _app.contentWindow;
-    if (appDocument) {
-      appDocument.LIBRARY.SKETCH.destroyComposition();
+    if (appDocument && appDocument.LIBRARY) {
+      appDocument.LIBRARY.SKETCH?.destroyComposition();
     }
     _app.style.display = 'none';
   };
