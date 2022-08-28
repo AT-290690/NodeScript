@@ -124,7 +124,57 @@ const list = {
 // };
 
 export class StandartLibrary {
+  COLOR = {
+    makeRgbColor: (r, g, b) => `rgb(${r}, ${g}, ${b})`,
+    makeRgbAlphaColor: (r, g, b, a = 1) => `rgba(${r}, ${g}, ${b}, ${a})`,
+    randomColor: () => `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+    randomLightColor: () =>
+      '#' +
+      (
+        '00000' + Math.floor(Math.random() * Math.pow(16, 6)).toString(16)
+      ).slice(-6),
+    invertColor: hex =>
+      '#' +
+      (Number(`0x1${hex.split('#')[1]}`) ^ 0xffffff)
+        .toString(16)
+        .substr(1)
+        .toUpperCase()
+  };
   SKETCH = {
+    VECTOR: {
+      makeVector: (...args) => new Two.Vector(...args),
+      zero: Two.Vector.zero,
+      left: Two.Vector.left,
+      right: Two.Vector.right,
+      up: Two.Vector.up,
+      down: Two.Vector.down,
+      add: (a, b) => Two.Vector.add(a, b),
+      subtract: (a, b) => Two.Vector.subtract(a, b),
+      multiply: (a, b) => Two.Vector.add(a, b),
+      divide: (a, b) => a.divide(b),
+      dot: (a, b) => a.dot(b),
+      normalize: vec => vec.normalize(),
+      ratioBetween: (a, b) => Two.Vector.ratioBetween(a, b),
+      angleBetween: (a, b) => Two.Vector.angleBetween(a, b),
+      distanceBetween: (a, b) => Two.Vector.distanceBetween(a, b),
+      distanceBetweenSquared: (a, b) => Two.Vector.distanceBetweenSquared(a, b),
+      distanceTo: (a, b, e) => a.distanceTo(b, e),
+      distanceToSquared: (a, b, e) => a.distanceToSquared(b, e),
+      getX: vec => vec.x,
+      getY: vec => vec.y,
+      copy: (vec, d) => vec.copy(d),
+      clear: vec => vec.clear(),
+      clone: vec => vec.clone(),
+      lerp: (vec, d, t) => vec.lerp(d, t),
+      addSelf: (vec, a) => vec.addSelf(a),
+      subtractSelf: (vec, a) => vec.subtractSelf(a),
+      multiplySelf: (vec, a) => vec.multiplySelf(a),
+      multiplyScalar: (vec, scalar) => vec.multiplyScalar(scalar),
+      divideScalar: (vec, scalar) => vec.divideScalar(scalar),
+      setLength: (vec, len) => vec.setLength(len),
+      length: vec => vec.length(),
+      rotate: (vec, angle) => vec.rotate(angle)
+    },
     background: (color = 'var(--background-primary)') =>
       (canvasContainer.firstChild.style.background = color),
     requestAnimationFrame: fn => (animation = requestAnimationFrame(fn)),

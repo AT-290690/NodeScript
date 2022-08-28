@@ -55,6 +55,7 @@ const memo = {
   <script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.8.10/two.min.js" integrity="sha512-D9pUm3+gWPkv/Wl6vd45vRLjdkdEKGje7BxOxYG0N6m4UlEUB7RSljBwpmJNAOuf6txLLtlaRchoKfzngr/bQg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script>
   const canvasContainer = document.getElementById("canvas-container");
+  const VOID = null;
   ${languageUtilsString}
   </script>
   <script>\n${BinaryArray.toString()}
