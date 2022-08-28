@@ -267,7 +267,9 @@ const getPredecessorCode = () => {
       .predecessors('node')
       .map(x => {
         const data = x.data().comment.trim();
-        return data && data[data.length - 1] !== ';' ? data + ';' : data;
+        return data && data[data.length - 1] !== ';'
+          ? data + ';\n'
+          : data + '\n';
       })
       .reverse()
       .join('\n') + comment
