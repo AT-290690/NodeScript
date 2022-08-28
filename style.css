@@ -6,7 +6,7 @@
   --comment: #546a90;
   --linenumbers: #3e4d67;
   --border: #809ac6;
-  --background-primary: #0000008a;
+  --background-primary: #000000;
   --background-thirdly: #000000;
   --background-secondary: #b578ff58;
   --color-primary: #809ac6;
@@ -308,10 +308,11 @@ body {
   top: 0;
   left: 50vw;
   width: 49.9vw;
-  height: 100vh;
+  height: 99.9vh;
   box-sizing: border-box;
   z-index: 2;
-  border: solid 1px var(--border);
+  border: none;
+  border-left: solid 1px var(--border);
 }
 @keyframes fadeOutOpacity {
   0% {

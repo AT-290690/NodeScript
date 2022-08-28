@@ -134,7 +134,7 @@ export class StandartLibrary {
       this.SKETCH.engine?.removeEventListener('update');
     },
     makeScene: (width = 100, height = 100, callback) => {
-      if (!canvasContainer) return;
+      if (!canvasContainer) return 'Open App';
       canvasContainer.innerHTML = '';
       this.SKETCH.engine?.removeEventListener('update');
       // this.SKETCH.engine?.removeEventListener('update');

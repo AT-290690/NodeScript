@@ -609,6 +609,7 @@ cy.ready(() => {
     clearSelection();
     deselectIndex();
     consoleElement.value = '';
+    _app.style.display = 'none';
   });
   // elements.load.addEventListener('click', () => loadFile());
   document.addEventListener('keydown', e => {
