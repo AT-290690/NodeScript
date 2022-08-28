@@ -1,15 +1,11 @@
 import { CodeMirror } from './editor/cell.editor.bundle.js';
 import { languageUtilsString, toJavasScript } from './language/core/toJs.js';
-import {
-  pruneDep,
-  removeNoCode,
-  run,
-  wrapInBody
-} from './language/core/utils.js';
+import { removeNoCode, run, wrapInBody } from './language/core/utils.js';
 import { BinaryArray } from './language/extentions/BinaryArray.js';
 import {
   consoleElement,
-  StandartLibrary
+  StandartLibrary,
+  STD
 } from './language/extentions/extentions.js';
 const _seciton = document.getElementById('comments-section');
 const _app = document.getElementById('app');
@@ -309,6 +305,10 @@ const openAppWindow = () => {
     _app.style.display = 'block';
     updateApp();
   } else {
+    const appDocument = _app.contentWindow;
+    if (appDocument) {
+      appDocument.LIBRARY.SKETCH.destroyComposition();
+    }
     _app.style.display = 'none';
   }
 
@@ -605,23 +605,28 @@ cy.ready(() => {
     const pan = cy.pan();
     cy.pan({ x: pan.x + step * x, y: pan.y + step * y });
   };
-  elements.save.addEventListener('click', () => saveFile());
-  elements.close.addEventListener('click', () => {
+
+  const onClose = () => {
     elements.commentsSection.style.display = 'none';
     clearSelection();
     deselectIndex();
     consoleElement.value = '';
+    STD.LIBRARY.SKETCH.destroyComposition();
+    const appDocument = _app.contentWindow;
+    if (appDocument) {
+      appDocument.LIBRARY.SKETCH.destroyComposition();
+    }
     _app.style.display = 'none';
-  });
+  };
+
+  elements.save.addEventListener('click', () => saveFile());
+  elements.close.addEventListener('click', onClose);
   // elements.load.addEventListener('click', () => loadFile());
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       e.preventDefault();
       e.stopPropagation();
-      elements.commentsSection.style.display = 'none';
-      clearSelection();
-      deselectIndex();
-      consoleElement.value = '';
+      onClose();
     }
     if (elements.commentsSection.style.display === 'none') {
       if (e.key.toLowerCase() === 's' && (e.ctrlKey || e.metaKey)) {

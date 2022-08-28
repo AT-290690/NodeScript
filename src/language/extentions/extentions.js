@@ -1,7 +1,7 @@
 import { VOID } from '../core/tokens.js';
 import { BinaryArray } from './BinaryArray.js';
 export const consoleElement = document.getElementById('console');
-const canvasContainer = null;
+const canvasContainer = document.getElementById('canvas-container');
 
 const prefixDep = (dep, prefix = '') =>
   Object.entries(dep).reduce((acc, [key, value]) => {
@@ -126,7 +126,7 @@ const list = {
 export class StandartLibrary {
   SKETCH = {
     background: (color = 'var(--background-primary)') =>
-      canvasContainer && (canvasContainer.firstChild.style.background = color),
+      (canvasContainer.firstChild.style.background = color),
     requestAnimationFrame: fn => (animation = requestAnimationFrame(fn)),
     destroyComposition: () => {
       canvasContainer.style.background = 'var(--background-primary)';
@@ -134,7 +134,6 @@ export class StandartLibrary {
       this.SKETCH.engine?.removeEventListener('update');
     },
     makeScene: (width = 100, height = 100, callback) => {
-      if (!canvasContainer) return 'Open App';
       canvasContainer.innerHTML = '';
       this.SKETCH.engine?.removeEventListener('update');
       // this.SKETCH.engine?.removeEventListener('update');
@@ -320,7 +319,6 @@ export class StandartLibrary {
     setCompositionWidth: width => (this.SKETCH.engine.width = width),
     setCompositionHeight: height => (this.SKETCH.engine.height = height),
     setScreenSize: (w, h, showBorder = true) => {
-      if (!canvasContainer) return;
       const svg = canvasContainer.firstChild;
       svg.setAttribute('width', w);
       svg.setAttribute('height', h);

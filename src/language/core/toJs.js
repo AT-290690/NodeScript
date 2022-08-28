@@ -10,12 +10,12 @@ const protoless = `const protolessModule = methods => { const env = Object.creat
 
 export const languageUtilsString = ` ${tco}\n${pipe}\n${spread}\n${is_equal}\n${is_similar}\n${protoless};`;
 
-export const toJavasScript = ({ source, env }) => {
+export const toJavasScript = ({ source }) => {
   const AST = parse(source);
   const { program, vars } = compileHyperScriptToJavaScript(AST);
   const tops = vars.length ? `var ${vars.join(',')};\n` : '';
   const script = `
-  const LIBRARY = new StandartLibrary();
+  globalThis.LIBRARY = new StandartLibrary();
   (()=>{
     ${tops}; 
     return ${program}
