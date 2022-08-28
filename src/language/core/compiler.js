@@ -38,37 +38,6 @@ const dfs = (tree, locals) => {
           body.type === 'apply' || body.type === 'value' ? 'return ' : ' '
         } ${evaluatedBody.trimStart()}};`;
       }
-      case '===': {
-        const [first, ...rest] = tree.args;
-        if (rest.length === 1) {
-          return `_isEqual(${dfs(first, locals)},${dfs(rest[0], locals)})`;
-        } else {
-          return (
-            '(' +
-            rest
-              .map(x => `_isEqual(${dfs(first, locals)}, ${dfs(x, locals)})`)
-              .join('&&') +
-            ')'
-          );
-        }
-      }
-
-      case '=*': {
-        const [first, ...rest] = tree.args;
-        const match = dfs(first, locals);
-        let output = '';
-        for (let i = 0; i < rest.length; i += 2) {
-          if (i === rest.length - 1) {
-            output += dfs(rest[i], locals);
-          } else {
-            output += `_isEqual(${match},${dfs(rest[i], locals)})?${dfs(
-              rest[i + 1],
-              locals
-            )}:`;
-          }
-        }
-        return output;
-      }
 
       case '==':
         return '(' + tree.args.map(x => dfs(x, locals)).join('===') + ')';

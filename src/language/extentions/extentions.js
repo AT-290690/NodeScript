@@ -27,61 +27,6 @@ export const protolessModule = methods => {
   return env;
 };
 
-const _isSimilar = (a, b) => {
-  const typeA = typeof a,
-    typeB = typeof b;
-  if (typeA !== typeB) return 0;
-  if (typeA === 'number' || typeA === 'string' || typeA === 'boolean') {
-    return +(a === b);
-  }
-  if (typeA === 'object') {
-    const isArrayA = Array.isArray(a),
-      isArrayB = Array.isArray(b);
-    if (isArrayA !== isArrayB) return 0;
-    if (isArrayA && isArrayB) {
-      return a.length < b.length
-        ? +a.every((item, index) => _isSimilar(item, b[index]))
-        : +b.every((item, index) => _isSimilar(item, a[index]));
-    } else {
-      if (a === undefined || a === null || b === undefined || b === null)
-        return +(a === b);
-      for (const key in a) {
-        if (!_isSimilar(a[key], b[key])) {
-          return 0;
-        }
-      }
-      return 1;
-    }
-  }
-};
-const _isEqual = (a, b) => {
-  const typeA = typeof a,
-    typeB = typeof b;
-  if (typeA !== typeB) return 0;
-  if (typeA === 'number' || typeA === 'string' || typeA === 'boolean') {
-    return +(a === b);
-  }
-  if (typeA === 'object') {
-    const isArrayA = Array.isArray(a),
-      isArrayB = Array.isArray(b);
-    if (isArrayA !== isArrayB) return 0;
-    if (isArrayA && isArrayB) {
-      if (a.length !== b.length) return 0;
-      return +a.every((item, index) => _isEqual(item, b[index]));
-    } else {
-      if (a === undefined || a === null || b === undefined || b === null)
-        return +(a === b);
-      if (Object.keys(a).length !== Object.keys(b).length) return 0;
-      for (const key in a) {
-        if (!_isEqual(a[key], b[key])) {
-          return 0;
-        }
-      }
-      return 1;
-    }
-  }
-};
-
 export class StandartLibrary {
   COLOR = {
     makeRgbColor: (r, g, b) => `rgb(${r}, ${g}, ${b})`,
@@ -565,8 +510,61 @@ export class StandartLibrary {
   LOGIC = {
     isTrue: bol => +(!!bol === true),
     isFalse: bol => +(!!bol === false),
-    isEqual: _isEqual,
-    isSimilar: _isSimilar,
+    isEqual: (a, b) => {
+      const typeA = typeof a,
+        typeB = typeof b;
+      if (typeA !== typeB) return 0;
+      if (typeA === 'number' || typeA === 'string' || typeA === 'boolean') {
+        return +(a === b);
+      }
+      if (typeA === 'object') {
+        const isArrayA = Array.isArray(a),
+          isArrayB = Array.isArray(b);
+        if (isArrayA !== isArrayB) return 0;
+        if (isArrayA && isArrayB) {
+          if (a.length !== b.length) return 0;
+          return +a.every((item, index) => this.LOGIC.isEqual(item, b[index]));
+        } else {
+          if (a === undefined || a === null || b === undefined || b === null)
+            return +(a === b);
+          if (Object.keys(a).length !== Object.keys(b).length) return 0;
+          for (const key in a) {
+            if (!this.LOGIC.isEqual(a[key], b[key])) {
+              return 0;
+            }
+          }
+          return 1;
+        }
+      }
+    },
+    isSimilar: (a, b) => {
+      const typeA = typeof a,
+        typeB = typeof b;
+      if (typeA !== typeB) return 0;
+      if (typeA === 'number' || typeA === 'string' || typeA === 'boolean') {
+        return +(a === b);
+      }
+      if (typeA === 'object') {
+        const isArrayA = Array.isArray(a),
+          isArrayB = Array.isArray(b);
+        if (isArrayA !== isArrayB) return 0;
+        if (isArrayA && isArrayB) {
+          return a.length < b.length
+            ? +a.every((item, index) => this.LOGIC.isSimilar(item, b[index]))
+            : +b.every((item, index) => this.LOGIC.isSimilar(item, a[index]));
+        } else {
+          if (a === undefined || a === null || b === undefined || b === null)
+            return +(a === b);
+          const less = Object.keys(a) > Object.keys(b) ? b : a;
+          for (const key in less) {
+            if (!this.LOGIC.isSimilar(a[key], b[key])) {
+              return 0;
+            }
+          }
+          return 1;
+        }
+      }
+    },
     isNotVoid: item => (item === VOID ? 0 : 1),
     isVoid: item => (item === VOID ? 1 : 0),
     makeBoolean: item => Boolean(item),
@@ -578,7 +576,8 @@ export class StandartLibrary {
     isOdd: arg => (arg % 2 !== 0 ? 1 : 0),
     invert: val => +!val,
     isHaving: (obj, ...props) => +props.every(x => x in obj),
-    areEqual: (item, ...args) => +args.every(current => _isEqual(item, current))
+    areEqual: (item, ...args) =>
+      +args.every(current => this.LOGIC.isEqual(item, current))
   };
   LOOP = {
     generator: function* (entity = [], index = 0) {

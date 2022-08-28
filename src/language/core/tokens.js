@@ -168,42 +168,6 @@ const tokens = {
     }
     return res;
   },
-  ['===']: (args, env) => {
-    if (args.length < 2) {
-      printErrors('TypeError Invalid number of arguments  to ===', args);
-      throw new TypeError('Invalid number of arguments  to ===');
-    }
-    const [first, ...rest] = args;
-    let res = 0;
-    const match = evaluate(first, env);
-    rest.forEach(item => {
-      res = isEqual(match, evaluate(item, env));
-    });
-    return res;
-  },
-  ['=*']: (args, env) => {
-    if (args.length % 2 !== 0) {
-      printErrors('SyntaxError =* has to end with a default case', args);
-      throw new SyntaxError('=* has to end with a default case');
-    }
-    if (args.length < 4) {
-      printErrors('TypeError Invalid number of arguments  to =*', args);
-      throw new TypeError('Invalid number of arguments  to =*');
-    }
-    const [first, ...rest] = args;
-    let res = 0;
-    const match = evaluate(first, env);
-    for (let i = 0; i < rest.length; i += 2) {
-      if (i === rest.length - 1 && res === 0) {
-        res = evaluate(rest[i], env);
-        break;
-      } else if (!!isEqual(match, evaluate(rest[i], env))) {
-        res = evaluate(rest[i + 1], env);
-        break;
-      }
-    }
-    return res;
-  },
   ['&&']: (args, env) => {
     if (args.length === 0) {
       printErrors('TypeError Invalid number of arguments to &&', args);
