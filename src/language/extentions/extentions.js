@@ -1,8 +1,20 @@
+import { CodeMirror } from '../../editor/cell.editor.bundle.js';
 import { VOID } from '../core/tokens.js';
 import { BinaryArray } from './BinaryArray.js';
 export const consoleElement = document.getElementById('console');
 const canvasContainer = document.getElementById('canvas-container');
-
+export const popupContainer = document.getElementById('popup-container');
+const popUp = (
+  msg,
+  w = window.innerWidth / 2 - 5,
+  h = window.innerHeight / 3
+) => {
+  popupContainer.innerHTML = '';
+  const popup = CodeMirror(popupContainer);
+  popup.setSize(w, h);
+  popup.setValue(msg);
+  popupContainer.style.display = 'block';
+};
 const prefixDep = (dep, prefix = '') =>
   Object.entries(dep).reduce((acc, [key, value]) => {
     if (!acc[prefix]) acc[prefix] = {};
@@ -31,61 +43,143 @@ export class StandartLibrary {
   NAME = 'LIBRARY';
   COLOR = {
     NAME: 'COLOR',
-    makeRgbColor: (r, g, b) => `rgb(${r}, ${g}, ${b})`,
-    makeRgbAlphaColor: (r, g, b, a = 1) => `rgba(${r}, ${g}, ${b}, ${a})`,
-    randomColor: () => `#${Math.floor(Math.random() * 16777215).toString(16)}`,
-    randomLightColor: () =>
-      '#' +
-      (
-        '00000' + Math.floor(Math.random() * Math.pow(16, 6)).toString(16)
-      ).slice(-6),
-    invertColor: hex =>
-      '#' +
-      (Number(`0x1${hex.split('#')[1]}`) ^ 0xffffff)
-        .toString(16)
-        .substr(1)
-        .toUpperCase()
+    makeRgbColor: (r, g, b) => {
+      return `rgb(${r}, ${g}, ${b})`;
+    },
+    makeRgbAlphaColor: (r, g, b, a = 1) => {
+      return `rgba(${r}, ${g}, ${b}, ${a})`;
+    },
+    randomColor: () => {
+      return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+    },
+    randomLightColor: () => {
+      return (
+        '#' +
+        (
+          '00000' + Math.floor(Math.random() * Math.pow(16, 6)).toString(16)
+        ).slice(-6)
+      );
+    },
+    rgbToHex: color => {
+      const [r, g, b] = color
+        .split('(')[1]
+        .split(')')[0]
+        .split(',')
+        .map(Number);
+      function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? '0' + hex : hex;
+      }
+
+      return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    },
+    invertHexColor: hex => {
+      return (
+        '#' +
+        (Number(`0x1${hex.split('#')[1]}`) ^ 0xffffff)
+          .toString(16)
+          .substr(1)
+          .toUpperCase()
+      );
+    }
   };
   SKETCH = {
     NAME: 'SKETCH',
     VECTOR: {
       NAME: 'VECTOR',
-      makeVector: (...args) => new Two.Vector(...args),
+      makeVector: (...args) => {
+        return new Two.Vector(...args);
+      },
       zero: Two.Vector.zero,
       left: Two.Vector.left,
       right: Two.Vector.right,
       up: Two.Vector.up,
       down: Two.Vector.down,
-      add: (a, b) => Two.Vector.add(a, b),
-      subtract: (a, b) => Two.Vector.subtract(a, b),
-      multiply: (a, b) => Two.Vector.add(a, b),
-      divide: (a, b) => a.divide(b),
-      dot: (a, b) => a.dot(b),
-      normalize: vec => vec.normalize(),
-      ratioBetween: (a, b) => Two.Vector.ratioBetween(a, b),
-      angleBetween: (a, b) => Two.Vector.angleBetween(a, b),
-      distanceBetween: (a, b) => Two.Vector.distanceBetween(a, b),
-      distanceBetweenSquared: (a, b) => Two.Vector.distanceBetweenSquared(a, b),
-      distanceTo: (a, b, e) => a.distanceTo(b, e),
-      distanceToSquared: (a, b, e) => a.distanceToSquared(b, e),
-      getX: vec => vec.x,
-      getY: vec => vec.y,
-      copy: (vec, d) => vec.copy(d),
-      clear: vec => vec.clear(),
-      clone: vec => vec.clone(),
-      lerp: (vec, d, t) => vec.lerp(d, t),
-      addSelf: (vec, a) => vec.addSelf(a),
-      subtractSelf: (vec, a) => vec.subtractSelf(a),
-      multiplySelf: (vec, a) => vec.multiplySelf(a),
-      multiplyScalar: (vec, scalar) => vec.multiplyScalar(scalar),
-      divideScalar: (vec, scalar) => vec.divideScalar(scalar),
-      setLength: (vec, len) => vec.setLength(len),
-      length: vec => vec.length(),
-      rotate: (vec, angle) => vec.rotate(angle)
+      add: (a, b) => {
+        return Two.Vector.add(a, b);
+      },
+      subtract: (a, b) => {
+        return Two.Vector.subtract(a, b);
+      },
+      multiply: (a, b) => {
+        return Two.Vector.add(a, b);
+      },
+      divide: (a, b) => {
+        return a.divide(b);
+      },
+      dot: (a, b) => {
+        return a.dot(b);
+      },
+      normalize: vec => {
+        return vec.normalize();
+      },
+      ratioBetween: (a, b) => {
+        return Two.Vector.ratioBetween(a, b);
+      },
+      angleBetween: (a, b) => {
+        return Two.Vector.angleBetween(a, b);
+      },
+      distanceBetween: (a, b) => {
+        return Two.Vector.distanceBetween(a, b);
+      },
+      distanceBetweenSquared: (a, b) => {
+        return Two.Vector.distanceBetweenSquared(a, b);
+      },
+      distanceTo: (a, b, e) => {
+        return a.distanceTo(b, e);
+      },
+      distanceToSquared: (a, b, e) => {
+        return a.distanceToSquared(b, e);
+      },
+      getX: vec => {
+        return vec.x;
+      },
+      getY: vec => {
+        return vec.y;
+      },
+      copy: (vec, d) => {
+        return vec.copy(d);
+      },
+      clear: vec => {
+        return vec.clear();
+      },
+      clone: vec => {
+        return vec.clone();
+      },
+      lerp: (vec, d, t) => {
+        return vec.lerp(d, t);
+      },
+      addSelf: (vec, a) => {
+        return vec.addSelf(a);
+      },
+      subtractSelf: (vec, a) => {
+        return vec.subtractSelf(a);
+      },
+      multiplySelf: (vec, a) => {
+        return vec.multiplySelf(a);
+      },
+      multiplyScalar: (vec, scalar) => {
+        return vec.multiplyScalar(scalar);
+      },
+      divideScalar: (vec, scalar) => {
+        return vec.divideScalar(scalar);
+      },
+      setLength: (vec, len) => {
+        return vec.setLength(len);
+      },
+      length: vec => {
+        return vec.length();
+      },
+      rotate: (vec, angle) => {
+        return vec.rotate(angle);
+      }
     },
-    background: (color = 'var(--background-primary)') =>
-      (canvasContainer.firstChild.style.background = color),
-    requestAnimationFrame: fn => (animation = requestAnimationFrame(fn)),
+    background: (color = 'var(--background-primary)') => {
+      return (canvasContainer.firstChild.style.background = color);
+    },
+    requestAnimationFrame: fn => {
+      return (animation = requestAnimationFrame(fn));
+    },
     destroyComposition: () => {
       canvasContainer.style.background = 'var(--background-primary)';
       canvasContainer.innerHTML = '';
@@ -104,35 +198,6 @@ export class StandartLibrary {
       return 'Scene created!';
     },
 
-    makeGrid: (size = 50, settings) => {
-      size = Math.max(8, size);
-      const defaults = {
-        color: 'var(--comment)',
-        opacity: 0.5,
-        linewidth: 1
-      };
-
-      const { color, opacity, linewidth } = { ...defaults, ...settings };
-
-      const t = this.SKETCH.engine;
-      for (let i = 0; i < t.width; i++) {
-        const line = t.makeLine(t.width, size * i, 0, i * size);
-        line.stroke = color;
-        line.opacity = opacity;
-        line.linewidth = linewidth;
-      }
-      for (let i = 0; i < t.height; i++) {
-        const line = t.makeLine(i * size, t.height, i * size, 0);
-        line.stroke = color;
-        line.opacity = opacity;
-        line.linewidth = linewidth;
-      }
-    },
-    makeFrame: (items, settings = {}) => {
-      const group = this.SKETCH.engine.makeGroup(...items);
-      this.SKETCH.showGroupBounds(group, settings);
-      return group;
-    },
     insertIntoGroup: (group, ...items) => {
       group.add(...items);
       return group;
@@ -156,87 +221,143 @@ export class StandartLibrary {
       return group;
     },
 
-    groupAdditions: group => group.additions,
-    groupChildren: group => group.children,
-    showGroupBounds: (group, settings = {}) => {
-      settings = { padding: [1, 1], stroke: 'lime', linewidth: 1, ...settings };
-      const rect = this.SKETCH.engine.makeRectangle(0, 0, 0, 0);
-      const padding = settings.padding;
-      rect.stroke = settings.stroke;
-      rect.noFill();
-      rect.linewidth = settings.linewidth;
-      if (settings.dashes) {
-        rect.dashes = settings.dashes;
-      }
-      if (settings.fixedSize) {
-        rect.width = settings.fixedSize[0];
-        rect.height = settings.fixedSize[1];
-        group.add(rect);
-      } else {
-        const offset = { x: Infinity, y: Infinity };
-        group.additions.forEach(item => {
-          const bounds = item.getBoundingClientRect();
-          const origin = item?.origin
-            ? { x: item.origin.x + 0.5, y: item.origin.y + 0.5 }
-            : item.constructor.name === 'Gt'
-            ? { x: 0, y: 0 }
-            : { x: 0.5, y: 0.5 };
-          const X =
-            item.position.x - bounds.width * origin.x - item.linewidth * 0.5;
-          const Y =
-            item.position.y - bounds.height * origin.y - item.linewidth * 0.5;
-          if (X <= offset.x) {
-            offset.x = X;
-          }
-          if (Y <= offset.y) {
-            offset.y = Y;
-          }
-        });
-        const bounds = group.getBoundingClientRect();
-        group.add(rect);
-        const scale = group.scale;
-        const last = group.additions[group.additions.length - 1];
-        last.position.x = (bounds.width * 0.5) / scale + offset.x;
-        last.position.y = (bounds.height * 0.5) / scale + offset.y;
-        last.width = (bounds.width * padding[0]) / scale;
-        last.height = (bounds.height * padding[1]) / scale;
-      }
-      return rect;
+    groupAdditions: group => {
+      return group.additions;
     },
-    width: (ratio = 1) => this.SKETCH.engine.width * ratio,
-    height: (ratio = 1) => this.SKETCH.engine.height * ratio,
-    add: (...args) => this.SKETCH.engine.add(...args),
-    clear: () => this.SKETCH.engine.clear(),
-    ignore: (...args) => this.SKETCH.engine.ignore(...args),
-    interpret: index =>
-      this.SKETCH.engine.interpret(document.getElementById(index)),
-    listen: (...args) => this.SKETCH.engine.listen(...args),
-    load: (...args) => this.SKETCH.engine.load(...args),
-    makeArcSegment: (...args) => this.SKETCH.engine.makeArcSegment(...args),
-    makeArrow: (...args) => this.SKETCH.engine.makeArrow(...args),
-    makeCircle: (...args) => this.SKETCH.engine.makeCircle(...args),
-    makeCurve: (...points) => this.SKETCH.engine.makeCurve(...points),
-    makeEllipse: (...args) => this.SKETCH.engine.makeEllipse(...args),
-    makeGroup: (...args) => this.SKETCH.engine.makeGroup(...args),
+    groupChildren: group => {
+      return group.children;
+    },
+    // showGroupBounds: (group, settings = {}) => {
+    //   settings = { padding: [1, 1], stroke: 'lime', linewidth: 1, ...settings };
+    //   const rect = this.SKETCH.engine.makeRectangle(0, 0, 0, 0);
+    //   const padding = settings.padding;
+    //   rect.stroke = settings.stroke;
+    //   rect.noFill();
+    //   rect.linewidth = settings.linewidth;
+    //   if (settings.dashes) {
+    //     rect.dashes = settings.dashes;
+    //   }
+    //   if (settings.fixedSize) {
+    //     rect.width = settings.fixedSize[0];
+    //     rect.height = settings.fixedSize[1];
+    //     group.add(rect);
+    //   } else {
+    //     const offset = { x: Infinity, y: Infinity };
+    //     group.additions.forEach(item => {
+    //       const bounds = item.getBoundingClientRect();
+    //       const origin = item?.origin
+    //         ? { x: item.origin.x + 0.5, y: item.origin.y + 0.5 }
+    //         : item.constructor.name === 'Gt'
+    //         ? { x: 0, y: 0 }
+    //         : { x: 0.5, y: 0.5 };
+    //       const X =
+    //         item.position.x - bounds.width * origin.x - item.linewidth * 0.5;
+    //       const Y =
+    //         item.position.y - bounds.height * origin.y - item.linewidth * 0.5;
+    //       if (X <= offset.x) {
+    //         offset.x = X;
+    //       }
+    //       if (Y <= offset.y) {
+    //         offset.y = Y;
+    //       }
+    //     });
+    //     const bounds = group.getBoundingClientRect();
+    //     group.add(rect);
+    //     const scale = group.scale;
+    //     const last = group.additions[group.additions.length - 1];
+    //     last.position.x = (bounds.width * 0.5) / scale + offset.x;
+    //     last.position.y = (bounds.height * 0.5) / scale + offset.y;
+    //     last.width = (bounds.width * padding[0]) / scale;
+    //     last.height = (bounds.height * padding[1]) / scale;
+    //   }
+    //   return rect;
+    // },
+    width: (ratio = 1) => {
+      return this.SKETCH.engine.width * ratio;
+    },
+    height: (ratio = 1) => {
+      return this.SKETCH.engine.height * ratio;
+    },
+    add: (...args) => {
+      return this.SKETCH.engine.add(...args);
+    },
+    clear: () => {
+      return this.SKETCH.engine.clear();
+    },
+    ignore: (...args) => {
+      return this.SKETCH.engine.ignore(...args);
+    },
+    interpret: index => {
+      return this.SKETCH.engine.interpret(document.getElementById(index));
+    },
+    listen: (...args) => {
+      return this.SKETCH.engine.listen(...args);
+    },
+    load: (...args) => {
+      return this.SKETCH.engine.load(...args);
+    },
+    makeArcSegment: (...args) => {
+      return this.SKETCH.engine.makeArcSegment(...args);
+    },
+    makeArrow: (...args) => {
+      return this.SKETCH.engine.makeArrow(...args);
+    },
+    makeCircle: (x, y, r) => {
+      return this.SKETCH.engine.makeCircle(x, y, r);
+    },
+    makeCurve: (...points) => {
+      return this.SKETCH.engine.makeCurve(...points);
+    },
+    makeEllipse: (...args) => {
+      return this.SKETCH.engine.makeEllipse(...args);
+    },
+    makeGroup: (...args) => {
+      return this.SKETCH.engine.makeGroup(...args);
+    },
     makeImageSequence: (...args) =>
       this.SKETCH.engine.makeImageSequence(...args),
-    makeLine: (...args) => this.SKETCH.engine.makeLine(...args),
-    makeLinearGradient: (...args) =>
-      this.SKETCH.engine.makeLinearGradient(...args),
-    makePath: (...args) => this.SKETCH.engine.makePath(...args),
-    makePoints: (...args) => this.SKETCH.engine.makePoints(...args),
-    makePolygon: (...args) => this.SKETCH.engine.makePolygon(...args),
-    makeRadialGradient: (...args) =>
-      this.SKETCH.engine.makeRadialGradient(...args),
-    makeRectangle: (...args) => this.SKETCH.engine.makeRectangle(...args),
-    makeRoundedRectangle: (...args) =>
-      this.SKETCH.engine.makeRoundedRectangle(...args),
-    makeSprite: (...args) => this.SKETCH.engine.makeSprite(...args),
-    makeStar: (...args) => this.SKETCH.engine.makeStar(...args),
-    makeText: (...args) => this.SKETCH.engine.makeText(...args),
-    makeTexture: (...args) => this.SKETCH.engine.makeTexture(...args),
-    on: (...args) => this.SKETCH.engine.on(...args),
-    off: (...args) => this.SKETCH.engine.off(...args),
+    makeLine: (...args) => {
+      return this.SKETCH.engine.makeLine(...args);
+    },
+    makeLinearGradient: (...args) => {
+      return this.SKETCH.engine.makeLinearGradient(...args);
+    },
+    makePath: (...args) => {
+      return this.SKETCH.engine.makePath(...args);
+    },
+    makePoints: (...args) => {
+      return this.SKETCH.engine.makePoints(...args);
+    },
+    makePolygon: (...args) => {
+      return this.SKETCH.engine.makePolygon(...args);
+    },
+    makeRadialGradient: (...args) => {
+      return this.SKETCH.engine.makeRadialGradient(...args);
+    },
+    makeRectangle: (x, y, w, h) => {
+      return this.SKETCH.engine.makeRectangle(x, y, w, h);
+    },
+    makeRoundedRectangle: (...args) => {
+      return this.SKETCH.engine.makeRoundedRectangle(...args);
+    },
+    makeSprite: (...args) => {
+      return this.SKETCH.engine.makeSprite(...args);
+    },
+    makeStar: (...args) => {
+      return this.SKETCH.engine.makeStar(...args);
+    },
+    makeText: (...args) => {
+      return this.SKETCH.engine.makeText(...args);
+    },
+    makeTexture: (...args) => {
+      return this.SKETCH.engine.makeTexture(...args);
+    },
+    on: (...args) => {
+      return this.SKETCH.engine.on(...args);
+    },
+    off: (...args) => {
+      return this.SKETCH.engine.off(...args);
+    },
     pause: (...args) => {
       this.SKETCH.engine.pause(...args);
       return 'Paused!';
@@ -245,10 +366,18 @@ export class StandartLibrary {
       this.SKETCH.engine.play(...args);
       return 'Playing!';
     },
-    release: (...args) => this.SKETCH.engine.release(...args),
-    remove: (...args) => this.SKETCH.engine.remove(...args),
-    setPlaying: (...args) => this.SKETCH.engine.setPlaying(...args),
-    trigger: (...args) => this.SKETCH.engine.trigger(...args),
+    release: (...args) => {
+      return this.SKETCH.engine.release(...args);
+    },
+    remove: (...args) => {
+      return this.SKETCH.engine.remove(...args);
+    },
+    setPlaying: (...args) => {
+      return this.SKETCH.engine.setPlaying(...args);
+    },
+    trigger: (...args) => {
+      return this.SKETCH.engine.trigger(...args);
+    },
     update: (...args) => {
       this.SKETCH.engine.update(...args);
       return 'Updated!';
@@ -274,8 +403,12 @@ export class StandartLibrary {
       this.SKETCH.engine.width = w;
       this.SKETCH.engine.height = h;
     },
-    setCompositionWidth: width => (this.SKETCH.engine.width = width),
-    setCompositionHeight: height => (this.SKETCH.engine.height = height),
+    setCompositionWidth: width => {
+      return (this.SKETCH.engine.width = width);
+    },
+    setCompositionHeight: height => {
+      return (this.SKETCH.engine.height = height);
+    },
     setScreenSize: (w, h, showBorder = true) => {
       const svg = canvasContainer.firstChild;
       svg.setAttribute('width', w);
@@ -344,16 +477,36 @@ export class StandartLibrary {
         : entity.origin.set(x, y);
       return entity;
     },
-    new: (prop, ...args) => new Two[prop](...args),
-    getWidth: () => document.body.getBoundingClientRect().width,
-    getHeight: () => document.body.getBoundingClientRect().height,
-    getFromGroup: (group, index) => group.additions[index] ?? VOID,
-    getOrigin: entity => entity.origin,
-    getOpacity: entity => entity.opacity,
-    getDashes: entity => entity.dashes,
-    getPosition: entity => entity.position,
-    getTranslation: entity => entity.translation,
-    getBounds: entity => entity.getBoundingClientRect()
+    make: (prop, ...args) => {
+      return new Two[prop](...args);
+    },
+    getWidth: () => {
+      return document.body.getBoundingClientRect().width;
+    },
+    getHeight: () => {
+      return document.body.getBoundingClientRect().height;
+    },
+    getFromGroup: (group, index) => {
+      return group.additions[index] ?? VOID;
+    },
+    getOrigin: entity => {
+      return entity.origin;
+    },
+    getOpacity: entity => {
+      return entity.opacity;
+    },
+    getDashes: entity => {
+      return entity.dashes;
+    },
+    getPosition: entity => {
+      return entity.position;
+    },
+    getTranslation: entity => {
+      return entity.translation;
+    },
+    getBounds: entity => {
+      return entity.getBoundingClientRect();
+    }
   };
   // REQUEST = {
   //   maybeJson: (url, callback) =>
@@ -369,31 +522,60 @@ export class StandartLibrary {
   // };
   TIME = {
     NAME: 'TIME',
-    makeDate: date => new Date(date),
-    currentTime: () => new Date().getTime(),
-    currentDate: () => new Date(),
-    getHour: date => date.getHours(),
-    getMinute: date => date.getMinutes(),
-    getSecond: date => date.getSeconds(),
-    setInterval: (fn, ms) => setInterval(() => fn(), ms),
-    clearInterval: id => clearInterval(id),
-    setTimeout: (fn, ms) => setTimeout(() => fn(), ms),
-    clearTimeout: id => clearTimeout(id)
+    makeDate: date => {
+      return new Date(date);
+    },
+    currentTime: () => {
+      return new Date().getTime();
+    },
+    currentDate: () => {
+      return new Date();
+    },
+    getHour: date => {
+      return date.getHours();
+    },
+    getMinute: date => {
+      return date.getMinutes();
+    },
+    getSecond: date => {
+      return date.getSeconds();
+    },
+    setInterval: (fn, ms) => {
+      return setInterval(() => fn(), ms);
+    },
+    clearInterval: id => {
+      return clearInterval(id);
+    },
+    setTimeout: (fn, ms) => {
+      return setTimeout(() => fn(), ms);
+    },
+    clearTimeout: id => {
+      return clearTimeout(id);
+    }
   };
   SET = {
     NAME: 'SET',
-    from: arr => new Set(arr),
-    makeSet: (...args) => new Set(args),
-    has: (entity, item) => +entity.has(item),
+    from: arr => {
+      return new Set(arr);
+    },
+    makeSet: (...args) => {
+      return new Set(args);
+    },
+    has: (entity, item) => {
+      return +entity.has(item);
+    },
     add: (entity, ...values) => {
       values.forEach(x => entity.add(x));
       return entity;
     },
     remove: (entity, ...values) => {
       values.forEach(x => entity.delete(x));
+      return entity;
     },
-    inside: (entity, callback) =>
-      entity.forEach((x, i, a) => callback(x)) ?? entity,
+    inside: (entity, callback) => {
+      entity.forEach((x, i, a) => callback(x));
+      return entity;
+    },
     union: (a, b) => {
       const out = new Set();
       a.forEach(item => out.add(item));
@@ -424,103 +606,240 @@ export class StandartLibrary {
       });
       return out;
     },
-    clear: entity => entity.clear(),
-    fromArray: (...array) => new Set(...array),
-    toArray: entity => [...entity],
-    size: entity => entity.size
+    clear: entity => {
+      return entity.clear();
+    },
+    fromArray: (...array) => {
+      return new Set(...array);
+    },
+    toArray: entity => {
+      return [...entity];
+    },
+    size: entity => {
+      return entity.size;
+    }
   };
   OBJECT = {
     NAME: 'OBJECT',
-    jsonString: object => JSON.stringify(object),
-    jsonParse: string => JSON.parse(string),
-    clone: obj => structuredClone(obj),
-    has: (obj, ...props) => +props.every(x => x in obj),
-    keys: obj => Object.keys(obj),
-    values: obj => Object.values(obj),
-    entries: obj => Object.entries(obj),
-    fromEntries: entries => Object.fromEntries(entries),
-    freeze: obj => void Object.freeze(obj) ?? obj,
-    size: obj => Object.keys(obj).length,
-    float32Array: (...items) => new Float32Array(items),
-    float64Array: (...items) => new Float64Array(items)
+    jsonString: object => {
+      return JSON.stringify(object);
+    },
+    jsonParse: string => {
+      return JSON.parse(string);
+    },
+    clone: obj => {
+      return structuredClone(obj);
+    },
+    has: (obj, ...props) => {
+      return +props.every(function (x) {
+        return x in obj;
+      });
+    },
+    keys: obj => {
+      return Object.keys(obj);
+    },
+    values: obj => {
+      return Object.values(obj);
+    },
+    entries: obj => {
+      return Object.entries(obj);
+    },
+    fromEntries: entries => {
+      return Object.fromEntries(entries);
+    },
+    freeze: obj => {
+      return void Object.freeze(obj) ?? obj;
+    },
+    size: obj => {
+      return Object.keys(obj).length;
+    },
+    float32Array: (...items) => {
+      return new Float32Array(items);
+    },
+    float64Array: (...items) => {
+      return new Float64Array(items);
+    }
     // set: (entity, prop, ...values) => entity[prop].set(...values),
     // get: (entity, prop) => entity[prop] ?? VOID
   };
   MATH = {
     NAME: 'MATH',
-    abs: num => Math.abs(num),
-    mod: (left, right) => ((left % right) + right) % right,
-    clamp: (num, min, max) => Math.min(Math.max(num, min), max),
-    sqrt: num => Math.sqrt(num),
-    inc: (a, i = 1) => (a += i),
-    add: (a, b) => a + b,
-    sub: (a, b) => a - b,
-    mult: (a, b) => a * b,
-    pow: (a, b) => a ** b,
-    pow2: a => a ** 2,
-    divide: (a, b) => a / b,
-    sign: n => Math.sign(n),
-    trunc: n => Math.trunc(n),
-    exp: n => Math.exp(n),
-    floor: n => Math.floor(n),
-    round: n => Math.round(n),
-    random: () => Math.random(),
-    dice: (min, max) => Math.floor(Math.random() * (max - min + 1) + min),
-    max: (...args) => Math.max(...args),
-    min: (...args) => Math.min(...args),
-    sin: n => Math.sin(n),
-    cos: n => Math.cos(n),
-    tan: n => Math.tan(n),
-    atan: n => Math.atan(n),
-    atan2: (y, x) => Math.atan2(y, x),
-    log10: x => Math.log10(x),
-    log2: x => Math.log2(x),
-    log: x => Math.log(x),
-    sum: arr => arr.reduce((acc, item) => (acc += item), 0),
+    abs: num => {
+      return Math.abs(num);
+    },
+    mod: (left, right) => {
+      return ((left % right) + right) % right;
+    },
+    clamp: (num, min, max) => {
+      return Math.min(Math.max(num, min), max);
+    },
+    sqrt: num => {
+      return Math.sqrt(num);
+    },
+    inc: (a, i = 1) => {
+      return (a += i);
+    },
+    add: (a, b) => {
+      return a + b;
+    },
+    sub: (a, b) => {
+      return a - b;
+    },
+    mult: (a, b) => {
+      return a * b;
+    },
+    pow: (a, b) => {
+      return a ** b;
+    },
+    pow2: a => {
+      return a ** 2;
+    },
+    divide: (a, b) => {
+      return a / b;
+    },
+    sign: n => {
+      return Math.sign(n);
+    },
+    trunc: n => {
+      return Math.trunc(n);
+    },
+    exp: n => {
+      return Math.exp(n);
+    },
+    floor: n => {
+      return Math.floor(n);
+    },
+    round: n => {
+      return Math.round(n);
+    },
+    random: () => {
+      return Math.random();
+    },
+    dice: (min, max) => {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    },
+    max: (...args) => {
+      return Math.max(...args);
+    },
+    min: (...args) => {
+      return Math.min(...args);
+    },
+    sin: n => {
+      return Math.sin(n);
+    },
+    cos: n => {
+      return Math.cos(n);
+    },
+    tan: n => {
+      return Math.tan(n);
+    },
+    atan: n => {
+      return Math.atan(n);
+    },
+    atan2: (y, x) => {
+      return Math.atan2(y, x);
+    },
+    log10: x => {
+      return Math.log10(x);
+    },
+    log2: x => {
+      return Math.log2(x);
+    },
+    log: x => {
+      return Math.log(x);
+    },
+    sum: arr => {
+      return arr.reduce((acc, item) => (acc += item), 0);
+    },
     minInt: Number.MIN_SAFE_INTEGER,
     maxInt: Number.MAX_SAFE_INTEGER,
     infinity: Number.POSITIVE_INFINITY,
-    negative: n => -n,
+    negative: n => {
+      return -n;
+    },
     PI: Math.PI,
-    parseInt: (number, base) => parseInt(number.toString(), base),
-    number: string => Number(string)
+    parseInt: (number, base) => {
+      return parseInt(number.toString(), base);
+    },
+    number: string => {
+      return Number(string);
+    }
   };
   STRING = {
     NAME: 'STRING',
-    interpolate: (...args) =>
-      args.reduce((acc, item) => (acc += item.toString()), ''),
-    includes: (string, target) => string.includes(target),
-    string: thing => thing.toString(),
-    upperCase: string => string.toUpperCase(),
-    lowerCase: string => string.toLowerCase(),
-    trim: string => string.trim(),
-    trimStart: string => string.trimStart(),
-    trimEnd: string => string.trimEnd(),
-    substring: (string, start, end) =>
-      string.substring(start, end ?? end.length),
-    replace: (string, match, replace) => string.replace(match, replace),
+    interpolate: (...args) => {
+      return args.reduce((acc, item) => {
+        return (acc += item.toString());
+      }, '');
+    },
+    includes: (string, target) => {
+      return string.includes(target);
+    },
+    string: thing => {
+      return thing.toString();
+    },
+    upperCase: string => {
+      return string.toUpperCase();
+    },
+    lowerCase: string => {
+      return string.toLowerCase();
+    },
+    trim: string => {
+      return string.trim();
+    },
+    trimStart: string => {
+      return string.trimStart();
+    },
+    trimEnd: string => {
+      return string.trimEnd();
+    },
+    substring: (string, start, end) => {
+      return string.substring(start, end ?? end.length);
+    },
+    replace: (string, match, replace) => {
+      return string.replace(match, replace);
+    },
     sp: ' '
   };
   CONVERT = {
     NAME: 'CONVERT',
-    array: thing =>
-      BinaryArray.isBinaryArray(thing) ? thing.toArray() : [...thing],
-    boolean: thing => Boolean(thing),
-    string: thing => thing.toString(),
-    integer: number => parseInt(number.toString()),
-    float: (number, base = 1) => +Number(number).toFixed(base),
-    number: thing => Number(thing)
+    array: thing => {
+      return BinaryArray.isBinaryArray(thing) ? thing.toArray() : [...thing];
+    },
+    boolean: thing => {
+      return Boolean(thing);
+    },
+    string: thing => {
+      return thing.toString();
+    },
+    integer: number => {
+      return parseInt(number.toString());
+    },
+    float: (number, base = 1) => {
+      return +Number(number).toFixed(base);
+    },
+    number: thing => {
+      return Number(thing);
+    }
   };
   CONSOLE = {
     print,
-    printLog: thing => console.log(...print(thing)),
-    consoleLog: thing => console.log(thing),
+    printLog: thing => {
+      return console.log(...print(thing));
+    },
+    consoleLog: thing => {
+      return console.log(thing);
+    },
     NAME: 'CONSOLE'
   };
   LOGIC = {
     NAME: 'LOGIC',
-    isTrue: bol => +(!!bol === true),
-    isFalse: bol => +(!!bol === false),
+    isTrue: bol => {
+      return +(!!bol === true);
+    },
+    isFalse: bol => {
+      return +(!!bol === false);
+    },
     isEqual: (a, b) => {
       const typeA = typeof a,
         typeB = typeof b;
@@ -576,33 +895,58 @@ export class StandartLibrary {
         }
       }
     },
-    isNotVoid: item => (item === VOID ? 0 : 1),
-    isVoid: item => (item === VOID ? 1 : 0),
-    makeBoolean: item => Boolean(item),
-    or: (entity, other) => entity || other,
-    isEmpty: item => (Object.keys(item).length === 0 ? 1 : 0),
+    isNotVoid: item => {
+      return item === VOID ? 0 : 1;
+    },
+    isVoid: item => {
+      return item === VOID ? 1 : 0;
+    },
+    makeBoolean: item => {
+      return Boolean(item);
+    },
+    or: (entity, other) => {
+      return entity || other;
+    },
+    isEmpty: item => {
+      return Object.keys(item).length === 0 ? 1 : 0;
+    },
     true: 1,
     false: 0,
-    isEven: arg => (arg % 2 === 0 ? 1 : 0),
-    isOdd: arg => (arg % 2 !== 0 ? 1 : 0),
-    invert: val => +!val,
-    isHaving: (obj, ...props) => +props.every(x => x in obj),
-    areEqual: (item, ...args) =>
-      +args.every(current => this.LOGIC.isEqual(item, current))
+    isEven: arg => {
+      return arg % 2 === 0 ? 1 : 0;
+    },
+    isOdd: arg => {
+      return arg % 2 !== 0 ? 1 : 0;
+    },
+    invert: val => {
+      return +!val;
+    },
+    isHaving: (obj, ...props) => {
+      return +props.every(x => x in obj);
+    },
+    areEqual: (item, ...args) => {
+      return +args.every(current => this.LOGIC.isEqual(item, current));
+    }
   };
   LOOP = {
     NAME: 'LOOP',
-    generator: function* (entity = [], index = 0) {
-      while (true) {
-        yield entity[index++];
-      }
+    generator: (entity = [], index = 0) => {
+      return function* () {
+        while (true) {
+          yield entity[index++];
+        }
+      };
     },
-    counter: function* (index = 0) {
-      while (true) {
-        yield index++;
-      }
+    counter: (index = 0) => {
+      return function* () {
+        while (true) {
+          yield index++;
+        }
+      };
     },
-    next: entity => entity.next().value,
+    next: entity => {
+      return entity.next().value;
+    },
     iterate: (iterable, callback) => {
       for (const i in iterable) {
         callback(i, iterable);
@@ -642,28 +986,51 @@ export class StandartLibrary {
   };
   ARRAY = {
     NAME: 'ARRAY',
-    ['map1']: (entity, callback) => entity.map(x => callback(x)),
-    ['filter1']: (entity, callback) => entity.filter(x => callback(x)),
-    ['reduce1']: (entity, callback, acc) =>
-      entity.reduce(acc => callback(acc), acc),
-    ['reduce2']: (entity, callback, acc) =>
-      entity.reduce((acc, x) => callback(acc, x), acc),
-    ['find1']: (entity, callback) => entity.find(x => callback(x)),
-    ['some1']: (entity, callback) => entity.some(x => callback(x)),
-    ['every1']: (entity, callback) => entity.every(x => callback(x)),
-    ['map3']: (entity, callback) => entity.map((x, i, a) => callback(x, i, a)),
-    ['filter3']: (entity, callback) =>
-      entity.filter((x, i, a) => callback(x, i, a)),
-    ['reduce3']: (entity, callback, acc) =>
-      entity.reduce((acc, x, i, a) => callback(acc, x, i, a), acc),
-    ['find3']: (entity, callback) =>
-      entity.find((x, i, a) => callback(x, i, a)),
-    ['some3']: (entity, callback) =>
-      entity.some((x, i, a) => callback(x, i, a)),
-    ['every3']: (entity, callback) =>
-      entity.every((x, i, a) => callback(x, i, a)),
-    compact: arr => arr.filter(Boolean),
-    makeArray: (...items) => items,
+    ['map1']: (entity, callback) => {
+      return entity.map(x => callback(x));
+    },
+    ['filter1']: (entity, callback) => {
+      return entity.filter(x => callback(x));
+    },
+    ['reduce1']: (entity, callback, acc) => {
+      return entity.reduce(acc => callback(acc), acc);
+    },
+    ['reduce2']: (entity, callback, acc) => {
+      return entity.reduce((acc, x) => callback(acc, x), acc);
+    },
+    ['find1']: (entity, callback) => {
+      return entity.find(x => callback(x));
+    },
+    ['some1']: (entity, callback) => {
+      return entity.some(x => callback(x));
+    },
+    ['every1']: (entity, callback) => {
+      return entity.every(x => callback(x));
+    },
+    ['map3']: (entity, callback) => {
+      return entity.map((x, i, a) => callback(x, i, a));
+    },
+    ['filter3']: (entity, callback) => {
+      return entity.filter((x, i, a) => callback(x, i, a));
+    },
+    ['reduce3']: (entity, callback, acc) => {
+      return entity.reduce((acc, x, i, a) => callback(acc, x, i, a), acc);
+    },
+    ['find3']: (entity, callback) => {
+      return entity.find((x, i, a) => callback(x, i, a));
+    },
+    ['some3']: (entity, callback) => {
+      return entity.some((x, i, a) => callback(x, i, a));
+    },
+    ['every3']: (entity, callback) => {
+      return entity.every((x, i, a) => callback(x, i, a));
+    },
+    compact: arr => {
+      return arr.filter(Boolean);
+    },
+    makeArray: (...items) => {
+      return items;
+    },
     makeMatrix: (...dimensions) => {
       if (dimensions.length > 0) {
         const dim = dimensions[0];
@@ -697,11 +1064,18 @@ export class StandartLibrary {
         }
         return acc;
       }, []),
-    indexedIteration: (entity, fn) =>
-      entity.forEach((x, i, arr) => fn(i)) ?? VOID,
-    forOf: (entity, fn) => entity.forEach((x, i, arr) => fn(x)) ?? VOID,
-    each: (entity, fn) => entity.forEach((x, i, arr) => fn(x, i)) ?? VOID,
-    from: items => Array.from(items),
+    indexedIteration: (entity, fn) => {
+      return entity.forEach((x, i, arr) => fn(i)) ?? VOID;
+    },
+    forOf: (entity, fn) => {
+      return entity.forEach((x, i, arr) => fn(x)) ?? VOID;
+    },
+    each: (entity, fn) => {
+      return entity.forEach((x, i, arr) => fn(x, i)) ?? VOID;
+    },
+    from: items => {
+      return Array.from(items);
+    },
     transform: (entity, callback) => {
       for (let i = 0; i < entity.length; i++) {
         entity[i] = callback(entity[i], i, entity);
@@ -716,11 +1090,21 @@ export class StandartLibrary {
       entity.pop();
       return entity;
     },
-    map: (entity, callback) => entity.map(callback),
-    filter: (entity, callback) => entity.filter(callback),
-    reduce: (entity, callback, acc) => entity.reduce(callback, acc),
-    forEach: (entity, callback) => entity.forEach(callback),
-    reverse: entity => entity.reverse(),
+    map: (entity, callback) => {
+      return entity.map(callback);
+    },
+    filter: (entity, callback) => {
+      return entity.filter(callback);
+    },
+    reduce: (entity, callback, acc) => {
+      return entity.reduce(callback, acc);
+    },
+    forEach: (entity, callback) => {
+      return entity.forEach(callback);
+    },
+    reverse: entity => {
+      return entity.reverse();
+    },
     insertAtEnd: (entity, ...args) => {
       entity.push(...args);
       return entity;
@@ -729,25 +1113,63 @@ export class StandartLibrary {
       entity.pop();
       return entity;
     },
-    push: (entity, ...args) => entity.push(...args),
-    pop: entity => entity.pop(),
-    includes: (entity, arg) => +entity.includes(arg),
-    isArray: entity => +entity.isArray(),
-    unshift: (entity, ...args) => entity.unshift(...args),
-    shift: entity => entity.shift(),
-    fill: (entity, filling) => entity.fill(filling),
-    find: (entity, callback) => entity.find(callback) ?? VOID,
-    findIndex: (entity, callback) => entity.findIndex(callback),
-    indexOf: (entity, item) => entity.indexOf(item),
-    some: (entity, callback) => +entity.some(callback),
-    every: (entity, callback) => +entity.every(callback),
-    split: (str, separator) => str.split(separator),
-    join: (entity, separator) => entity.join(separator),
-    flat: (entity, level) => entity.flat(level),
-    flatMap: (entity, callback) => entity.flatMap(callback),
-    sort: (entity, callback) => entity.sort(callback),
-    slice: (entity, ...args) => entity.slice(...args),
-    splice: (entity, ...args) => entity.splice(...args),
+    push: (entity, ...args) => {
+      return entity.push(...args);
+    },
+    pop: entity => {
+      return entity.pop();
+    },
+    includes: (entity, arg) => {
+      return +entity.includes(arg);
+    },
+    isArray: entity => {
+      return +entity.isArray();
+    },
+    unshift: (entity, ...args) => {
+      return entity.unshift(...args);
+    },
+    shift: entity => {
+      return entity.shift();
+    },
+    fill: (entity, filling) => {
+      return entity.fill(filling);
+    },
+    find: (entity, callback) => {
+      return entity.find(callback) ?? VOID;
+    },
+    findIndex: (entity, callback) => {
+      return entity.findIndex(callback);
+    },
+    indexOf: (entity, item) => {
+      return entity.indexOf(item);
+    },
+    some: (entity, callback) => {
+      return +entity.some(callback);
+    },
+    every: (entity, callback) => {
+      return +entity.every(callback);
+    },
+    split: (str, separator) => {
+      return str.split(separator);
+    },
+    join: (entity, separator) => {
+      return entity.join(separator);
+    },
+    flat: (entity, level) => {
+      return entity.flat(level);
+    },
+    flatMap: (entity, callback) => {
+      return entity.flatMap(callback);
+    },
+    sort: (entity, callback) => {
+      return entity.sort(callback);
+    },
+    slice: (entity, ...args) => {
+      return entity.slice(...args);
+    },
+    splice: (entity, ...args) => {
+      return entity.splice(...args);
+    },
     range: (start, end, step = 1) => {
       const arr = [];
       if (start > end) {
@@ -761,51 +1183,98 @@ export class StandartLibrary {
       }
       return arr;
     },
-    at: (entity, index) => entity.at(index)
+    at: (entity, index) => {
+      return entity.at(index);
+    }
   };
   BINARYARRAY = {
     NAME: 'BINARYARRAY',
-    ['remake1']: (entity, callback) =>
-      entity.reduce(acc => callback(acc), new BinaryArray()),
-    ['remake2']: (entity, callback) =>
-      entity.reduce((acc, x) => callback(acc, x), new BinaryArray()),
-    ['remake3']: (entity, callback) =>
-      entity.reduce((acc, x, i) => callback(acc, x, i), new BinaryArray()),
-    ['remake4']: (entity, callback) =>
-      entity.reduce(
+    ['remake1']: (entity, callback) => {
+      return entity.reduce(acc => callback(acc), new BinaryArray());
+    },
+    ['remake2']: (entity, callback) => {
+      return entity.reduce((acc, x) => callback(acc, x), new BinaryArray());
+    },
+    ['remake3']: (entity, callback) => {
+      return entity.reduce(
+        (acc, x, i) => callback(acc, x, i),
+        new BinaryArray()
+      );
+    },
+    ['remake4']: (entity, callback) => {
+      return entity.reduce(
         (acc, x, i, a) => callback(acc, x, i, a),
         new BinaryArray()
-      ),
-    ['map1']: (entity, callback) => entity.map(x => callback(x)),
-    ['map2']: (entity, callback) => entity.map((x, i) => callback(x, i)),
-    ['map3']: (entity, callback) => entity.map((x, i, a) => callback(x, i, a)),
-    ['filter1']: (entity, callback) => entity.filter(x => callback(x)),
-    ['filter2']: (entity, callback) => entity.filter((x, i) => callback(x, i)),
-    ['filter3']: (entity, callback) =>
-      entity.filter((x, i, a) => callback(x, i, a)),
-    ['reduce1']: (entity, callback, acc) =>
-      entity.reduce(acc => callback(acc), acc),
-    ['reduce2']: (entity, callback, acc) =>
-      entity.reduce((acc, x) => callback(acc, x), acc),
-    ['reduce3']: (entity, callback, acc) =>
-      entity.reduce((acc, x, i) => callback(acc, x, i), acc),
-    ['reduce4']: (entity, callback, acc) =>
-      entity.reduce((acc, x, i, a) => callback(acc, x, i, a), acc),
-    ['find1']: (entity, callback) => entity.find(x => callback(x)),
-    ['find2']: (entity, callback) => entity.find((x, i) => callback(x, i)),
-    ['find3']: (entity, callback) =>
-      entity.find((x, i, a) => callback(x, i, a)),
-    ['some1']: (entity, callback) => entity.some(x => callback(x)),
-    ['some2']: (entity, callback) => entity.some((x, i) => callback(x, i)),
-    ['some3']: (entity, callback) => entity.some((x, i) => callback(x, i)),
-    ['every1']: (entity, callback) => entity.every(x => callback(x)),
-    ['every2']: (entity, callback) => entity.every((x, i) => callback(x, i)),
-    ['every3']: (entity, callback) => entity.every((x, i) => callback(x, i)),
-    compact: arr => arr.filter(Boolean),
-    split: (str, separator) => BinaryArray.from(str.split(separator)),
-    sizeOf: entity => entity.size,
-    clone: entity =>
-      BinaryArray.isBinaryArray(entity)
+      );
+    },
+    ['map1']: (entity, callback) => {
+      return entity.map(x => callback(x));
+    },
+    ['map2']: (entity, callback) => {
+      return entity.map((x, i) => callback(x, i));
+    },
+    ['map3']: (entity, callback) => {
+      return entity.map((x, i, a) => callback(x, i, a));
+    },
+    ['filter1']: (entity, callback) => {
+      return entity.filter(x => callback(x));
+    },
+    ['filter2']: (entity, callback) => {
+      return entity.filter((x, i) => callback(x, i));
+    },
+    ['filter3']: (entity, callback) => {
+      return entity.filter((x, i, a) => callback(x, i, a));
+    },
+    ['reduce1']: (entity, callback, acc) => {
+      return entity.reduce(acc => callback(acc), acc);
+    },
+    ['reduce2']: (entity, callback, acc) => {
+      return entity.reduce((acc, x) => callback(acc, x), acc);
+    },
+    ['reduce3']: (entity, callback, acc) => {
+      return entity.reduce((acc, x, i) => callback(acc, x, i), acc);
+    },
+    ['reduce4']: (entity, callback, acc) => {
+      return entity.reduce((acc, x, i, a) => callback(acc, x, i, a), acc);
+    },
+    ['find1']: (entity, callback) => {
+      return entity.find(x => callback(x));
+    },
+    ['find2']: (entity, callback) => {
+      return entity.find((x, i) => callback(x, i));
+    },
+    ['find3']: (entity, callback) => {
+      return entity.find((x, i, a) => callback(x, i, a));
+    },
+    ['some1']: (entity, callback) => {
+      return entity.some(x => callback(x));
+    },
+    ['some2']: (entity, callback) => {
+      return entity.some((x, i) => callback(x, i));
+    },
+    ['some3']: (entity, callback) => {
+      return entity.some((x, i) => callback(x, i));
+    },
+    ['every1']: (entity, callback) => {
+      return entity.every(x => callback(x));
+    },
+    ['every2']: (entity, callback) => {
+      return entity.every((x, i) => callback(x, i));
+    },
+    ['every3']: (entity, callback) => {
+      return entity.every((x, i) => callback(x, i));
+    },
+    compact: arr => {
+      return arr.filter(Boolean);
+    },
+    split: (str, separator) => {
+      return BinaryArray.from(str.split(separator));
+    },
+    sizeOf: entity => {
+      return entity.size;
+    },
+    clone: entity => {
+      return BinaryArray.isBinaryArray(entity)
         ? new BinaryArray(
             entity.map(x =>
               BinaryArray.isBinaryArray(x)
@@ -815,7 +1284,8 @@ export class StandartLibrary {
                 : x
             )
           )
-        : new BinaryArray(entity),
+        : new BinaryArray(entity);
+    },
     swap: (entity, a, b) => {
       const A = entity.get(a);
       const B = entity.get(b);
@@ -823,7 +1293,9 @@ export class StandartLibrary {
       entity.set(b, A);
       return entity;
     },
-    remake: (entity, fn) => entity.reduce(fn, new BinaryArray()),
+    remake: (entity, fn) => {
+      return entity.reduce(fn, new BinaryArray());
+    },
     product: (a, b) => {
       const out = a.reduce((acc, item, i) => {
         acc._addToRight(new BinaryArray([item, b.get(i % b.size)]));
@@ -832,19 +1304,32 @@ export class StandartLibrary {
       out.balance();
       return out;
     },
-    makeBinaryArray: (...items) => new BinaryArray(items),
-    to: (entity, fn) => entity.mapMut(x => fn(x)),
-    mutmap: (entity, fn) => entity.mapMut(fn),
-    max: entity =>
-      entity.reduce(
+    makeBinaryArray: (...items) => {
+      return new BinaryArray(items);
+    },
+    to: (entity, fn) => {
+      return entity.mapMut(x => fn(x));
+    },
+    mutmap: (entity, fn) => {
+      return entity.mapMut(fn);
+    },
+    max: entity => {
+      return entity.reduce(
         (acc, item) => (item > acc ? (acc = item) : acc),
         -Infinity
-      ),
-    min: entity =>
-      entity.reduce((acc, item) => (item < acc ? (acc = item) : acc), Infinity),
-    array: entity => entity.toArray(),
-    printBinaryArray: entity =>
-      BinaryArray.isBinaryArray(entity)
+      );
+    },
+    min: entity => {
+      return entity.reduce(
+        (acc, item) => (item < acc ? (acc = item) : acc),
+        Infinity
+      );
+    },
+    array: entity => {
+      return entity.toArray();
+    },
+    printBinaryArray: entity => {
+      return BinaryArray.isBinaryArray(entity)
         ? entity
             .map(x =>
               BinaryArray.isBinaryArray(x)
@@ -854,21 +1339,38 @@ export class StandartLibrary {
                 : x
             )
             .toArray()
-        : entity,
-    map: (entity, fn) => entity.map(fn),
-    filter: (entity, fn) => entity.filter(fn),
-    every: (entity, fn) => +entity.every(fn),
-    some: (entity, fn) => +entity.some(fn),
-    find: (entity, fn) => entity.find(fn) ?? VOID,
-    findIndex: (entity, fn) => entity.findIndex(fn),
-    at: (entity, index) => entity.at(index) ?? VOID,
+        : entity;
+    },
+    map: (entity, fn) => {
+      return entity.map(fn);
+    },
+    filter: (entity, fn) => {
+      return entity.filter(fn);
+    },
+    every: (entity, fn) => {
+      return +entity.every(fn);
+    },
+    some: (entity, fn) => {
+      return +entity.some(fn);
+    },
+    find: (entity, fn) => {
+      return entity.find(fn) ?? VOID;
+    },
+    findIndex: (entity, fn) => {
+      return entity.findIndex(fn);
+    },
+    at: (entity, index) => {
+      return entity.at(index) ?? VOID;
+    },
     update: (entity, index, value) => {
       if (entity.get(index) !== undefined) {
         entity.set(index, value);
       }
       return entity;
     },
-    join: (entity, separator) => entity.join(separator),
+    join: (entity, separator) => {
+      return entity.join(separator);
+    },
     union: (a, b) => {
       const out = new BinaryArray();
       const A = new Set(a.toArray());
@@ -927,7 +1429,9 @@ export class StandartLibrary {
       res.balance();
       return res;
     },
-    flat: (entity, level) => entity.flat(level),
+    flat: (entity, level) => {
+      return entity.flat(level);
+    },
     unique: entity => {
       const set = new Set();
       return BinaryArray.from(
@@ -976,23 +1480,49 @@ export class StandartLibrary {
       entity.clear();
       return entity;
     },
-    isEmpty: entity => +!entity.size,
-    reverse: entity => entity.reverse(),
-    reduce: (entity, fn, initial) => entity.reduce(fn, initial),
-    from: data => BinaryArray.from(data),
-    sort: (entity, fn) => entity.sort(fn),
-    last: entity => entity.get(entity.size - 1),
-    first: entity => entity.get(0),
-    pivot: entity => entity.pivot(),
-    isBinaryArray: entity => +BinaryArray.isBinaryArray(entity),
-    includes: (entity, arg) => +entity.includes(arg),
-    splice: (entity, ...args) => entity.splice(...args),
-    sum: entity => entity.reduce((acc, x) => (acc += x), 0),
+    isEmpty: entity => {
+      return +!entity.size;
+    },
+    reverse: entity => {
+      return entity.reverse();
+    },
+    reduce: (entity, fn, initial) => {
+      return entity.reduce(fn, initial);
+    },
+    from: data => {
+      return BinaryArray.from(data);
+    },
+    sort: (entity, fn) => {
+      return entity.sort(fn);
+    },
+    last: entity => {
+      return entity.get(entity.size - 1);
+    },
+    first: entity => {
+      return entity.get(0);
+    },
+    pivot: entity => {
+      return entity.pivot();
+    },
+    isBinaryArray: entity => {
+      return +BinaryArray.isBinaryArray(entity);
+    },
+    includes: (entity, arg) => {
+      return +entity.includes(arg);
+    },
+    splice: (entity, ...args) => {
+      return entity.splice(...args);
+    },
+    sum: entity => {
+      return entity.reduce((acc, x) => (acc += x), 0);
+    },
     forOf: (entity, fn) => {
       entity.forEach((x, i) => fn(x, i));
       return entity;
     },
-    inside: (entity, fn) => entity.forEach(x => fn(x)) ?? entity,
+    inside: (entity, fn) => {
+      return entity.forEach(x => fn(x)) ?? entity;
+    },
     each: (entity, fn) => {
       entity.forEach(fn);
       return entity;
@@ -1027,8 +1557,13 @@ export class StandartLibrary {
       arr.balance();
       return arr;
     },
-    slice: (entity, ...args) => entity.slice(...args)
+    slice: (entity, ...args) => {
+      return entity.slice(...args);
+    }
   };
+  constructor() {
+    this.COLOR.randomColor.comment = 'Generate a random hex color';
+  }
 }
 export const STD = {
   void: VOID,
@@ -1037,14 +1572,49 @@ export const STD = {
   null: VOID,
   NULL: VOID,
   IMP: module => {
-    prompt(
-      'Copy to clipboard: Ctrl+C, Enter',
-      `<-[${Object.keys(module)
+    popUp(
+      `<- [${Object.keys(module)
+        .filter(x => x !== 'NAME')
         .map(x => `"${x}"`)
-        .join(';')}][${module.NAME}]`
+        .join(';')}] [${module.NAME}];\n`,
+      window.innerWidth * 1 - 20
     );
   },
-  LS: module => Object.keys(module),
+  LS: module => alert(Object.keys(module)),
+  SRC: module => alert(module.toString()),
+  INSPECT: msg =>
+    popUp(`${JSON.stringify(msg) ?? null}`, window.innerWidth * 1 - 20),
+  SIGN: method => {
+    const sign = method.toString();
+    let returnValue = `return void\n}`;
+    if (sign.includes('return')) {
+      const ret = sign
+        .split('return ')
+        .join('##return ')
+        .split('##')
+        .filter(x => x.includes('return'))
+        .map(x => x.trim());
+      returnValue = ret[ret.length - 1];
+    }
+
+    popUp(
+      `${
+        method.comment
+          ? method.comment
+              .split('\n')
+              .map(x => ';; ' + x)
+              .join('\n')
+          : ';; JavaScript signature:'
+      }
+${method.name} (${sign
+        .split(' => {')[0]
+        .replace('(', '')
+        .replace(')', '')}) => {
+  ${returnValue}`,
+      window.innerWidth * 1 - 20
+    );
+  },
+
   tco:
     func =>
     (...args) => {

@@ -4,6 +4,7 @@ import { removeNoCode, run, wrapInBody } from './language/core/utils.js';
 import { BinaryArray } from './language/extentions/BinaryArray.js';
 import {
   consoleElement,
+  popupContainer,
   StandartLibrary,
   STD
 } from './language/extentions/extentions.js';
@@ -276,6 +277,7 @@ const getPredecessorCode = () => {
   );
 };
 const updateApp = () => {
+  popupContainer.style.display = 'none';
   const appDocument = elements.app.contentWindow.document;
 
   // if (appDocument.body) appDocument.body.innerHTML = '';
@@ -428,6 +430,7 @@ const clearSelection = () => {
   deselectEdges();
   memo.nodePairsSelections.length = 0;
   memo.lastSelection.id = undefined;
+  popupContainer.innerHTML = '';
 };
 const renameVariable = (value = DEFAULT_TOKEN) => {
   if (memo.lastSelection.type === 'node') {

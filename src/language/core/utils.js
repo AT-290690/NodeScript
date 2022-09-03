@@ -4,7 +4,8 @@ import {
   STD,
   consoleElement,
   print,
-  protolessModule
+  protolessModule,
+  popupContainer
 } from '../extentions/extentions.js';
 export const correctFilePath = filename => {
   if (!filename) return '';
@@ -123,6 +124,7 @@ export const isBalancedParenthesis = sourceCode => {
 export const prettier = str => addSpace(str);
 
 export const run = source => {
+  popupContainer.style.display = 'none';
   State.isErrored = false;
   consoleElement.classList.add('info_line');
   consoleElement.classList.remove('error_line');
@@ -142,9 +144,10 @@ export const run = source => {
     );
   }
 };
+
 export const pruneDep = () => {
   const ignore = [
-    ...['_', 'tco', 'void', 'VOID', 'NULL', 'null', ';;tokens'],
+    ...['_', 'tco', 'void', 'VOID', 'NULL', 'null', ';;tokens', 'IMP', 'SIGN'],
     ...['!', '^', '>>>', '>>', '<<', '~', '|', '&'],
     ...['+', '-', '*', '/', '==', '!=', '>', '<', '>=', '<=', '%', '**']
   ];
