@@ -201,14 +201,12 @@ const tokens = {
       printErrors('TypeError Invalid number of arguments  to ??', args);
       throw new TypeError('Invalid number of arguments  to ??');
     }
-    for (let i = 0; i < args.length - 1; i++) {
-      if (evaluate(args[i], env) !== VOID) {
-        return evaluate(args[i], env);
-      } else {
-        continue;
-      }
-    }
-    return evaluate(args[args.length - 1], env);
+    const resolve = (arg, count) => {
+      const val = evaluate(arg, env);
+      if (val !== VOID) return val;
+      else return resolve(args[count], ++count);
+    };
+    return resolve(args[0], 0);
   },
   ['=>']: (args, env) => {
     let value = VOID;

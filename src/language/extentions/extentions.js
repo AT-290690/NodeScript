@@ -4,16 +4,22 @@ import { BinaryArray } from './BinaryArray.js';
 export const consoleElement = document.getElementById('console');
 const canvasContainer = document.getElementById('canvas-container');
 export const popupContainer = document.getElementById('popup-container');
+
+const createPopUp = () => {
+  popupContainer.innerHTML = '';
+  const popup = CodeMirror(popupContainer);
+  popupContainer.style.display = 'block';
+  return popup;
+};
+
 const popUp = (
+  popup,
   msg,
   w = window.innerWidth / 2 - 5,
   h = window.innerHeight / 3
 ) => {
-  popupContainer.innerHTML = '';
-  const popup = CodeMirror(popupContainer);
   popup.setSize(w, h);
   popup.setValue(msg);
-  popupContainer.style.display = 'block';
 };
 const prefixDep = (dep, prefix = '') =>
   Object.entries(dep).reduce((acc, [key, value]) => {
@@ -1164,8 +1170,8 @@ export class StandartLibrary {
     sort: (entity, callback) => {
       return entity.sort(callback);
     },
-    slice: (entity, ...args) => {
-      return entity.slice(...args);
+    slice: (entity, start, end) => {
+      return entity.slice(start, end);
     },
     splice: (entity, ...args) => {
       return entity.splice(...args);
@@ -1557,8 +1563,8 @@ export class StandartLibrary {
       arr.balance();
       return arr;
     },
-    slice: (entity, ...args) => {
-      return entity.slice(...args);
+    slice: (entity, start, end) => {
+      return entity.slice(start, end);
     }
   };
   constructor() {
@@ -1572,18 +1578,42 @@ export const STD = {
   null: VOID,
   NULL: VOID,
   IMP: module => {
+    const pop = createPopUp();
     popUp(
+      pop,
       `<- [${Object.keys(module)
         .filter(x => x !== 'NAME')
         .map(x => `"${x}"`)
         .join(';')}] [${module.NAME}];\n`,
       window.innerWidth * 1 - 20
     );
+    pop.focus();
   },
-  LS: module => alert(Object.keys(module)),
-  SRC: module => alert(module.toString()),
-  INSPECT: msg =>
-    popUp(`${JSON.stringify(msg) ?? null}`, window.innerWidth * 1 - 20),
+  SOURCE: method => {
+    popUp(
+      createPopUp(),
+      `${method.toString()}`,
+      window.innerWidth * 1 - 20,
+      window.innerHeight / 2
+    );
+  },
+  INSPECT: () => {
+    const popup = createPopUp();
+    popup.setSize(window.innerWidth * 1 - 20, window.innerHeight / 3);
+    let count = 0;
+    return (msg, space) => {
+      const current = popup.getValue();
+      popup.setValue(
+        `${current ? current + '\n' : ''};; ${count++}
+${msg !== VOID ? JSON.stringify(msg, null, space) : VOID}`
+      );
+      popup.setCursor(
+        popup.posToOffset({ ch: 0, line: popup.lineCount() - 1 }),
+        true
+      );
+      return msg;
+    };
+  },
   SIGN: method => {
     const sign = method.toString();
     let returnValue = `return void\n}`;
@@ -1598,6 +1628,7 @@ export const STD = {
     }
 
     popUp(
+      createPopUp(),
       `${
         method.comment
           ? method.comment
