@@ -1597,14 +1597,15 @@ export const STD = {
       window.innerHeight / 2
     );
   },
-  INSPECT: () => {
+  INSPECT: (disable = 0) => {
+    if (disable) return (msg, count) => {};
     const popup = createPopUp();
     popup.setSize(window.innerWidth * 1 - 20, window.innerHeight / 3);
     let count = 0;
-    return (msg, space) => {
+    return (msg, comment = '', space) => {
       const current = popup.getValue();
       popup.setValue(
-        `${current ? current + '\n' : ''};; ${count++}
+        `${current ? current + '\n' : ''};; ${count++} ${comment}
 ${msg !== VOID ? JSON.stringify(msg, null, space) : VOID}`
       );
       popup.setCursor(
