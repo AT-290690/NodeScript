@@ -190,19 +190,20 @@ const dfs = (tree, locals) => {
           );
         } else {
           if (tree.operator.operator.name === '<-') {
+            const [lib, pref] = tree.args;
             const imp =
-              tree.args[0].type === 'word'
-                ? tree.args[0].name
-                : dfs(tree.args[0], locals).slice(0, -1);
+              lib.type === 'word' ? lib.name : dfs(lib, locals).slice(0, -1);
             const methods = tree.operator.args.map(x =>
               x.type === 'value' ? x.value : dfs(x, locals)
             );
+            const prefix =
+              pref && pref.type === 'value' ? pref.value + '_' : '';
             return methods
               .map(x => {
                 if (x) {
                   locals.add(x);
                 }
-                return `${x} = ${imp}["${x}"];`;
+                return `${prefix}${x} = ${imp}["${x}"];`;
               })
               .join('');
           } else if (

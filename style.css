@@ -395,6 +395,7 @@ input:focus {
 .cm-panels,
 .cm-search {
   background-color: transparent !important;
+  max-width: 48.5vw;
 }
 #console:focus {
   color: var(--color-fiftly);

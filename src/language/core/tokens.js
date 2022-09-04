@@ -448,10 +448,13 @@ const tokens = {
     }
   },
   ['.:']: (args, env) => args.map(item => extract(item, env)),
-  ['<-']: (args, env) => exp =>
+  ['<-']: (args, env) => (exp, prefix) => {
+    prefix = prefix ? prefix + '_' : '';
     args.forEach(arg => {
-      env[arg.value] = exp[arg.value];
-    }) ?? VOID,
+      env[`${prefix}${arg.value}`] = exp[arg.value];
+    });
+    return VOID;
+  },
   ['|>']: (args, env) => {
     const [param, ...rest] = args;
     return pipe(...rest.map(arg => p => evaluate(arg, env)(p)))(
