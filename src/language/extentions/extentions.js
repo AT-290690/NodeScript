@@ -1195,6 +1195,18 @@ export class StandartLibrary {
   };
   BINARYARRAY = {
     NAME: 'BINARYARRAY',
+    addAt: (entity, index, ...items) => {
+      entity.addAt(index, ...items);
+      return entity;
+    },
+    addTo: (entity, index, item) => {
+      entity.addTo(index, item);
+      return entity;
+    },
+    removeFrom: (entity, index, amount) => {
+      entity.removeFrom(index, amount);
+      return entity;
+    },
     ['remake1']: (entity, callback) => {
       return entity.reduce(acc => callback(acc), new BinaryArray());
     },
