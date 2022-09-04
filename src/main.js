@@ -314,7 +314,7 @@ const openAppWindow = () => {
   } else {
     const appDocument = elements.app.contentWindow;
     if (appDocument) {
-      appDocument.LIBRARY.SKETCH.destroyComposition();
+      appDocument.LIBRARY.SKETCH.destroycomposition();
     }
     elements.app.style.display = 'none';
   }
@@ -671,10 +671,10 @@ cy.ready(() => {
     clearSelection();
     deselectIndex();
     consoleElement.value = '';
-    STD.LIBRARY.SKETCH.destroyComposition();
+    STD.LIBRARY.SKETCH.destroycomposition();
     const appDocument = elements.app.contentWindow;
     if (appDocument && appDocument.LIBRARY) {
-      appDocument.LIBRARY.SKETCH?.destroyComposition();
+      appDocument.LIBRARY.SKETCH?.destroycomposition();
     }
     elements.app.style.display = 'none';
   };

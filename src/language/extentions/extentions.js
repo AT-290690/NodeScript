@@ -49,16 +49,16 @@ export class StandartLibrary {
   NAME = 'LIBRARY';
   COLOR = {
     NAME: 'COLOR',
-    makeRgbColor: (r, g, b) => {
+    makergbcolor: (r, g, b) => {
       return `rgb(${r}, ${g}, ${b})`;
     },
-    makeRgbAlphaColor: (r, g, b, a = 1) => {
+    makergbalphacolor: (r, g, b, a = 1) => {
       return `rgba(${r}, ${g}, ${b}, ${a})`;
     },
-    randomColor: () => {
+    randomcolor: () => {
       return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
     },
-    randomLightColor: () => {
+    randomlightcolor: () => {
       return (
         '#' +
         (
@@ -66,7 +66,7 @@ export class StandartLibrary {
         ).slice(-6)
       );
     },
-    rgbToHex: color => {
+    rgbtohex: color => {
       const [r, g, b] = color
         .split('(')[1]
         .split(')')[0]
@@ -79,7 +79,7 @@ export class StandartLibrary {
 
       return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
     },
-    invertHexColor: hex => {
+    inverthexcolor: hex => {
       return (
         '#' +
         (Number(`0x1${hex.split('#')[1]}`) ^ 0xffffff)
@@ -93,7 +93,7 @@ export class StandartLibrary {
     NAME: 'SKETCH',
     VECTOR: {
       NAME: 'VECTOR',
-      makeVector: (...args) => {
+      makevector: (...args) => {
         return new Two.Vector(...args);
       },
       zero: Two.Vector.zero,
@@ -119,28 +119,28 @@ export class StandartLibrary {
       normalize: vec => {
         return vec.normalize();
       },
-      ratioBetween: (a, b) => {
+      ratiobetween: (a, b) => {
         return Two.Vector.ratioBetween(a, b);
       },
-      angleBetween: (a, b) => {
+      anglebetween: (a, b) => {
         return Two.Vector.angleBetween(a, b);
       },
-      distanceBetween: (a, b) => {
+      distancebetween: (a, b) => {
         return Two.Vector.distanceBetween(a, b);
       },
-      distanceBetweenSquared: (a, b) => {
+      distancebetweensquared: (a, b) => {
         return Two.Vector.distanceBetweenSquared(a, b);
       },
-      distanceTo: (a, b, e) => {
+      distanceto: (a, b, e) => {
         return a.distanceTo(b, e);
       },
-      distanceToSquared: (a, b, e) => {
+      distancetosquared: (a, b, e) => {
         return a.distanceToSquared(b, e);
       },
-      getX: vec => {
+      getx: vec => {
         return vec.x;
       },
-      getY: vec => {
+      gety: vec => {
         return vec.y;
       },
       copy: (vec, d) => {
@@ -155,22 +155,22 @@ export class StandartLibrary {
       lerp: (vec, d, t) => {
         return vec.lerp(d, t);
       },
-      addSelf: (vec, a) => {
+      addself: (vec, a) => {
         return vec.addSelf(a);
       },
-      subtractSelf: (vec, a) => {
+      subtractself: (vec, a) => {
         return vec.subtractSelf(a);
       },
-      multiplySelf: (vec, a) => {
+      multiplyself: (vec, a) => {
         return vec.multiplySelf(a);
       },
-      multiplyScalar: (vec, scalar) => {
+      multiplyscalar: (vec, scalar) => {
         return vec.multiplyScalar(scalar);
       },
-      divideScalar: (vec, scalar) => {
+      dividescalar: (vec, scalar) => {
         return vec.divideScalar(scalar);
       },
-      setLength: (vec, len) => {
+      setlength: (vec, len) => {
         return vec.setLength(len);
       },
       length: vec => {
@@ -183,15 +183,15 @@ export class StandartLibrary {
     background: (color = 'var(--background-primary)') => {
       return (canvasContainer.firstChild.style.background = color);
     },
-    requestAnimationFrame: fn => {
+    requestanimationframe: fn => {
       return (animation = requestAnimationFrame(fn));
     },
-    destroyComposition: () => {
+    destroycomposition: () => {
       canvasContainer.style.background = 'var(--background-primary)';
       canvasContainer.innerHTML = '';
       this.SKETCH.engine?.removeEventListener('update');
     },
-    makeScene: (width = 100, height = 100, callback) => {
+    makescene: (width = 100, height = 100, callback) => {
       canvasContainer.innerHTML = '';
       this.SKETCH.engine?.removeEventListener('update');
       // this.SKETCH.engine?.removeEventListener('update');
@@ -204,80 +204,26 @@ export class StandartLibrary {
       return 'Scene created!';
     },
 
-    insertIntoGroup: (group, ...items) => {
+    insertintogroup: (group, ...items) => {
       group.add(...items);
       return group;
     },
-    removeFromGroup: item => {
+    removefromgroup: item => {
       item.parent.remove(item);
       this.SKETCH.engine.add(item);
       return item;
     },
-    removeFromScene: item => {
+    removefromscene: item => {
       item.remove();
       return VOID;
     },
 
-    makeComp: (x, y, items, scale = 1) => {
-      const group = this.SKETCH.engine.makeGroup();
-      group.position.x = x;
-      group.position.y = y;
-      group.scale = scale;
-      items.forEach(item => group.add(item));
-      return group;
-    },
-
-    groupAdditions: group => {
+    groupadditions: group => {
       return group.additions;
     },
-    groupChildren: group => {
+    groupchildren: group => {
       return group.children;
     },
-    // showGroupBounds: (group, settings = {}) => {
-    //   settings = { padding: [1, 1], stroke: 'lime', linewidth: 1, ...settings };
-    //   const rect = this.SKETCH.engine.makeRectangle(0, 0, 0, 0);
-    //   const padding = settings.padding;
-    //   rect.stroke = settings.stroke;
-    //   rect.noFill();
-    //   rect.linewidth = settings.linewidth;
-    //   if (settings.dashes) {
-    //     rect.dashes = settings.dashes;
-    //   }
-    //   if (settings.fixedSize) {
-    //     rect.width = settings.fixedSize[0];
-    //     rect.height = settings.fixedSize[1];
-    //     group.add(rect);
-    //   } else {
-    //     const offset = { x: Infinity, y: Infinity };
-    //     group.additions.forEach(item => {
-    //       const bounds = item.getBoundingClientRect();
-    //       const origin = item?.origin
-    //         ? { x: item.origin.x + 0.5, y: item.origin.y + 0.5 }
-    //         : item.constructor.name === 'Gt'
-    //         ? { x: 0, y: 0 }
-    //         : { x: 0.5, y: 0.5 };
-    //       const X =
-    //         item.position.x - bounds.width * origin.x - item.linewidth * 0.5;
-    //       const Y =
-    //         item.position.y - bounds.height * origin.y - item.linewidth * 0.5;
-    //       if (X <= offset.x) {
-    //         offset.x = X;
-    //       }
-    //       if (Y <= offset.y) {
-    //         offset.y = Y;
-    //       }
-    //     });
-    //     const bounds = group.getBoundingClientRect();
-    //     group.add(rect);
-    //     const scale = group.scale;
-    //     const last = group.additions[group.additions.length - 1];
-    //     last.position.x = (bounds.width * 0.5) / scale + offset.x;
-    //     last.position.y = (bounds.height * 0.5) / scale + offset.y;
-    //     last.width = (bounds.width * padding[0]) / scale;
-    //     last.height = (bounds.height * padding[1]) / scale;
-    //   }
-    //   return rect;
-    // },
     width: (ratio = 1) => {
       return this.SKETCH.engine.width * ratio;
     },
@@ -302,60 +248,60 @@ export class StandartLibrary {
     load: (...args) => {
       return this.SKETCH.engine.load(...args);
     },
-    makeArcSegment: (...args) => {
+    makearcsegment: (...args) => {
       return this.SKETCH.engine.makeArcSegment(...args);
     },
-    makeArrow: (...args) => {
+    makearrow: (...args) => {
       return this.SKETCH.engine.makeArrow(...args);
     },
-    makeCircle: (x, y, r) => {
+    makecircle: (x, y, r) => {
       return this.SKETCH.engine.makeCircle(x, y, r);
     },
-    makeCurve: (...points) => {
+    makecurve: (...points) => {
       return this.SKETCH.engine.makeCurve(...points);
     },
-    makeEllipse: (...args) => {
+    makeellipse: (...args) => {
       return this.SKETCH.engine.makeEllipse(...args);
     },
-    makeGroup: (...args) => {
+    makegroup: (...args) => {
       return this.SKETCH.engine.makeGroup(...args);
     },
-    makeImageSequence: (...args) =>
+    makeimagesequence: (...args) =>
       this.SKETCH.engine.makeImageSequence(...args),
-    makeLine: (...args) => {
+    makeline: (...args) => {
       return this.SKETCH.engine.makeLine(...args);
     },
-    makeLinearGradient: (...args) => {
+    makelineargradient: (...args) => {
       return this.SKETCH.engine.makeLinearGradient(...args);
     },
-    makePath: (...args) => {
+    makepath: (...args) => {
       return this.SKETCH.engine.makePath(...args);
     },
-    makePoints: (...args) => {
+    makepoints: (...args) => {
       return this.SKETCH.engine.makePoints(...args);
     },
-    makePolygon: (...args) => {
+    makepolygon: (...args) => {
       return this.SKETCH.engine.makePolygon(...args);
     },
-    makeRadialGradient: (...args) => {
+    makeradialgradient: (...args) => {
       return this.SKETCH.engine.makeRadialGradient(...args);
     },
-    makeRectangle: (x, y, w, h) => {
+    makerectangle: (x, y, w, h) => {
       return this.SKETCH.engine.makeRectangle(x, y, w, h);
     },
-    makeRoundedRectangle: (...args) => {
+    makeroundedrectangle: (...args) => {
       return this.SKETCH.engine.makeRoundedRectangle(...args);
     },
-    makeSprite: (...args) => {
+    makesprite: (...args) => {
       return this.SKETCH.engine.makeSprite(...args);
     },
-    makeStar: (...args) => {
+    makestar: (...args) => {
       return this.SKETCH.engine.makeStar(...args);
     },
-    makeText: (...args) => {
+    maketext: (...args) => {
       return this.SKETCH.engine.makeText(...args);
     },
-    makeTexture: (...args) => {
+    maketexture: (...args) => {
       return this.SKETCH.engine.makeTexture(...args);
     },
     on: (...args) => {
@@ -378,7 +324,7 @@ export class StandartLibrary {
     remove: (...args) => {
       return this.SKETCH.engine.remove(...args);
     },
-    setPlaying: (...args) => {
+    setplaying: (...args) => {
       return this.SKETCH.engine.setPlaying(...args);
     },
     trigger: (...args) => {
@@ -388,11 +334,11 @@ export class StandartLibrary {
       this.SKETCH.engine.update(...args);
       return 'Updated!';
     },
-    noFill: entity => {
+    nofill: entity => {
       entity.noFill();
       return entity;
     },
-    noStroke: entity => {
+    nostroke: entity => {
       entity.noStroke();
       return entity;
     },
@@ -405,77 +351,68 @@ export class StandartLibrary {
         }, 1000 * lifespan);
       }
     },
-    setCompositionSize: (w, h) => {
-      this.SKETCH.engine.width = w;
-      this.SKETCH.engine.height = h;
-    },
-    setCompositionWidth: width => {
-      return (this.SKETCH.engine.width = width);
-    },
-    setCompositionHeight: height => {
-      return (this.SKETCH.engine.height = height);
-    },
-    setScreenSize: (w, h, showBorder = true) => {
+
+    setscreensize: (w, h, showBorder = true) => {
       const svg = canvasContainer.firstChild;
       svg.setAttribute('width', w);
       svg.setAttribute('height', h);
       if (showBorder) svg.style.border = '1px solid lime';
     },
-    setOffsetStart: entity => {
+    setoffsetstart: entity => {
       entity.position.x = entity.position.x + entity.width * 0.5;
       entity.position.y = entity.position.y + entity.height * 0.5;
       return entity;
     },
-    setFill: (entity, fill) => {
+    setfill: (entity, fill) => {
       entity.fill = fill;
       return entity;
     },
-    setStroke: (entity, stroke) => {
+    setstroke: (entity, stroke) => {
       entity.stroke = stroke;
       return entity;
     },
-    setDashes: (entity, dashes) => {
+    setdashes: (entity, dashes) => {
       entity.dashes = dashes;
       return entity;
     },
-    setLinewidth: (entity, linewidth) => {
+    setlinewidth: (entity, linewidth) => {
       entity.linewidth = linewidth;
       return entity;
     },
 
-    setPosition: (entity, x, y) => {
+    setposition: (entity, x, y) => {
       entity.position.set(x, y);
       return entity;
     },
-    setPositionX: (entity, x) => {
+    setpositionx: (entity, x) => {
       entity.position.x = x;
       return entity;
     },
-    setPositionY: (entity, y) => {
+    setpositiony: (entity, y) => {
       entity.position.y = y;
       return entity;
     },
-    setScale: (entity, s) => {
+    setscale: (entity, s) => {
       entity.scale = s;
       return entity;
     },
-    setOpacity: (entity, opacity) => {
+    setopacity: (entity, opacity) => {
       entity.opacity = opacity;
       return entity;
     },
-    setRotation: (entity, a) => {
+    setrotation: (entity, a) => {
       entity.rotation = a;
       return entity;
     },
-    setWidth: (entity, w) => {
+    setwidth: (entity, w) => {
       entity.width = w;
       return entity;
     },
-    setHeight: (entity, h) => {
+    setheight: (entity, h) => {
       entity.height = h;
       return entity;
     },
-    setOrigin: (entity, x, y) => {
+    setorigin: (entity, x, y) => {
       entity.additions
         ? entity.additions.forEach(item => {
             item.position.set(item.position.x - x, item.position.y - y);
@@ -486,31 +423,31 @@ export class StandartLibrary {
     make: (prop, ...args) => {
       return new Two[prop](...args);
     },
-    getWidth: () => {
+    getwidth: () => {
       return document.body.getBoundingClientRect().width;
     },
-    getHeight: () => {
+    getheight: () => {
       return document.body.getBoundingClientRect().height;
     },
-    getFromGroup: (group, index) => {
+    getfromgroup: (group, index) => {
       return group.additions[index] ?? VOID;
     },
-    getOrigin: entity => {
+    getorigin: entity => {
       return entity.origin;
     },
-    getOpacity: entity => {
+    getopacity: entity => {
       return entity.opacity;
     },
-    getDashes: entity => {
+    getdashes: entity => {
       return entity.dashes;
     },
-    getPosition: entity => {
+    getposition: entity => {
       return entity.position;
     },
-    getTranslation: entity => {
+    gettranslation: entity => {
       return entity.translation;
     },
-    getBounds: entity => {
+    getbounds: entity => {
       return entity.getBoundingClientRect();
     }
   };
@@ -528,34 +465,34 @@ export class StandartLibrary {
   // };
   TIME = {
     NAME: 'TIME',
-    makeDate: date => {
+    makedate: date => {
       return new Date(date);
     },
-    currentTime: () => {
+    currenttime: () => {
       return new Date().getTime();
     },
-    currentDate: () => {
+    currentdate: () => {
       return new Date();
     },
-    getHour: date => {
+    gethour: date => {
       return date.getHours();
     },
-    getMinute: date => {
+    getminute: date => {
       return date.getMinutes();
     },
-    getSecond: date => {
+    getsecond: date => {
       return date.getSeconds();
     },
-    setInterval: (fn, ms) => {
+    setinterval: (fn, ms) => {
       return setInterval(() => fn(), ms);
     },
-    clearInterval: id => {
+    clearinterval: id => {
       return clearInterval(id);
     },
-    setTimeout: (fn, ms) => {
+    settimeout: (fn, ms) => {
       return setTimeout(() => fn(), ms);
     },
-    clearTimeout: id => {
+    cleartimeout: id => {
       return clearTimeout(id);
     }
   };
@@ -564,7 +501,7 @@ export class StandartLibrary {
     from: arr => {
       return new Set(arr);
     },
-    makeSet: (...args) => {
+    makeset: (...args) => {
       return new Set(args);
     },
     has: (entity, item) => {
@@ -602,7 +539,7 @@ export class StandartLibrary {
       });
       return out;
     },
-    symetricDifference: (a, b) => {
+    symetricdifference: (a, b) => {
       const out = new Set();
       b.forEach(item => {
         if (!a.has(item)) out.add(item);
@@ -627,10 +564,10 @@ export class StandartLibrary {
   };
   OBJECT = {
     NAME: 'OBJECT',
-    jsonString: object => {
+    jsonstring: object => {
       return JSON.stringify(object);
     },
-    jsonParse: string => {
+    jsonparse: string => {
       return JSON.parse(string);
     },
     clone: obj => {
@@ -650,7 +587,7 @@ export class StandartLibrary {
     entries: obj => {
       return Object.entries(obj);
     },
-    fromEntries: entries => {
+    fromentries: entries => {
       return Object.fromEntries(entries);
     },
     freeze: obj => {
@@ -659,10 +596,10 @@ export class StandartLibrary {
     size: obj => {
       return Object.keys(obj).length;
     },
-    float32Array: (...items) => {
+    float32array: (...items) => {
       return new Float32Array(items);
     },
-    float64Array: (...items) => {
+    float64array: (...items) => {
       return new Float64Array(items);
     }
     // set: (entity, prop, ...values) => entity[prop].set(...values),
@@ -757,14 +694,14 @@ export class StandartLibrary {
     sum: arr => {
       return arr.reduce((acc, item) => (acc += item), 0);
     },
-    minInt: Number.MIN_SAFE_INTEGER,
-    maxInt: Number.MAX_SAFE_INTEGER,
-    infinity: Number.POSITIVE_INFINITY,
+    MININT: Number.MINSAFEINTEGER,
+    MAXINT: Number.MAXSAFEINTEGER,
+    infinity: Number.POSITIVEINFINITY,
     negative: n => {
       return -n;
     },
     PI: Math.PI,
-    parseInt: (number, base) => {
+    parseint: (number, base) => {
       return parseInt(number.toString(), base);
     },
     number: string => {
@@ -784,19 +721,19 @@ export class StandartLibrary {
     string: thing => {
       return thing.toString();
     },
-    upperCase: string => {
+    uppercase: string => {
       return string.toUpperCase();
     },
-    lowerCase: string => {
+    lowercase: string => {
       return string.toLowerCase();
     },
     trim: string => {
       return string.trim();
     },
-    trimStart: string => {
+    trimstart: string => {
       return string.trimStart();
     },
-    trimEnd: string => {
+    trimend: string => {
       return string.trimEnd();
     },
     substring: (string, start, end) => {
@@ -830,23 +767,23 @@ export class StandartLibrary {
   };
   CONSOLE = {
     print,
-    printLog: thing => {
+    printlog: thing => {
       return console.log(...print(thing));
     },
-    consoleLog: thing => {
+    consolelog: thing => {
       return console.log(thing);
     },
     NAME: 'CONSOLE'
   };
   LOGIC = {
     NAME: 'LOGIC',
-    isTrue: bol => {
+    istrue: bol => {
       return +(!!bol === true);
     },
-    isFalse: bol => {
+    isfalse: bol => {
       return +(!!bol === false);
     },
-    isEqual: (a, b) => {
+    isequal: (a, b) => {
       const typeA = typeof a,
         typeB = typeof b;
       if (typeA !== typeB) return 0;
@@ -873,7 +810,7 @@ export class StandartLibrary {
         }
       }
     },
-    isSimilar: (a, b) => {
+    issimilar: (a, b) => {
       const typeA = typeof a,
         typeB = typeof b;
       if (typeA !== typeB) return 0;
@@ -901,36 +838,36 @@ export class StandartLibrary {
         }
       }
     },
-    isNotVoid: item => {
+    isnotvoid: item => {
       return item === VOID ? 0 : 1;
     },
-    isVoid: item => {
+    isvoid: item => {
       return item === VOID ? 1 : 0;
     },
-    makeBoolean: item => {
+    makeboolean: item => {
       return Boolean(item);
     },
     or: (entity, other) => {
       return entity || other;
     },
-    isEmpty: item => {
+    isempty: item => {
       return Object.keys(item).length === 0 ? 1 : 0;
     },
     true: 1,
     false: 0,
-    isEven: arg => {
+    iseven: arg => {
       return arg % 2 === 0 ? 1 : 0;
     },
-    isOdd: arg => {
+    isodd: arg => {
       return arg % 2 !== 0 ? 1 : 0;
     },
     invert: val => {
       return +!val;
     },
-    isHaving: (obj, ...props) => {
+    ishaving: (obj, ...props) => {
       return +props.every(x => x in obj);
     },
-    areEqual: (item, ...args) => {
+    areequal: (item, ...args) => {
       return +args.every(current => this.LOGIC.isEqual(item, current));
     }
   };
@@ -965,7 +902,7 @@ export class StandartLibrary {
       }
       return iterable;
     },
-    forOfEvery: (iterable, callback) => {
+    forofevery: (iterable, callback) => {
       for (const x of iterable) {
         callback(x);
       }
@@ -979,7 +916,7 @@ export class StandartLibrary {
     loop: (start, end, callback) => {
       for (let i = start; i < end; i++) callback(i);
     },
-    whileTrue: (condition, callback) => {
+    whiletrue: (condition, callback) => {
       let out = VOID;
       while (condition()) out = callback();
       return out;
@@ -1034,10 +971,10 @@ export class StandartLibrary {
     compact: arr => {
       return arr.filter(Boolean);
     },
-    makeArray: (...items) => {
+    makearray: (...items) => {
       return items;
     },
-    makeMatrix: (...dimensions) => {
+    makematrix: (...dimensions) => {
       if (dimensions.length > 0) {
         const dim = dimensions[0];
         const rest = dimensions.slice(1);
@@ -1070,10 +1007,10 @@ export class StandartLibrary {
         }
         return acc;
       }, []),
-    indexedIteration: (entity, fn) => {
+    indexediteration: (entity, fn) => {
       return entity.forEach((x, i, arr) => fn(i)) ?? VOID;
     },
-    forOf: (entity, fn) => {
+    forof: (entity, fn) => {
       return entity.forEach((x, i, arr) => fn(x)) ?? VOID;
     },
     each: (entity, fn) => {
@@ -1105,17 +1042,17 @@ export class StandartLibrary {
     reduce: (entity, callback, acc) => {
       return entity.reduce(callback, acc);
     },
-    forEach: (entity, callback) => {
+    foreach: (entity, callback) => {
       return entity.forEach(callback);
     },
     reverse: entity => {
       return entity.reverse();
     },
-    insertAtEnd: (entity, ...args) => {
+    insertatend: (entity, ...args) => {
       entity.push(...args);
       return entity;
     },
-    removeFromEnd: entity => {
+    removefromend: entity => {
       entity.pop();
       return entity;
     },
@@ -1128,7 +1065,7 @@ export class StandartLibrary {
     includes: (entity, arg) => {
       return +entity.includes(arg);
     },
-    isArray: entity => {
+    isarray: entity => {
       return +entity.isArray();
     },
     unshift: (entity, ...args) => {
@@ -1143,10 +1080,10 @@ export class StandartLibrary {
     find: (entity, callback) => {
       return entity.find(callback) ?? VOID;
     },
-    findIndex: (entity, callback) => {
+    findindex: (entity, callback) => {
       return entity.findIndex(callback);
     },
-    indexOf: (entity, item) => {
+    indexof: (entity, item) => {
       return entity.indexOf(item);
     },
     some: (entity, callback) => {
@@ -1195,15 +1132,19 @@ export class StandartLibrary {
   };
   BINARYARRAY = {
     NAME: 'BINARYARRAY',
-    addAt: (entity, index, ...items) => {
+    set: (entity, index, value) => {
+      entity.set(index, value);
+      return entity;
+    },
+    addat: (entity, index, ...items) => {
       entity.addAt(index, ...items);
       return entity;
     },
-    addTo: (entity, index, item) => {
+    addto: (entity, index, item) => {
       entity.addTo(index, item);
       return entity;
     },
-    removeFrom: (entity, index, amount) => {
+    removefrom: (entity, index, amount) => {
       entity.removeFrom(index, amount);
       return entity;
     },
@@ -1288,7 +1229,7 @@ export class StandartLibrary {
     split: (str, separator) => {
       return BinaryArray.from(str.split(separator));
     },
-    sizeOf: entity => {
+    sizeof: entity => {
       return entity.size;
     },
     clone: entity => {
@@ -1316,13 +1257,13 @@ export class StandartLibrary {
     },
     product: (a, b) => {
       const out = a.reduce((acc, item, i) => {
-        acc._addToRight(new BinaryArray([item, b.get(i % b.size)]));
+        acc.addToRight(new BinaryArray([item, b.get(i % b.size)]));
         return acc;
       }, new BinaryArray());
       out.balance();
       return out;
     },
-    makeBinaryArray: (...items) => {
+    makebinaryarray: (...items) => {
       return new BinaryArray(items);
     },
     to: (entity, fn) => {
@@ -1346,7 +1287,7 @@ export class StandartLibrary {
     array: entity => {
       return entity.toArray();
     },
-    printBinaryArray: entity => {
+    printbinaryarray: entity => {
       return BinaryArray.isBinaryArray(entity)
         ? entity
             .map(x =>
@@ -1374,7 +1315,7 @@ export class StandartLibrary {
     find: (entity, fn) => {
       return entity.find(fn) ?? VOID;
     },
-    findIndex: (entity, fn) => {
+    findindex: (entity, fn) => {
       return entity.findIndex(fn);
     },
     at: (entity, index) => {
@@ -1398,7 +1339,7 @@ export class StandartLibrary {
       out.balance();
       return out;
     },
-    symetricDifference: (a, b) => {
+    symetricdifference: (a, b) => {
       const out = new BinaryArray();
       const A = new Set(a.toArray());
       const B = new Set(b.toArray());
@@ -1470,11 +1411,11 @@ export class StandartLibrary {
       entity.pop();
       return entity;
     },
-    rotateRight: (entity, n) => {
+    rotateright: (entity, n) => {
       entity.rotateRight(n);
       return entity;
     },
-    rotateLeft: (entity, n) => {
+    rotateleft: (entity, n) => {
       entity.rotateLeft(n);
       return entity;
     },
@@ -1498,7 +1439,7 @@ export class StandartLibrary {
       entity.clear();
       return entity;
     },
-    isEmpty: entity => {
+    isempty: entity => {
       return +!entity.size;
     },
     reverse: entity => {
@@ -1522,7 +1463,7 @@ export class StandartLibrary {
     pivot: entity => {
       return entity.pivot();
     },
-    isBinaryArray: entity => {
+    isbinaryarray: entity => {
       return +BinaryArray.isBinaryArray(entity);
     },
     includes: (entity, arg) => {
@@ -1580,7 +1521,7 @@ export class StandartLibrary {
     }
   };
   constructor() {
-    this.COLOR.randomColor.comment = 'Generate a random hex color';
+    this.COLOR.randomcolor.comment = 'Generate a random hex color';
   }
 }
 export const STD = {

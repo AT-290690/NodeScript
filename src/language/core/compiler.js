@@ -197,10 +197,13 @@ const dfs = (tree, locals) => {
               x.type === 'value' ? x.value : dfs(x, locals)
             );
             const prefix =
-              pref && pref.type === 'value' ? pref.value + '_' : '';
+              pref && pref.type === 'value'
+                ? pref.value.replaceAll(' ', '')
+                : '';
             return methods
               .map(x => {
                 if (x) {
+                  x = x = x.replaceAll(' ', '');
                   locals.add(x);
                 }
                 return `${prefix}${x} = ${imp}["${x}"];`;

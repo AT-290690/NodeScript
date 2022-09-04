@@ -448,13 +448,16 @@ const tokens = {
     }
   },
   ['.:']: (args, env) => args.map(item => extract(item, env)),
-  ['<-']: (args, env) => (exp, prefix) => {
-    prefix = prefix ? prefix + '_' : '';
-    args.forEach(arg => {
-      env[`${prefix}${arg.value}`] = exp[arg.value];
-    });
-    return VOID;
-  },
+  ['<-']:
+    (args, env) =>
+    (exp, prefix = '') => {
+      prefix = prefix.replaceAll(' ', '');
+      args.forEach(arg => {
+        const method = arg.value.replaceAll(' ', '');
+        env[`${prefix}${method}`] = exp[method];
+      });
+      return VOID;
+    },
   ['|>']: (args, env) => {
     const [param, ...rest] = args;
     return pipe(...rest.map(arg => p => evaluate(arg, env)(p)))(
