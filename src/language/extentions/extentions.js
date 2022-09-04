@@ -1287,13 +1287,13 @@ export class StandartLibrary {
     array: entity => {
       return entity.toArray();
     },
-    printbinaryarray: entity => {
+    printasarray: entity => {
       return BinaryArray.isBinaryArray(entity)
         ? entity
             .map(x =>
               BinaryArray.isBinaryArray(x)
                 ? BinaryArray.isBinaryArray(x.get(0))
-                  ? BA.printBinaryArray(x)
+                  ? BA.printasarray(x)
                   : x.toArray()
                 : x
             )
@@ -1475,7 +1475,7 @@ export class StandartLibrary {
     sum: entity => {
       return entity.reduce((acc, x) => (acc += x), 0);
     },
-    forOf: (entity, fn) => {
+    forof: (entity, fn) => {
       entity.forEach((x, i) => fn(x, i));
       return entity;
     },

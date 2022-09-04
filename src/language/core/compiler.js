@@ -230,7 +230,7 @@ const dfs = (tree, locals) => {
     switch (tree.name) {
       case 'void':
       case 'VOID':
-        return 'null';
+        return 'undefined';
       default:
         return tree.name;
     }

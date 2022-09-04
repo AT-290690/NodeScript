@@ -36,7 +36,7 @@ const isEqual = (a, b) => {
     }
   }
 };
-export const VOID = null;
+export const VOID = undefined;
 export const pipe =
   (...fns) =>
   x =>
