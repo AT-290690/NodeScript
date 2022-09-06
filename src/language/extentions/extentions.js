@@ -32,7 +32,7 @@ export const print = function (...values) {
     return VOID;
   }
   values.forEach(
-    x => (consoleElement.value += `[ ${JSON.stringify(x) ?? null} ]`)
+    x => (consoleElement.value += `[ ${JSON.stringify(x) ?? undefined} ]`)
   );
   return values;
 };
@@ -430,7 +430,7 @@ export class StandartLibrary {
       return document.body.getBoundingClientRect().height;
     },
     getfromgroup: (group, index) => {
-      return group.additions[index] ?? VOID;
+      return group.additions[index];
     },
     getorigin: entity => {
       return entity.origin;
@@ -564,6 +564,17 @@ export class StandartLibrary {
   };
   OBJECT = {
     NAME: 'OBJECT',
+
+    forin: (object, callback) => {
+      for (const key in object) {
+        callback(key, object);
+      }
+    },
+    forof: (object, callback) => {
+      for (const key in object) {
+        callback(object[key]);
+      }
+    },
     jsonstring: object => {
       return JSON.stringify(object);
     },
@@ -591,7 +602,8 @@ export class StandartLibrary {
       return Object.fromEntries(entries);
     },
     freeze: obj => {
-      return void Object.freeze(obj) ?? obj;
+      void Object.freeze(obj);
+      return obj;
     },
     size: obj => {
       return Object.keys(obj).length;
@@ -847,14 +859,17 @@ export class StandartLibrary {
     makeboolean: item => {
       return Boolean(item);
     },
+    and: (entity, other) => {
+      return entity && other;
+    },
     or: (entity, other) => {
       return entity || other;
     },
     isempty: item => {
       return Object.keys(item).length === 0 ? 1 : 0;
     },
-    true: 1,
-    false: 0,
+    TRUE: 1,
+    FALSE: 0,
     iseven: arg => {
       return arg % 2 === 0 ? 1 : 0;
     },
@@ -1008,13 +1023,13 @@ export class StandartLibrary {
         return acc;
       }, []),
     indexediteration: (entity, fn) => {
-      return entity.forEach((x, i, arr) => fn(i)) ?? VOID;
+      return entity.forEach((x, i, arr) => fn(i));
     },
     forof: (entity, fn) => {
-      return entity.forEach((x, i, arr) => fn(x)) ?? VOID;
+      return entity.forEach((x, i, arr) => fn(x));
     },
     each: (entity, fn) => {
-      return entity.forEach((x, i, arr) => fn(x, i)) ?? VOID;
+      return entity.forEach((x, i, arr) => fn(x, i));
     },
     from: items => {
       return Array.from(items);
@@ -1078,7 +1093,7 @@ export class StandartLibrary {
       return entity.fill(filling);
     },
     find: (entity, callback) => {
-      return entity.find(callback) ?? VOID;
+      return entity.find(callback);
     },
     findindex: (entity, callback) => {
       return entity.findIndex(callback);
@@ -1313,13 +1328,13 @@ export class StandartLibrary {
       return +entity.some(fn);
     },
     find: (entity, fn) => {
-      return entity.find(fn) ?? VOID;
+      return entity.find(fn);
     },
     findindex: (entity, fn) => {
       return entity.findIndex(fn);
     },
     at: (entity, index) => {
-      return entity.at(index) ?? VOID;
+      return entity.at(index);
     },
     update: (entity, index, value) => {
       if (entity.get(index) !== undefined) {
@@ -1480,7 +1495,8 @@ export class StandartLibrary {
       return entity;
     },
     inside: (entity, fn) => {
-      return entity.forEach(x => fn(x)) ?? entity;
+      entity.forEach(x => fn(x));
+      return entity;
     },
     each: (entity, fn) => {
       entity.forEach(fn);

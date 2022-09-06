@@ -203,8 +203,8 @@ const dfs = (tree, locals) => {
             return methods
               .map(x => {
                 if (x) {
-                  x = x = x.replaceAll(' ', '');
-                  locals.add(x);
+                  x = x.replaceAll(' ', '');
+                  locals.add(`${prefix}${x}`);
                 }
                 return `${prefix}${x} = ${imp}["${x}"];`;
               })
