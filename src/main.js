@@ -176,7 +176,7 @@ const cy = cytoscape({
   boxSelectionEnabled: true,
   selectionType: 'single',
   touchTapThreshold: 8,
-  desktopTapThreshold: 4,
+  desktopTapThreshold: 8,
   autolock: false,
   autoungrabify: false,
   autounselectify: false,
