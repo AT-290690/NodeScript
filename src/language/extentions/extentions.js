@@ -670,6 +670,9 @@ export class StandartLibrary {
     random: () => {
       return Math.random();
     },
+    dice: (min, max) => {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    },
     rolldice: (min, max) => {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },

@@ -1,1 +1,450 @@
-export class BinaryArray{left=[null];right=[];constructor(a=[]){this.init(a)}static isBinaryArray(a){return a instanceof BinaryArray}static from(a){if(void 0!==a.length){let b=void 0!==a[0]?a:Array.from(a);return new BinaryArray([...b])}}static of(...a){return new BinaryArray(a)}get offsetLeft(){return-((this.left.length-1)*1)}get offsetRight(){return this.right.length}get size(){return this.left.length+this.right.length-1}get first(){return this.get(0)}get last(){return this.get(this.size-1)}get pivot(){return this.right[0]}_access(a){let b=this.abs(a);return a>=0?this.right[b]:this.left[b]}_delete(a){if(1===this.size){this.left=[null],this.right=[];return}-1===a&&this.left.length>0?this.left.length--:1===a&&this.right.length>0&&this.right.length--}abs(a){return a<0?-1*a:a}init(a){a&&!Array.isArray(a)&&"function"==typeof a[Symbol.iterator]&&(a=[...a]),this.size&&this.clear();let d=Math.floor(a.length/2);for(let b=d-1;b>=0;b--)this._addToLeft(a[b]);for(let c=d;c<a.length;c++)this._addToRight(a[c])}get(a){return this._access(a+this.offsetLeft)}clear(){this.right=[],this.left=[null]}_addToLeft(a){this.left.push(a)}_addToRight(a){this.right.push(a)}_removeFromLeft(){this.size&&this._delete(-1)}_removeFromRight(){this.size&&this._delete(1)}vectorIndexOf(b){let a=b+this.offsetLeft;return a<0?[-1*a,-1]:[a,1]}set(c,a){let[b,d]=this.vectorIndexOf(c);return d>=0?this.right[b]=a:this.left[b]=a}[Symbol.iterator]=function*(){for(let a=0;a<this.size;a++)yield this.get(a)};toArray(){return[...this]}at(a){return a<0?this.get(this.size+a):this.get(a)}push(...b){for(let a=0;a<b.length;a++)this._addToRight(b[a]);return this.size}unshift(...b){for(let a=b.length-1;a>=0;a--)this._addToLeft(b[a]);return this.size}pop(){0===this.offsetRight&&this.balance();let a=this.last;return this._removeFromRight(),a}shift(){0===this.offsetLeft&&this.balance();let a=this.first;return this._removeFromLeft(),a}slice(c,d=this.size){let b=[];for(let a=c;a<d;a++)b.push(this.get(a));return new BinaryArray(b)}splice(b,a=0,...d){let c=[];if(this.offsetLeft+b>0){let e=this.size-b-a;if(this.rotateRight(e),a>0)for(let f=0;f<a;f++)c.push(this.pop());this.push(...d);for(let g=0;g<e;g++)this.push(this.shift())}else{if(this.rotateLeft(b),a>0)for(let h=0;h<a;h++)c.push(this.shift());this.unshift(...d);for(let i=0;i<b;i++)this.unshift(this.pop())}return c}indexOf(b){for(let a=0;a<this.size;a++)if(this.get(a)===b)return a;return -1}lastIndexOf(b){for(let a=this.size-1;a>=0;a--)if(this.get(a)===b)return a;return -1}includes(b){for(let a=0;a<this.size;a++)if(this.get(a)===b)return!0;return!1}find(c){for(let a=0;a<this.size;a++){let b=this.get(a);if(c(b,a,this))return b}}some(b){for(let a=0;a<this.size;a++)if(b(this.get(a),a,this))return!0;return!1}every(b){for(let a=0;a<this.size;a++)if(!b(this.get(a),a,this))return!1;return!0}findIndex(b){for(let a=0;a<this.size;a++){let c=this.get(a);if(b(c,a,this))return a}return -1}map(d){let c=new BinaryArray,e=Math.floor(this.size/2);for(let a=e-1;a>=0;a--)c._addToLeft(d(this.get(a),a,this));for(let b=e;b<this.size;b++)c._addToRight(d(this.get(b),b,this));return c}mapMut(b){for(let a=0;a<this.size;a++)this.set(a,b(this.get(a),a,this));return this}forEach(b){for(let a=0;a<this.size;a++)b(this.get(a),a,this)}reduce(c,b){for(let a=0;a<this.size;a++)b=c(b,this.get(a),a,this);return b}reduceRight(c,b){for(let a=this.size-1;a>=0;a--)b=c(b,this.get(a),a,this);return b}filter(d){let b=[];for(let a=0;a<this.size;a++){let c=this.get(a),e=d(c,a,this);e&&b.push(c)}return new BinaryArray(b)}reverse(){if(this.size<=2){if(1===this.size)return this;let c=this.get(0);return this.set(0,this.get(1)),this.set(1,c),this}let a=this.left,b=this.right;return b.unshift(a.shift()),this.left=b,this.right=a,this}sort(a){return new BinaryArray(this.toArray().sort(a))}join(c=","){let b="";for(let a=0;a<this.size;a++)b+=this.get(a)+c;return b}concat(a){return new BinaryArray([...this,...a])}flat(a=1){let c=c=>c.reduce((c,d)=>(BinaryArray.isBinaryArray(d)?c.push(...b(d,a)):c.push(d),c),[]),b=a===1/0?a=>c(a):(a,b)=>-1== --b?a:c(a);return new BinaryArray(b(this,a))}flatMap(a){return new BinaryArray(this.reduce((c,b,d,e)=>(BinaryArray.isBinaryArray(b)?b.forEach(b=>{c.push(a(b))}):c.push(a(b,d,e)),c),[]))}addTo(a,b){if(a>=this.size)for(let c=this.size;c<=a;c++)this._addToRight(void 0);let[d,e]=this.vectorIndexOf(a);return e>=0?this.right[d]=b:this.left[d]=b,this.size}addAt(a,...b){if(this.offsetLeft+a>0){let c=this.size-a;this.rotateRight(c),this.push(...b);for(let d=0;d<c;d++)this.push(this.shift())}else{this.rotateLeft(a),this.unshift(...b);for(let e=0;e<a;e++)this.unshift(this.pop())}}removeFrom(a,b){if(this.offsetLeft+a>0){let c=this.size-a;this.rotateRight(c);for(let d=0;d<b;d++)this.pop();for(let e=0;e<c;e++)this.push(this.shift())}else{this.rotateLeft(a);for(let f=0;f<b;f++)this.shift();for(let g=0;g<a;g++)this.unshift(this.pop())}}rotateLeft(a=1){a%=this.size;for(let b=0;b<a;b++)this._addToRight(this.first),this._removeFromLeft()}rotateRight(a=1){a%=this.size;for(let b=0;b<a;b++)this._addToLeft(this.last),this._removeFromRight()}rotate(a=1,b=1){1===b?this.rotateRight(a):this.rotateLeft(a)}rotateCopy(b=1,c=1){let a=new BinaryArray(this);return 1===c?a.rotateRight(b):a.rotateLeft(b),a}balance(){if(this.offsetRight+this.offsetLeft===0)return;let a=this.toArray();return this.clear(),this.init(a)}}
+export class BinaryArray {
+  left = [null];
+  right = [];
+
+  constructor(initial = []) {
+    this.init(initial);
+  }
+
+  static isBinaryArray(entity) {
+    return entity instanceof BinaryArray;
+  }
+
+  static from(iterable) {
+    if (iterable.length !== undefined) {
+      const initial =
+        iterable[0] !== undefined ? iterable : Array.from(iterable);
+      return new BinaryArray([...initial]);
+    }
+  }
+
+  static of(...items) {
+    return new BinaryArray(items);
+  }
+  get offsetLeft() {
+    return (this.left.length - 1) * -1;
+  }
+
+  get offsetRight() {
+    return this.right.length;
+  }
+  get size() {
+    return this.left.length + this.right.length - 1;
+  }
+
+  get first() {
+    return this.get(0);
+  }
+
+  get last() {
+    return this.get(this.size - 1);
+  }
+
+  get pivot() {
+    return this.right[0];
+  }
+
+  _access(key) {
+    const index = this.abs(key);
+    return key >= 0 ? this.right[index] : this.left[index];
+  }
+
+  _delete(key) {
+    if (this.size === 1) {
+      this.left = [null];
+      this.right = [];
+      return;
+    }
+    if (key === -1 && this.left.length > 0) this.left.length--;
+    else if (key === 1 && this.right.length > 0) this.right.length--;
+  }
+
+  abs(key) {
+    return key < 0 ? key * -1 : key;
+  }
+
+  init(initial) {
+    if (
+      initial &&
+      !Array.isArray(initial) &&
+      typeof initial[Symbol.iterator] === 'function'
+    ) {
+      initial = [...initial];
+    }
+    if (this.size) this.clear();
+    const half = Math.floor(initial.length / 2);
+    for (let i = half - 1; i >= 0; i--) this._addToLeft(initial[i]);
+    for (let i = half; i < initial.length; i++) this._addToRight(initial[i]);
+  }
+
+  get(index) {
+    return this._access(index + this.offsetLeft);
+  }
+
+  clear() {
+    this.right = [];
+    this.left = [null];
+  }
+
+  _addToLeft(item) {
+    this.left.push(item);
+  }
+
+  _addToRight(item) {
+    this.right.push(item);
+  }
+
+  _removeFromLeft() {
+    if (this.size) {
+      this._delete(-1);
+    }
+  }
+
+  _removeFromRight() {
+    if (this.size) {
+      this._delete(1);
+    }
+  }
+
+  vectorIndexOf(index) {
+    const key = index + this.offsetLeft;
+    return key < 0 ? [key * -1, -1] : [key, 1];
+  }
+
+  set(key, value) {
+    const [index, direction] = this.vectorIndexOf(key);
+    return direction >= 0
+      ? (this.right[index] = value)
+      : (this.left[index] = value);
+  }
+
+  [Symbol.iterator] = function* () {
+    for (let i = 0; i < this.size; i++) yield this.get(i);
+  };
+
+  toArray() {
+    return [...this];
+  }
+
+  at(index) {
+    if (index < 0) {
+      return this.get(this.size + index);
+    } else {
+      return this.get(index);
+    }
+  }
+
+  push(...items) {
+    for (let i = 0; i < items.length; i++) this._addToRight(items[i]);
+    return this.size;
+  }
+
+  unshift(...items) {
+    for (let i = items.length - 1; i >= 0; i--) this._addToLeft(items[i]);
+    return this.size;
+  }
+
+  pop() {
+    if (this.offsetRight === 0) {
+      this.balance();
+    }
+    const last = this.last;
+    this._removeFromRight();
+    return last;
+  }
+  shift() {
+    if (this.offsetLeft === 0) {
+      this.balance();
+    }
+    const first = this.first;
+    this._removeFromLeft();
+    return first;
+  }
+
+  slice(start, end = this.size) {
+    const collection = [];
+    for (let i = start; i < end; i++) collection.push(this.get(i));
+    return new BinaryArray(collection);
+  }
+
+  splice(start, deleteCount = 0, ...items) {
+    const deleted = [];
+    if (this.offsetLeft + start > 0) {
+      const len = this.size - start - deleteCount;
+      this.rotateRight(len);
+      if (deleteCount > 0) {
+        for (let i = 0; i < deleteCount; i++) {
+          deleted.push(this.pop());
+        }
+      }
+      this.push(...items);
+      for (let i = 0; i < len; i++) {
+        this.push(this.shift());
+      }
+    } else {
+      this.rotateLeft(start);
+      if (deleteCount > 0) {
+        for (let i = 0; i < deleteCount; i++) {
+          deleted.push(this.shift());
+        }
+      }
+      this.unshift(...items);
+      for (let i = 0; i < start; i++) {
+        this.unshift(this.pop());
+      }
+    }
+    return deleted;
+  }
+
+  indexOf(item) {
+    for (let i = 0; i < this.size; i++) {
+      if (this.get(i) === item) return i;
+    }
+    return -1;
+  }
+
+  lastIndexOf(item) {
+    for (let i = this.size - 1; i >= 0; i--) {
+      if (this.get(i) === item) return i;
+    }
+    return -1;
+  }
+
+  includes(val) {
+    for (let i = 0; i < this.size; i++) {
+      if (this.get(i) === val) return true;
+    }
+    return false;
+  }
+
+  find(callback) {
+    for (let i = 0; i < this.size; i++) {
+      const current = this.get(i);
+      if (callback(current, i, this)) return current;
+    }
+  }
+
+  some(callback) {
+    for (let i = 0; i < this.size; i++) {
+      if (callback(this.get(i), i, this)) return true;
+    }
+    return false;
+  }
+
+  every(callback) {
+    for (let i = 0; i < this.size; i++) {
+      if (!callback(this.get(i), i, this)) return false;
+    }
+    return true;
+  }
+
+  findIndex(callback) {
+    for (let i = 0; i < this.size; i++) {
+      const current = this.get(i);
+      if (callback(current, i, this)) return i;
+    }
+    return -1;
+  }
+
+  map(callback) {
+    const result = new BinaryArray();
+    const half = Math.floor(this.size / 2);
+    for (let i = half - 1; i >= 0; i--)
+      result._addToLeft(callback(this.get(i), i, this));
+    for (let i = half; i < this.size; i++)
+      result._addToRight(callback(this.get(i), i, this));
+    return result;
+  }
+
+  mapMut(callback) {
+    for (let i = 0; i < this.size; i++)
+      this.set(i, callback(this.get(i), i, this));
+    return this;
+  }
+
+  forEach(callback) {
+    for (let i = 0; i < this.size; i++) callback(this.get(i), i, this);
+  }
+
+  reduce(callback, initial) {
+    for (let i = 0; i < this.size; i++) {
+      initial = callback(initial, this.get(i), i, this);
+    }
+    return initial;
+  }
+
+  reduceRight(callback, initial) {
+    for (let i = this.size - 1; i >= 0; i--) {
+      initial = callback(initial, this.get(i), i, this);
+    }
+    return initial;
+  }
+
+  filter(callback) {
+    const out = [];
+    for (let i = 0; i < this.size; i++) {
+      const current = this.get(i);
+      const predicat = callback(current, i, this);
+      if (predicat) out.push(current);
+    }
+    return new BinaryArray(out);
+  }
+
+  reverse() {
+    if (this.size <= 2) {
+      if (this.size === 1) {
+        return this;
+      }
+      const temp = this.get(0);
+      this.set(0, this.get(1));
+      this.set(1, temp);
+      return this;
+    }
+
+    const left = this.left;
+    const right = this.right;
+    right.unshift(left.shift());
+    this.left = right;
+    this.right = left;
+    return this;
+  }
+
+  sort(callback) {
+    return new BinaryArray(this.toArray().sort(callback));
+  }
+
+  join(separator = ',') {
+    let output = '';
+    for (let i = 0; i < this.size; i++) output += this.get(i) + separator;
+    return output;
+  }
+
+  concat(second) {
+    return new BinaryArray([...this, ...second]);
+  }
+
+  flat(levels = 1) {
+    const flatten = collection =>
+      collection.reduce((acc, current) => {
+        if (BinaryArray.isBinaryArray(current)) {
+          acc.push(...flat(current, levels));
+        } else {
+          acc.push(current);
+        }
+        return acc;
+      }, []);
+    const flat =
+      levels === Infinity
+        ? collection => {
+            return flatten(collection);
+          }
+        : (collection, levels) => {
+            levels--;
+            return levels === -1 ? collection : flatten(collection);
+          };
+    return new BinaryArray(flat(this, levels));
+  }
+
+  flatMap(callback) {
+    return new BinaryArray(
+      this.reduce((acc, current, index, self) => {
+        if (BinaryArray.isBinaryArray(current)) {
+          current.forEach(item => {
+            acc.push(callback(item));
+          });
+        } else {
+          acc.push(callback(current, index, self));
+        }
+        return acc;
+      }, [])
+    );
+  }
+
+  addTo(key, value) {
+    if (key >= this.size) {
+      for (let i = this.size; i <= key; i++) {
+        this._addToRight(undefined);
+      }
+    }
+    const [index, direction] = this.vectorIndexOf(key);
+    direction >= 0 ? (this.right[index] = value) : (this.left[index] = value);
+    return this.size;
+  }
+
+  addAt(key, ...value) {
+    if (this.offsetLeft + key > 0) {
+      const len = this.size - key;
+      this.rotateRight(len);
+      this.push(...value);
+      for (let i = 0; i < len; i++) {
+        this.push(this.shift());
+      }
+    } else {
+      this.rotateLeft(key);
+      this.unshift(...value);
+      for (let i = 0; i < key; i++) {
+        this.unshift(this.pop());
+      }
+    }
+  }
+
+  removeFrom(key, amount) {
+    if (this.offsetLeft + key > 0) {
+      const len = this.size - key;
+      this.rotateRight(len);
+      for (let i = 0; i < amount; i++) {
+        this.pop();
+      }
+      for (let i = 0; i < len; i++) {
+        this.push(this.shift());
+      }
+    } else {
+      this.rotateLeft(key);
+      for (let i = 0; i < amount; i++) {
+        this.shift();
+      }
+      for (let i = 0; i < key; i++) {
+        this.unshift(this.pop());
+      }
+    }
+  }
+
+  rotateLeft(n = 1) {
+    n = n % this.size;
+    for (let i = 0; i < n; i++) {
+      if (this.offsetLeft === 0) {
+        this.balance();
+      }
+      this._addToRight(this.first);
+      this._removeFromLeft();
+    }
+  }
+
+  rotateRight(n = 1) {
+    n = n % this.size;
+    for (let i = 0; i < n; i++) {
+      if (this.offsetRight === 0) {
+        this.balance();
+      }
+      this._addToLeft(this.last);
+      this._removeFromRight();
+    }
+  }
+
+  rotate(n = 1, direction = 1) {
+    direction === 1 ? this.rotateRight(n) : this.rotateLeft(n);
+  }
+
+  rotateCopy(n = 1, direction = 1) {
+    const copy = new BinaryArray(this);
+    direction === 1 ? copy.rotateRight(n) : copy.rotateLeft(n);
+    return copy;
+  }
+
+  balance() {
+    if (this.offsetRight + this.offsetLeft === 0) return;
+    const array = this.toArray();
+    this.clear();
+    return this.init(array);
+  }
+}
