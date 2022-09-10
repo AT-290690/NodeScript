@@ -1310,12 +1310,12 @@ export class StandartLibrary {
     printasarray: entity => {
       return BinaryArray.isBinaryArray(entity)
         ? entity
-            .map(x =>
-              BinaryArray.isBinaryArray(x)
-                ? BinaryArray.isBinaryArray(x.get(0))
-                  ? BA.printasarray(x)
-                  : x.toArray()
-                : x
+            .map(item =>
+              BinaryArray.isBinaryArray(item)
+                ? item.some(BinaryArray.isBinaryArray)
+                  ? BA.printasarray(item)
+                  : item.toArray()
+                : item
             )
             .toArray()
         : entity;
