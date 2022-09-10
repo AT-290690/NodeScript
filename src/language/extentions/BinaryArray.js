@@ -1,5 +1,5 @@
 export class BinaryArray {
-  left = [null];
+  left = [undefined];
   right = [];
 
   constructor(initial = []) {
@@ -51,7 +51,7 @@ export class BinaryArray {
 
   _delete(key) {
     if (this.size === 1) {
-      this.left = [null];
+      this.left = [undefined];
       this.right = [];
       return;
     }
@@ -83,7 +83,7 @@ export class BinaryArray {
 
   clear() {
     this.right = [];
-    this.left = [null];
+    this.left = [undefined];
   }
 
   _addToLeft(item) {
@@ -309,6 +309,12 @@ export class BinaryArray {
     return this;
   }
 
+  reverseCopy() {
+    const copy = new BinaryArray(this);
+    copy.reverse();
+    return copy;
+  }
+
   sort(callback) {
     return new BinaryArray(this.toArray().sort(callback));
   }
@@ -389,8 +395,10 @@ export class BinaryArray {
   }
 
   removeFrom(key, amount) {
+    const len = this.size - key;
+    amount = Math.min(len, amount);
+
     if (this.offsetLeft + key > 0) {
-      const len = this.size - key;
       this.rotateRight(len);
       for (let i = 0; i < amount; i++) {
         this.pop();
@@ -407,6 +415,12 @@ export class BinaryArray {
         this.unshift(this.pop());
       }
     }
+  }
+
+  removeFromCopy(key, amount) {
+    const copy = new BinaryArray(this);
+    copy.removeFrom(key, amount);
+    return copy;
   }
 
   rotateLeft(n = 1) {
