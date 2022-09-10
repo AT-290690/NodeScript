@@ -569,11 +569,13 @@ export class StandartLibrary {
       for (const key in object) {
         callback(key, object);
       }
+      return object;
     },
     forof: (object, callback) => {
       for (const key in object) {
         callback(object[key]);
       }
+      return object;
     },
     jsonstring: object => {
       return JSON.stringify(object);
