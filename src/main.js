@@ -1,7 +1,6 @@
 import { CodeMirror } from './editor/cell.editor.bundle.js';
 import { languageUtilsString, toJavasScript } from './language/core/toJs.js';
 import { removeNoCode, run, wrapInBody } from './language/core/utils.js';
-import { BinaryArray } from './language/extentions/BinaryArray.js';
 import {
   consoleElement,
   popupContainer,
@@ -72,8 +71,6 @@ const memo = {
   const canvasContainer = document.getElementById("canvas-container");
   const VOID = null;
   ${languageUtilsString}
-  </script>
-  <script>\n${BinaryArray.toString()}
   </script>
   <script>\n${StandartLibrary.toString()}</script>
   </body>`

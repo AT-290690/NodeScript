@@ -1,6 +1,5 @@
 import { CodeMirror } from '../../editor/cell.editor.bundle.js';
 import { VOID } from '../core/tokens.js';
-import { BinaryArray } from './BinaryArray.js';
 export const consoleElement = document.getElementById('console');
 const canvasContainer = document.getElementById('canvas-container');
 export const popupContainer = document.getElementById('popup-container');
@@ -763,9 +762,7 @@ export class StandartLibrary {
   };
   CONVERT = {
     NAME: 'CONVERT',
-    array: thing => {
-      return BinaryArray.isBinaryArray(thing) ? thing.toArray() : [...thing];
-    },
+    array: thing => [...thing],
     boolean: thing => {
       return Boolean(thing);
     },
@@ -955,6 +952,18 @@ export class StandartLibrary {
     ['filter1']: (entity, callback) => {
       return entity.filter(x => callback(x));
     },
+    ['fold1']: (entity, callback) => {
+      return entity.reduce(acc => callback(acc), []);
+    },
+    ['fold2']: (entity, callback) => {
+      return entity.reduce((acc, item) => callback(acc, item), []);
+    },
+    ['fold3']: (entity, callback) => {
+      return entity.reduce(
+        (acc, item, index) => callback(acc, item, index),
+        []
+      );
+    },
     ['reduce1']: (entity, callback, acc) => {
       return entity.reduce(acc => callback(acc), acc);
     },
@@ -988,6 +997,14 @@ export class StandartLibrary {
     ['every3']: (entity, callback) => {
       return entity.every((x, i, a) => callback(x, i, a));
     },
+    ['foreach1']: (entity, callback) => {
+      entity.forEach(x => callback(x));
+      return entity;
+    },
+    ['foreach2']: (entity, callback) => {
+      entity.forEach((x, i) => callback(x, i));
+      return entity;
+    },
     compact: arr => {
       return arr.filter(Boolean);
     },
@@ -1015,18 +1032,7 @@ export class StandartLibrary {
         return acc;
       }, []);
     },
-    partition: (entity, groups = 1) =>
-      entity.reduce((acc, _, index, arr) => {
-        if (index % groups === 0) {
-          const part = [];
-          for (let i = 0; i < groups; i++) {
-            const current = arr[index + i];
-            if (current !== undefined) part.push(current);
-          }
-          acc.push(part);
-        }
-        return acc;
-      }, []),
+    partition: (entity, groups = 1) => entity.partition(groups),
     indexediteration: (entity, fn) => {
       return entity.forEach((x, i, arr) => fn(i));
     },
@@ -1081,6 +1087,22 @@ export class StandartLibrary {
     },
     pop: entity => {
       return entity.pop();
+    },
+    prepend: (entity, item) => {
+      entity.unshift(item);
+      return entity;
+    },
+    append: (entity, item) => {
+      entity.push(item);
+      return entity;
+    },
+    tail: entity => {
+      entity.pop();
+      return entity;
+    },
+    head: entity => {
+      entity.shift();
+      return entity;
     },
     includes: (entity, arg) => {
       return +entity.includes(arg);
@@ -1148,399 +1170,15 @@ export class StandartLibrary {
     },
     at: (entity, index) => {
       return entity.at(index);
-    }
-  };
-  BINARYARRAY = {
-    NAME: 'BINARYARRAY',
-    set: (entity, index, value) => {
-      entity.set(index, value);
-      return entity;
-    },
-    addat: (entity, index, ...items) => {
-      entity.addAt(index, ...items);
-      return entity;
-    },
-    addto: (entity, index, item) => {
-      entity.addTo(index, item);
-      return entity;
-    },
-    removefrom: (entity, index, amount) => {
-      entity.removeFrom(index, amount);
-      return entity;
-    },
-    ['remake1']: (entity, callback) => {
-      return entity.reduce(acc => callback(acc), new BinaryArray());
-    },
-    ['remake2']: (entity, callback) => {
-      return entity.reduce((acc, x) => callback(acc, x), new BinaryArray());
-    },
-    ['remake3']: (entity, callback) => {
-      return entity.reduce(
-        (acc, x, i) => callback(acc, x, i),
-        new BinaryArray()
-      );
-    },
-    ['remake4']: (entity, callback) => {
-      return entity.reduce(
-        (acc, x, i, a) => callback(acc, x, i, a),
-        new BinaryArray()
-      );
-    },
-    ['map1']: (entity, callback) => {
-      return entity.map(x => callback(x));
-    },
-    ['map2']: (entity, callback) => {
-      return entity.map((x, i) => callback(x, i));
-    },
-    ['map3']: (entity, callback) => {
-      return entity.map((x, i, a) => callback(x, i, a));
-    },
-    ['filter1']: (entity, callback) => {
-      return entity.filter(x => callback(x));
-    },
-    ['filter2']: (entity, callback) => {
-      return entity.filter((x, i) => callback(x, i));
-    },
-    ['filter3']: (entity, callback) => {
-      return entity.filter((x, i, a) => callback(x, i, a));
-    },
-    ['reduce1']: (entity, callback, acc) => {
-      return entity.reduce(acc => callback(acc), acc);
-    },
-    ['reduce2']: (entity, callback, acc) => {
-      return entity.reduce((acc, x) => callback(acc, x), acc);
-    },
-    ['reduce3']: (entity, callback, acc) => {
-      return entity.reduce((acc, x, i) => callback(acc, x, i), acc);
-    },
-    ['reduce4']: (entity, callback, acc) => {
-      return entity.reduce((acc, x, i, a) => callback(acc, x, i, a), acc);
-    },
-    ['find1']: (entity, callback) => {
-      return entity.find(x => callback(x));
-    },
-    ['find2']: (entity, callback) => {
-      return entity.find((x, i) => callback(x, i));
-    },
-    ['find3']: (entity, callback) => {
-      return entity.find((x, i, a) => callback(x, i, a));
-    },
-    ['some1']: (entity, callback) => {
-      return entity.some(x => callback(x));
-    },
-    ['some2']: (entity, callback) => {
-      return entity.some((x, i) => callback(x, i));
-    },
-    ['some3']: (entity, callback) => {
-      return entity.some((x, i) => callback(x, i));
-    },
-    ['every1']: (entity, callback) => {
-      return entity.every(x => callback(x));
-    },
-    ['every2']: (entity, callback) => {
-      return entity.every((x, i) => callback(x, i));
-    },
-    ['every3']: (entity, callback) => {
-      return entity.every((x, i) => callback(x, i));
-    },
-    compact: arr => {
-      return arr.filter(Boolean);
-    },
-    split: (str, separator) => {
-      return BinaryArray.from(str.split(separator));
-    },
-    sizeof: entity => {
-      return entity.size;
-    },
-    clone: entity => {
-      return BinaryArray.isBinaryArray(entity)
-        ? new BinaryArray(
-            entity.map(x =>
-              BinaryArray.isBinaryArray(x)
-                ? BinaryArray.isBinaryArray(x.get(0))
-                  ? BA.clone(x)
-                  : new BinaryArray(x)
-                : x
-            )
-          )
-        : new BinaryArray(entity);
-    },
-    swap: (entity, a, b) => {
-      const A = entity.get(a);
-      const B = entity.get(b);
-      entity.set(a, B);
-      entity.set(b, A);
-      return entity;
-    },
-    remake: (entity, fn) => {
-      return entity.reduce(fn, new BinaryArray());
-    },
-    product: (a, b) => {
-      const out = a.reduce((acc, item, i) => {
-        acc.addToRight(new BinaryArray([item, b.get(i % b.size)]));
-        return acc;
-      }, new BinaryArray());
-      out.balance();
-      return out;
-    },
-    makebinaryarray: (...items) => {
-      return new BinaryArray(items);
-    },
-    to: (entity, fn) => {
-      return entity.mapMut(x => fn(x));
-    },
-    mutmap: (entity, fn) => {
-      return entity.mapMut(fn);
-    },
-    max: entity => {
-      return entity.reduce(
-        (acc, item) => (item > acc ? (acc = item) : acc),
-        -Infinity
-      );
-    },
-    min: entity => {
-      return entity.reduce(
-        (acc, item) => (item < acc ? (acc = item) : acc),
-        Infinity
-      );
-    },
-    array: entity => {
-      return entity.toArray();
-    },
-    printasarray: entity => {
-      return BinaryArray.isBinaryArray(entity)
-        ? entity
-            .map(item =>
-              BinaryArray.isBinaryArray(item)
-                ? item.some(BinaryArray.isBinaryArray)
-                  ? BA.printasarray(item)
-                  : item.toArray()
-                : item
-            )
-            .toArray()
-        : entity;
-    },
-    map: (entity, fn) => {
-      return entity.map(fn);
-    },
-    filter: (entity, fn) => {
-      return entity.filter(fn);
-    },
-    every: (entity, fn) => {
-      return +entity.every(fn);
-    },
-    some: (entity, fn) => {
-      return +entity.some(fn);
-    },
-    find: (entity, fn) => {
-      return entity.find(fn);
-    },
-    findindex: (entity, fn) => {
-      return entity.findIndex(fn);
-    },
-    at: (entity, index) => {
-      return entity.at(index);
-    },
-    update: (entity, index, value) => {
-      if (entity.get(index) !== undefined) {
-        entity.set(index, value);
-      }
-      return entity;
-    },
-    join: (entity, separator) => {
-      return entity.join(separator);
-    },
-    union: (a, b) => {
-      const out = new BinaryArray();
-      const A = new Set(a.toArray());
-      const B = new Set(b.toArray());
-      A.forEach(item => out.push(item));
-      B.forEach(item => out.push(item));
-      out.balance();
-      return out;
-    },
-    symetricdifference: (a, b) => {
-      const out = new BinaryArray();
-      const A = new Set(a.toArray());
-      const B = new Set(b.toArray());
-      B.forEach(item => {
-        if (!A.has(item)) out.push(item);
-      });
-      A.forEach(item => {
-        if (!B.has(item)) out.push(item);
-      });
-      out.balance();
-      return out;
-    },
-    intersection: (a, b) => {
-      const out = new BinaryArray();
-      const A = new Set(a.toArray());
-      const B = new Set(b.toArray());
-      B.forEach(item => {
-        if (A.has(item)) out.push(item);
-      });
-      out.balance();
-      return out;
-    },
-    difference: (a, b) => {
-      const out = new BinaryArray();
-      const A = new Set(a.toArray());
-      const B = new Set(b.toArray());
-      A.forEach(item => {
-        if (!B.has(item)) out.push(item);
-      });
-      out.balance();
-      return out;
-    },
-    partition: (entity, groups = 1) => {
-      const res = entity.reduce((acc, _, index, arr) => {
-        if (index % groups === 0) {
-          const part = new BinaryArray();
-          for (let i = 0; i < groups; i++) {
-            const current = arr.get(index + i);
-            if (current !== undefined) part.push(current);
-          }
-          part.balance();
-          acc.push(part);
-        }
-        return acc;
-      }, new BinaryArray());
-      res.balance();
-      return res;
-    },
-    flat: (entity, level) => {
-      return entity.flat(level);
-    },
-    unique: entity => {
-      const set = new Set();
-      return BinaryArray.from(
-        entity.reduce((acc, item) => {
-          if (!set.has(item)) {
-            set.add(item);
-            acc.push(item);
-          }
-          return acc;
-        }, [])
-      );
-    },
-    tail: entity => {
-      entity.shift();
-      return entity;
-    },
-    head: entity => {
-      entity.pop();
-      return entity;
-    },
-    rotateright: (entity, n) => {
-      entity.rotateRight(n);
-      return entity;
-    },
-    rotateleft: (entity, n) => {
-      entity.rotateLeft(n);
-      return entity;
-    },
-    rotate: (entity, n, direction) => {
-      entity.rotate(n, direction);
-      return entity;
-    },
-    balance: entity => {
-      entity.balance();
-      return entity;
-    },
-    append: (entity, item) => {
-      entity._addToRight(item);
-      return entity;
-    },
-    prepend: (entity, item) => {
-      entity._addToLeft(item);
-      return entity;
-    },
-    empty: entity => {
-      entity.clear();
-      return entity;
-    },
-    isempty: entity => {
-      return +!entity.size;
-    },
-    reverse: entity => {
-      return entity.reverse();
-    },
-    reduce: (entity, fn, initial) => {
-      return entity.reduce(fn, initial);
-    },
-    from: data => {
-      return BinaryArray.from(data);
-    },
-    sort: (entity, fn) => {
-      return entity.sort(fn);
-    },
-    last: entity => {
-      return entity.get(entity.size - 1);
     },
     first: entity => {
-      return entity.get(0);
+      return entity[0];
     },
-    pivot: entity => {
-      return entity.pivot();
-    },
-    isbinaryarray: entity => {
-      return +BinaryArray.isBinaryArray(entity);
-    },
-    includes: (entity, arg) => {
-      return +entity.includes(arg);
-    },
-    splice: (entity, ...args) => {
-      return entity.splice(...args);
-    },
-    sum: entity => {
-      return entity.reduce((acc, x) => (acc += x), 0);
-    },
-    forof: (entity, fn) => {
-      entity.forEach((x, i) => fn(x, i));
-      return entity;
-    },
-    inside: (entity, fn) => {
-      entity.forEach(x => fn(x));
-      return entity;
-    },
-    each: (entity, fn) => {
-      entity.forEach(fn);
-      return entity;
-    },
-    range1: settings => {
-      const arr = new BinaryArray();
-      const { start, end, step } = settings;
-      if (start > end) {
-        for (let i = start; i >= end; i -= 1) {
-          arr.push(i * step);
-        }
-      } else {
-        for (let i = start; i <= end; i += 1) {
-          arr.push(i * step);
-        }
-      }
-      arr.balance();
-      return arr;
-    },
-    range2: (start, end) => {
-      const step = 1;
-      const arr = new BinaryArray();
-      if (start > end) {
-        for (let i = start; i >= end; i -= 1) {
-          arr.push(i * step);
-        }
-      } else {
-        for (let i = start; i <= end; i += 1) {
-          arr.push(i * step);
-        }
-      }
-      arr.balance();
-      return arr;
-    },
-    slice: (entity, start, end) => {
-      return entity.slice(start, end);
+    last: entity => {
+      return entity[entity.length - 1];
     }
   };
+
   constructor() {
     this.COLOR.randomcolor.comment = 'Generate a random hex color';
   }
