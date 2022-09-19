@@ -810,13 +810,13 @@ export class StandartLibrary {
         if (isArrayA !== isArrayB) return 0;
         if (isArrayA && isArrayB) {
           if (a.length !== b.length) return 0;
-          return +a.every((item, index) => this.LOGIC.isEqual(item, b[index]));
+          return +a.every((item, index) => this.LOGIC.isequal(item, b[index]));
         } else {
           if (a === undefined || a === null || b === undefined || b === null)
             return +(a === b);
           if (Object.keys(a).length !== Object.keys(b).length) return 0;
           for (const key in a) {
-            if (!this.LOGIC.isEqual(a[key], b[key])) {
+            if (!this.LOGIC.isequal(a[key], b[key])) {
               return 0;
             }
           }
@@ -837,14 +837,14 @@ export class StandartLibrary {
         if (isArrayA !== isArrayB) return 0;
         if (isArrayA && isArrayB) {
           return a.length < b.length
-            ? +a.every((item, index) => this.LOGIC.isSimilar(item, b[index]))
-            : +b.every((item, index) => this.LOGIC.isSimilar(item, a[index]));
+            ? +a.every((item, index) => this.LOGIC.issimilar(item, b[index]))
+            : +b.every((item, index) => this.LOGIC.issimilar(item, a[index]));
         } else {
           if (a === undefined || a === null || b === undefined || b === null)
             return +(a === b);
           const less = Object.keys(a) > Object.keys(b) ? b : a;
           for (const key in less) {
-            if (!this.LOGIC.isSimilar(a[key], b[key])) {
+            if (!this.LOGIC.issimilar(a[key], b[key])) {
               return 0;
             }
           }
@@ -885,7 +885,7 @@ export class StandartLibrary {
       return +props.every(x => x in obj);
     },
     areequal: (item, ...args) => {
-      return +args.every(current => this.LOGIC.isEqual(item, current));
+      return +args.every(current => this.LOGIC.isequal(item, current));
     }
   };
   LOOP = {
