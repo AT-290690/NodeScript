@@ -38,5 +38,5 @@ ${languageUtilsString}
       })()`
     if (appDocument.body) appDocument.body.appendChild(script)
     consoleElement.value = ''
-  }, 0)
+  }, 1000)
 })()

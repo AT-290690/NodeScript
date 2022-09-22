@@ -1,7 +1,6 @@
 import { CodeMirror } from './editor/cell.editor.bundle.js'
 import { languageUtilsString, toJavasScript } from './language/core/toJs.js'
 import {
-  decodeUrl,
   encodeUrl,
   removeNoCode,
   run,
