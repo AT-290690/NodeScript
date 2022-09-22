@@ -18,6 +18,10 @@
     "tsc-watch": "^4.2.9",
     "typescript": "^4.5.5"
   },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
   "scripts": {
     "start": "yarn tsc-watch"
   }
