@@ -1009,7 +1009,7 @@ export class StandartLibrary {
         const dim = dimensions[0]
         const rest = dimensions.slice(1)
         const arr = []
-        for (let i = 0; i < dim; i++) arr[i] = ARRAY.makeMatrix(...rest)
+        for (let i = 0; i < dim; i++) arr[i] = this.ARRAY.makematrix(...rest)
         return arr
       } else {
         return VOID
