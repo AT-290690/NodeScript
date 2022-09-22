@@ -285,14 +285,7 @@ const updateApp = () => {
   // if (appDocument.body) appDocument.body.innerHTML = '';
   const main = appDocument.getElementById('main')
   if (!main) appDocument.write(memo.app)
-  else {
-    // if (LIBRARY?.SKETCH?.engine) {
-    //   LIBRARY.SKETCH.engine.unbind('update', callback);
-    //   LIBRARY.SKETCH.engine.removeEventListener('update');
-    // }
-
-    appDocument.body.removeChild(main)
-  } // appDocument.open();
+  else appDocument.body.removeChild(main)
   const script = appDocument.createElement('script')
   script.id = 'main'
   script.innerHTML = `
@@ -315,21 +308,16 @@ const openAppWindow = () => {
     consoleElement.value = ''
   } else {
     const appDocument = elements.app.contentWindow
-    if (appDocument) {
-      appDocument.LIBRARY.SKETCH.destroycomposition()
-    }
+    if (appDocument) appDocument.LIBRARY.SKETCH.destroycomposition()
     elements.app.style.display = 'none'
   }
 
   // appDocument.close();
 }
 const connectNodes = (couple = memo.nodePairsSelections, label) => {
-  if (!couple[0] && !couple[1]) {
-    // resetColorOfSelectedNodes(couple);
-    clearSelection()
-  } else if (couple.length > 1) {
+  if (!couple[0] && !couple[1]) clearSelection()
+  else if (couple.length > 1) {
     const edge = addEdge({ source: couple[0], target: couple[1] }, label)
-    // resetColorOfSelectedNodes(couple);
     clearSelection()
     return edge
   }
@@ -525,9 +513,8 @@ cy.on('dblclick', 'node', () => {
 cy.ready(() => {
   elements.downloadSvgButton.addEventListener('click', () => {
     const encoded = encodeUrl(getPredecessorCode())
-    if (encoded) {
+    if (encoded)
       window.open(location.href + 'preview.html?s=' + encoded, '_blank').focus()
-    }
     // const a = document.createElement('a')
     // const canvasContainer =
     //   elements.app.contentWindow.document.getElementById('canvas-container')
@@ -553,9 +540,9 @@ cy.ready(() => {
     // canvasContainer.firstChild.style.border = temp
   })
   elements.makeNodeButton.addEventListener('click', () => {
-    if (elements.commentsSection.style.display === 'block') {
+    if (elements.commentsSection.style.display === 'block')
       elements.commentsSection.style.display = 'none'
-    } else if (memo.lastSelection.id) {
+    else if (memo.lastSelection.id) {
       elements.commentsSection.style.display = 'block'
       elements.connectionButton.style.display = 'none'
     } else {
@@ -577,15 +564,14 @@ cy.ready(() => {
       elements.app.style.display = 'block'
       updateApp()
       consoleElement.value = ''
-    } else {
-      openAppWindow()
-    }
+    } else openAppWindow()
   })
-  elements.connectionButton.addEventListener('click', () => {
-    if (memo.nodePairsSelections.length === 2) {
-      connectNodes(memo.nodePairsSelections)
-    }
-  })
+  elements.connectionButton.addEventListener(
+    'click',
+    () =>
+      memo.nodePairsSelections.length === 2 &&
+      connectNodes(memo.nodePairsSelections),
+  )
   document.addEventListener('mousemove', (e) => {
     memo.mousePosition = {
       x: e.clientX,
@@ -679,9 +665,8 @@ cy.ready(() => {
     consoleElement.value = ''
     STD.LIBRARY.SKETCH.destroycomposition()
     const appDocument = elements.app.contentWindow
-    if (appDocument && appDocument.LIBRARY) {
+    if (appDocument && appDocument.LIBRARY)
       appDocument.LIBRARY.SKETCH?.destroycomposition()
-    }
     elements.app.style.display = 'none'
   }
 
@@ -701,11 +686,8 @@ cy.ready(() => {
         e.preventDefault()
         e.stopPropagation()
         if (memo.lastSelection.id) {
-          if (elements.app.style.display === 'block') {
-            updateApp()
-          } else {
-            run(getPredecessorCode())
-          }
+          if (elements.app.style.display === 'block') updateApp()
+          else run(getPredecessorCode())
           clearSelection()
           deselectIndex()
         }
@@ -729,11 +711,9 @@ cy.ready(() => {
         e.key !== 'Control' &&
         !e.key.includes('Arrow')
       ) {
-        if (e.key === 'Backspace') {
+        if (e.key === 'Backspace')
           elements.variableInput.value = eraseCharacter()
-        } else {
-          elements.variableInput.value += e.key
-        }
+        else elements.variableInput.value += e.key
       }
       if (e.key === 'Delete' || (e.ctrlKey && e.key === 'Backspace')) {
         cy.elements().forEach((el) => {
@@ -746,11 +726,8 @@ cy.ready(() => {
       if (e.key.toLowerCase() === 's' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault()
         e.stopPropagation()
-        if (elements.app.style.display === 'block') {
-          updateApp()
-        } else {
-          run(getPredecessorCode())
-        }
+        if (elements.app.style.display === 'block') updateApp()
+        else run(getPredecessorCode())
       }
     }
   })

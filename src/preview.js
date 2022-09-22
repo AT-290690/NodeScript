@@ -37,6 +37,5 @@ ${languageUtilsString}
        })}
       })()`
     if (appDocument.body) appDocument.body.appendChild(script)
-    consoleElement.value = ''
   }, 1000)
 })()
