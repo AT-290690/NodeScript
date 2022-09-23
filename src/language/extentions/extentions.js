@@ -27,9 +27,7 @@ const prefixDep = (dep, prefix = '') =>
     return acc
   }, {})
 export const print = function (...values) {
-  if (values.length === 0) {
-    return VOID
-  }
+  if (values.length === 0) return VOID
   values.forEach(
     (x) => (consoleElement.value += `[ ${JSON.stringify(x) ?? undefined} ]`),
   )
@@ -38,9 +36,7 @@ export const print = function (...values) {
 
 export const protolessModule = (methods) => {
   const env = Object.create(null)
-  for (const method in methods) {
-    env[method] = methods[method]
-  }
+  for (const method in methods) env[method] = methods[method]
   return env
 }
 
@@ -198,7 +194,6 @@ export class StandartLibrary {
       callback()
       return 'Scene created!'
     },
-
     insertintogroup: (group, ...items) => {
       group.add(...items)
       return group
@@ -212,7 +207,6 @@ export class StandartLibrary {
       item.remove()
       return VOID
     },
-
     groupadditions: (group) => {
       return group.additions
     },
@@ -446,130 +440,14 @@ export class StandartLibrary {
       return entity.getBoundingClientRect()
     },
   }
-  // REQUEST = {
-  //   maybeJson: (url, callback) =>
-  //     fetch(url)
-  //       .then(res => res.json())
-  //       .then(res => callback(res, VOID))
-  //       .catch(err => callback(VOID, err)),
-  //   maybeText: (url, callback) =>
-  //     fetch(url)
-  //       .then(res => res.json())
-  //       .then(res => callback(res, VOID))
-  //       .catch(err => callback(VOID, err))
-  // };
-  TIME = {
-    NAME: 'TIME',
-    makedate: (date) => {
-      return new Date(date)
-    },
-    currenttime: () => {
-      return new Date().getTime()
-    },
-    currentdate: () => {
-      return new Date()
-    },
-    gethour: (date) => {
-      return date.getHours()
-    },
-    getminute: (date) => {
-      return date.getMinutes()
-    },
-    getsecond: (date) => {
-      return date.getSeconds()
-    },
-    setinterval: (fn, ms) => {
-      return setInterval(() => fn(), ms)
-    },
-    clearinterval: (id) => {
-      return clearInterval(id)
-    },
-    settimeout: (fn, ms) => {
-      return setTimeout(() => fn(), ms)
-    },
-    cleartimeout: (id) => {
-      return clearTimeout(id)
-    },
-  }
-  SET = {
-    NAME: 'SET',
-    from: (arr) => {
-      return new Set(arr)
-    },
-    makeset: (...args) => {
-      return new Set(args)
-    },
-    has: (entity, item) => {
-      return +entity.has(item)
-    },
-    add: (entity, ...values) => {
-      values.forEach((x) => entity.add(x))
-      return entity
-    },
-    remove: (entity, ...values) => {
-      values.forEach((x) => entity.delete(x))
-      return entity
-    },
-    inside: (entity, callback) => {
-      entity.forEach((x, i, a) => callback(x))
-      return entity
-    },
-    union: (a, b) => {
-      const out = new Set()
-      a.forEach((item) => out.add(item))
-      b.forEach((item) => out.add(item))
-      return out
-    },
-    intersection: (a, b) => {
-      const out = new Set()
-      b.forEach((item) => {
-        if (a.has(item)) out.add(item)
-      })
-      return out
-    },
-    difference: (a, b) => {
-      const out = new Set()
-      a.forEach((item) => {
-        if (!b.has(item)) out.add(item)
-      })
-      return out
-    },
-    symetricdifference: (a, b) => {
-      const out = new Set()
-      b.forEach((item) => {
-        if (!a.has(item)) out.add(item)
-      })
-      a.forEach((item) => {
-        if (!b.has(item)) out.add(item)
-      })
-      return out
-    },
-    clear: (entity) => {
-      return entity.clear()
-    },
-    fromArray: (...array) => {
-      return new Set(...array)
-    },
-    toArray: (entity) => {
-      return [...entity]
-    },
-    size: (entity) => {
-      return entity.size
-    },
-  }
   OBJECT = {
     NAME: 'OBJECT',
-
     forin: (object, callback) => {
-      for (const key in object) {
-        callback(key, object)
-      }
+      for (const key in object) callback(key, object)
       return object
     },
     forof: (object, callback) => {
-      for (const key in object) {
-        callback(object[key])
-      }
+      for (const key in object) callback(object[key])
       return object
     },
     jsonstring: (object) => {
@@ -582,9 +460,7 @@ export class StandartLibrary {
       return structuredClone(obj)
     },
     has: (obj, ...props) => {
-      return +props.every(function (x) {
-        return x in obj
-      })
+      return +props.every((x) => x in obj)
     },
     keys: (obj) => {
       return Object.keys(obj)
@@ -611,8 +487,6 @@ export class StandartLibrary {
     float64array: (...items) => {
       return new Float64Array(items)
     },
-    // set: (entity, prop, ...values) => entity[prop].set(...values),
-    // get: (entity, prop) => entity[prop] ?? VOID
   }
   MATH = {
     NAME: 'MATH',
@@ -1011,9 +885,7 @@ export class StandartLibrary {
         const arr = []
         for (let i = 0; i < dim; i++) arr[i] = this.ARRAY.makematrix(...rest)
         return arr
-      } else {
-        return VOID
-      }
+      } else return VOID
     },
     unique: (entity) => {
       const set = new Set()
@@ -1039,9 +911,8 @@ export class StandartLibrary {
       return Array.from(items)
     },
     transform: (entity, callback) => {
-      for (let i = 0; i < entity.length; i++) {
+      for (let i = 0; i < entity.length; i++)
         entity[i] = callback(entity[i], i, entity)
-      }
       return entity
     },
     tail: (entity) => {
@@ -1150,15 +1021,8 @@ export class StandartLibrary {
     },
     range: (start, end, step = 1) => {
       const arr = []
-      if (start > end) {
-        for (let i = start; i >= end; i -= 1) {
-          arr.push(i * step)
-        }
-      } else {
-        for (let i = start; i <= end; i += 1) {
-          arr.push(i * step)
-        }
-      }
+      if (start > end) for (let i = start; i >= end; i -= 1) arr.push(i * step)
+      else for (let i = start; i <= end; i += 1) arr.push(i * step)
       return arr
     },
     at: (entity, index) => {
@@ -1171,11 +1035,11 @@ export class StandartLibrary {
       return entity[entity.length - 1]
     },
   }
-
   constructor() {
     this.COLOR.randomcolor.comment = 'Generate a random hex color'
   }
 }
+
 export const STD = {
   void: VOID,
   VOID,

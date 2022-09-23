@@ -281,8 +281,6 @@ const getPredecessorCode = () => {
 const updateApp = () => {
   popupContainer.style.display = 'none'
   const appDocument = elements.app.contentWindow.document
-
-  // if (appDocument.body) appDocument.body.innerHTML = '';
   const main = appDocument.getElementById('main')
   if (!main) appDocument.write(memo.app)
   else appDocument.body.removeChild(main)
