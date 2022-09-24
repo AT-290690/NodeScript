@@ -7,16 +7,20 @@ const appendScript = source => {
   document.body.appendChild(script)
   return script
 }
+const source = document.getElementById('source')
 ;(() => {
   appendScript(languageUtilsString)
   appendScript(StandartLibrary.toString())
-  appendScript(
-    toJavasScript({
-      source: wrapInBody(
-        decodeUrl(
-          location.href.split('preview.html')[1].trim().replace('?s=', ''),
-        ),
-      ),
-    }),
-  )
+  let main = appendScript('')
+  document.getElementById('run').addEventListener('click', () => {
+    if (globalThis?.LIBRARY?.SKETCH) {
+      globalThis.LIBRARY.SKETCH.destroycomposition()
+    }
+    main.parentNode.removeChild(main)
+    main = appendScript(
+      toJavasScript({
+        source: wrapInBody(decodeUrl(source.value.split('s=').pop())),
+      }),
+    )
+  })
 })()

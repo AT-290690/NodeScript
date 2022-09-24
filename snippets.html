@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Visual code editor with custom language."
+    />
+
+    <title>Node Script</title>
+    <style>
+      :root {
+        --color-outgoing: #f44d8d;
+        --color-incomming: #4df47a;
+        --color-inverted: #ebbb8b;
+        --gutters: #ebe7e5;
+        --comment: #546a90;
+        --linenumbers: #3e4d67;
+        --border: #809ac6;
+        --background-primary: #000000;
+        --background-thirdly: #000000;
+        --background-secondary: #b578ff58;
+        --color-primary: #809ac6;
+        --color-secondary: #42c6ff;
+        --color-thirdly: #b578ff;
+        --color-fourtly: #75ff91;
+        --color-fiftly: #2eff85;
+        --gutters-border: 1px solid transparent;
+        --border-width: 1px;
+        --error: #e93838;
+        --warning: #ffed2b;
+        --success: #6de46d;
+        --icons: #cae5f2;
+        --progress: #42c6ff;
+        --def: #e8e5eb;
+        --dec: #42c6ff;
+        --classname: #7088f4;
+        --control: #58e1df;
+        --property: #bd86f8;
+        --atom: #e24488;
+        --number: #ed60cc;
+        --string: #74d3ff;
+        --tag: #9092de;
+        --unit: #62f8ce;
+        --color: #ff8bf7;
+        --var: #cae5f2;
+        --keyword: #cae5f2;
+        /* --keyword: #d976ef; */
+        --self: #4c95f6;
+        --separator: #a4b1dd;
+        --special: #6ad1e4;
+        --operator: #979af7;
+        --type: #37d2d2;
+        --bracket: #6b84b0;
+        --meta: #4f73f6;
+        --regexp: #f1628a;
+        --drone1: #833783;
+        --drone2: orchid;
+        --drone3: pink;
+        --drone4: #2a2c2e;
+        --hover: #e24488;
+      }
+
+      body {
+        user-select: none;
+        background-color: var(--background-thirdly);
+        overflow: hidden;
+        margin: 0;
+        height: 100vh;
+      }
+
+      #app {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+      #source {
+        width: 50%;
+        height: 30vh;
+        background-color: transparent;
+        color: var(--color-thirdly);
+        border: solid 1px var(--color-primary);
+        margin: 10px;
+        padding: 5px;
+      }
+      #run {
+        background-color: transparent;
+        border: solid 1px var(--color-primary);
+        padding: 10px;
+        cursor: pointer;
+      }
+      #container {
+        margin: 10px;
+        padding: 5px;
+        text-align: left;
+      }
+    </style>
+    <link rel="icon" type="image/x-icon" href="./assets/images/chip.svg" />
+  </head>
+  <body>
+    <div id="canvas-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/lzutf8@0.6.3/build/production/lzutf8.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.8.10/two.min.js"
+      integrity="sha512-D9pUm3+gWPkv/Wl6vd45vRLjdkdEKGje7BxOxYG0N6m4UlEUB7RSljBwpmJNAOuf6txLLtlaRchoKfzngr/bQg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script>
+      const canvasContainer = document.getElementById('canvas-container')
+      const VOID = null
+    </script>
+    <script type="module" src="./src/snippets.js"></script>
+    <div id="container">
+      <button id="run"><img src="./assets/images/chip.svg" /></button>
+    </div>
+    <textarea id="source"></textarea>
+  </body>
+</html>
