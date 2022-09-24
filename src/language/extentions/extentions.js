@@ -813,6 +813,13 @@ export class StandartLibrary {
       for (let i = 0; i < times; i++) out = callback(i)
       return out
     },
+    tailcalloptimisedrecursion:
+      (func) =>
+      (...args) => {
+        let result = func(...args)
+        while (typeof result === 'function') result = result()
+        return result
+      },
   }
   ARRAY = {
     NAME: 'ARRAY',
@@ -1035,6 +1042,404 @@ export class StandartLibrary {
       return entity[entity.length - 1]
     },
   }
+  BINAR = {
+    NAME: 'BINAR',
+    offsetleft: (entity) => {
+      return (entity.left.length - 1) * -1
+    },
+    offsetright: (entity) => {
+      return entity.right.length
+    },
+    makebinar: () => {
+      return { left: [-1], right: [] }
+    },
+    length: (entity) => {
+      return entity.left.length + entity.right.length - 1
+    },
+    clear: (entity) => {
+      entity.left = [-1]
+      entity.right = []
+      return entity
+    },
+
+    flatten: this.LOOP.tailcalloptimisedrecursion((collection, levels, flat) =>
+      to(
+        collection,
+        (acc, current) => {
+          if (this.BINAR.isbinaryarray(current))
+            acc.push(...flat(current, levels))
+          else acc.push(current)
+          return acc
+        },
+        [],
+      ),
+    ),
+    get: (entity, offset) => {
+      const offsetIndex = offset + this.BINAR.offsetleft(entity)
+      const index = offsetIndex < 0 ? offsetIndex * -1 : offsetIndex
+      return offsetIndex >= 0 ? entity.right[index] : entity.left[index]
+    },
+    at: (entity, index) => {
+      if (index < 0)
+        return this.BINAR.get(entity, this.BINAR.length(entity) + index)
+      else return this.BINAR.get(entity, index)
+    },
+    set: (entity, index, value) => {
+      const offset = index + this.BINAR.offsetleft(entity)
+      if (offset >= 0) entity.right[offset] = value
+      else entity.left[offset * -1] = value
+    },
+    first: (entity) => this.BINAR.get(entity, 0),
+    last: (entity) => this.BINAR.get(entity, this.BINAR.length(entity) - 1),
+    toarray: (entity) => {
+      const len = this.BINAR.length(entity)
+      const out = []
+      for (let i = 0; i < len; i++) out.push(this.BINAR.get(entity, i))
+      return out
+    },
+    copy: (entity) => {
+      const lem = this.BINAR.length(entity)
+      const out = this.BINAR.makebinar()
+      const half = (lem / 2) | 0.5
+      for (let i = half - 1; i >= 0; i--)
+        this.BINAR.addtoleft(out, this.BINAR.get(entity, i))
+      for (let i = half; i < lem; i++)
+        this.BINAR.addtoright(out, this.BINAR.get(entity, i))
+      return out
+    },
+    isbinaryarray: (entity) => {
+      return (
+        typeof entity === 'object' &&
+        'left' in entity &&
+        Array.isArray(entity.left) &&
+        entity.left[0] === -1 &&
+        'right' in entity &&
+        Array.isArray(entity.right)
+      )
+    },
+    isbalanced: (entity) => {
+      return (
+        this.BINAR.offsetright(entity) + this.BINAR.offsetleft(entity) === 0
+      )
+    },
+    balance: (entity) => {
+      if (this.BINAR.isbalanced(entity)) return entity
+      const initial = this.BINAR.toarray(entity)
+      this.BINAR.clear(entity)
+      const half = (initial.length / 2) | 0.5
+      for (let i = half - 1; i >= 0; i--)
+        this.BINAR.addtoleft(entity, initial[i])
+      for (let i = half; i < initial.length; i++)
+        this.BINAR.addtoright(entity, initial[i])
+      return entity
+    },
+    addtoleft: (entity, item) => {
+      return entity.left.push(item)
+    },
+    addtoright: (entity, item) => {
+      return entity.right.push(item)
+    },
+    removefromleft: (entity) => {
+      const len = this.BINAR.length(entity)
+      if (len) {
+        if (len === 1) this.BINAR.clear(entity)
+        else if (entity.left.length > 0) entity.left.length--
+      }
+    },
+    removefromright: (entity) => {
+      const len = this.BINAR.length(entity)
+      if (len) {
+        if (len === 1) this.BINAR.clear(entity)
+        else if (entity.right.length > 0) entity.right.length--
+      }
+    },
+    fill: (entity, ...initial) => {
+      const half = (initial.length / 2) | 0.5
+      for (let i = half - 1; i >= 0; i--)
+        this.BINAR.addtoleft(entity, initial[i])
+      for (let i = half; i < initial.length; i++)
+        this.BINAR.addtoright(entity, initial[i])
+      return entity
+    },
+    makebinarwith: (...intilal) => {
+      return this.BINAR.fill(this.BINAR.makebinar(), ...intilal)
+    },
+    map: (entity, callback) => {
+      const result = this.BINAR.make()
+      const len = this.BINAR.length(entity)
+      const half = (len / 2) | 0.5
+      for (let i = half - 1; i >= 0; i--)
+        this.BINAR.addtoleft(
+          entity,
+          callback(this.BINAR.get(entity, i), i, entity),
+        )
+      for (let i = half; i < len; i++)
+        this.BINAR.addtoleft(
+          entity,
+          callback(this.BINAR.get(entity, i), i, entity),
+        )
+      return result
+    },
+    filter: (entity, callback) => {
+      const out = []
+      const len = this.BINAR.length(entity)
+      for (let i = 0; i < len; i++) {
+        const current = this.BINAR.get(entity, i)
+        const predicat = callback(current, i, entity)
+        if (predicat) out.push(current)
+      }
+      return this.BINAR.fill(this.BINAR.make(), ...out)
+    },
+    some: (entity, callback) => {
+      const len = this.BINAR.length(entity)
+      for (let i = 0; i < len; i += 1)
+        if (callback(this.BINAR.get(entity, i), i, entity)) return true
+      return false
+    },
+    every: (entity, callback) => {
+      const len = this.BINAR.length(entity)
+      for (let i = 0; i < len; i += 1)
+        if (
+          i >= this.BINAR.length(entity) ||
+          !callback(this.BINAR.get(entity, i), i, entity)
+        )
+          return false
+      return true
+    },
+    findfirst: (entity, callback) => {
+      const len = this.BINAR.length(entity)
+      for (let i = 0; i < len; i += 1) {
+        const current = this.BINAR.get(entity, i)
+        if (callback(current, i, entity)) return current
+      }
+    },
+    findlast: (entity, callback) => {
+      const len = this.BINAR.length(entity)
+      for (let i = len - 1; i >= 0; i -= 1) {
+        const current = this.BINAR.get(entity, i)
+        if (callback(current, i, entity)) return current
+      }
+    },
+    scan: (entity, callback, dir = 1) => {
+      const len = this.BINAR.length(entity)
+      if (dir === -1)
+        for (let i = len; i >= 0; i -= 1)
+          callback(this.BINAR.get(entity, i), i, entity)
+      else
+        for (let i = 0; i < len; i += 1)
+          callback(this.BINAR.get(entity, i), i, entity)
+      return entity
+    },
+    each: (entity, callback) => {
+      const len = this.BINAR.length(entity)
+      for (let i = 0; i < len; i += 1) callback(this.BINAR.get(entity, i))
+      return entity
+    },
+    reverse: (entity) => {
+      const len = this.BINAR.length(entity)
+      if (len <= 2) {
+        if (len === 1) return entity
+        const temp = this.BINAR.get(entity, 0)
+        this.BINAR.set(entity, 0, this.BINAR.get(entity, 1))
+        this.BINAR.set(entity, 1, temp)
+        return entity
+      }
+      const left = entity.left
+      const right = entity.right
+      right.unshift(left.shift())
+      entity.left = right
+      entity.right = left
+      return entity
+    },
+    isempty: (entity) => {
+      return entity.left.length + entity.right.length === 1
+    },
+    isinbounds: (entity, index) => {
+      return index >= 0 && index < entity.length
+    },
+    getinbounds: (entity, index) => {
+      return this.BINAR.get(
+        entity,
+        this.MATH.clamp(index, 0, this.BINAR.length(entity) - 1),
+      )
+    },
+    append: (entity, item) => {
+      this.BINAR.addtoright(entity, item)
+      return entity
+    },
+    prepend: (entity, item) => {
+      this.BINAR.addtoleft(entity, item)
+      return entity
+    },
+    cut: (entity) => {
+      if (this.BINAR.offsetright(entity) === 0) this.BINAR.balance(entity)
+      const out = this.BINAR.last(entity)
+      this.BINAR.removefromright(entity)
+      return out
+    },
+    chop: (entity) => {
+      if (this.BINAR.offsetleft(entity) === 0) this.BINAR.balance(entity)
+      const out = this.BINAR.first(entity)
+      this.BINAR.removefromleft(entity)
+      return out
+    },
+    head: (entity) => {
+      if (this.BINAR.offsetright(entity) === 0) this.BINAR.balance(entity)
+      this.BINAR.removefromright(entity)
+      return entity
+    },
+    tail: (entity) => {
+      if (this.BINAR.offsetleft(entity) === 0) this.BINAR.balance(entity)
+      this.BINAR.removefromleft(entity)
+      return entity
+    },
+    to: (entity, callback, initial) => {
+      initial = initial ?? this.BINAR.make()
+      const len = this.BINAR.length(entity)
+      for (let i = 0; i < len; i += 1)
+        initial = callback(initial, this.BINAR.get(entity, i), i, entity)
+      return initial
+    },
+    rotateleft: (entity, n = 1) => {
+      n = n % this.BINAR.length(entity)
+      for (let i = 0; i < n; i += 1) {
+        if (this.BINAR.offsetleft(entity) === 0) this.BINAR.balance(entity)
+        this.BINAR.addtoright(entity, this.BINAR.first(entity))
+        this.BINAR.removefromleft(entity)
+      }
+      return entity
+    },
+    rotateright: (entity, n = 1) => {
+      n = n % this.BINAR.length(entity)
+      for (let i = 0; i < n; i += 1) {
+        if (this.BINAR.offsetright(entity) === 0) this.BINAR.balance(entity)
+        this.BINAR.addtoleft(entity, this.BINAR.last(entity))
+        this.BINAR.removefromright(entity)
+      }
+      return entity
+    },
+    rotate: (entity, n = 1, direction = 1) => {
+      return direction === 1
+        ? this.BINAR.rotateright(entity, n)
+        : this.BINAR.rotateleft(entity, n)
+    },
+    flat: (entity, levels = 1) => {
+      const flat =
+        levels === Infinity
+          ? this.LOOP.tailcalloptimisedrecursion((collection) =>
+              this.BINAR.flatten(collection, levels, flat),
+            )
+          : this.LOOP.tailcalloptimisedrecursion((collection, levels) => {
+              levels -= 1
+              return levels === -1
+                ? collection
+                : this.BINAR.flatten(collection, levels, flat)
+            })
+      return this.BINAR.fill(this.BINAR.make(), ...flat(entity, levels))
+    },
+    swap: (entity, i1, i2) => {
+      const temp = this.BINAR.get(entity, i1)
+      this.BINAR.set(entity, i1, this.BINAR.get(entity, i2))
+      this.BINAR.set(entity, i2, temp)
+      return entity
+    },
+    swapremoveRight: (entity, index) => {
+      this.BINAR.set(entity, index, this.BINAR.cut(entity))
+      return entity
+    },
+    swapremoveLeft: (entity, index) => {
+      this.BINAR.set(entity, index, this.BINAR.chop(entity))
+      return entity
+    },
+    compact: (entity) => {
+      return this.BINAR.filter(entity, Boolean)
+    },
+    union: (entity, b) => {
+      const a = entity
+      const out = this.BINAR.make()
+      const A = new Set(this.BINAR.toarray(a))
+      const B = new Set(this.BINAR.toarray(b))
+      A.forEach((item) => this.BINAR.append(out, item))
+      B.forEach((item) => this.BINAR.append(out, item))
+      return this.BINAR.balance(out)
+    },
+    symetricdifference: (entity, b) => {
+      const a = entity
+      const out = this.BINAR.make()
+      const A = new Set(this.BINAR.toarray(a))
+      const B = new Set(this.BINAR.toarray(b))
+      B.forEach((item) => !A.has(item) && this.BINAR.append(out, item))
+      A.forEach((item) => !B.has(item) && this.BINAR.append(out, item))
+      return this.BINAR.balance(out)
+    },
+    intersection: (entity, b) => {
+      const a = entity
+      const out = this.BINAR.make()
+      const A = new Set(this.BINAR.toarray(a))
+      const B = new Set(this.BINAR.toarray(b))
+      B.forEach((item) => A.has(item) && this.BINAR.append(out, item))
+      return this.BINAR.balance(out)
+    },
+    difference: (entity, b) => {
+      const a = entity
+      const out = this.BINAR.make()
+      const A = new Set(this.BINAR.toarray(a))
+      const B = new Set(this.BINAR.toarray(b))
+      A.forEach((item) => !B.has(item) && this.BINAR.append(out, item))
+      return this.BINAR.balance(out)
+    },
+    partition: (entity, groups = 1) =>
+      this.BINAR.balance(
+        this.BINAR.to(entity, (acc, _, index, arr) => {
+          if (index % groups === 0) {
+            const part = this.BINAR.make()
+            for (let i = 0; i < groups; i += 1) {
+              const current = this.BINAR.get(arr, index + i)
+              if (current !== undefined) this.BINAR.append(part, current)
+            }
+            this.BINAR.balance(part)
+            this.BINAR.append(acc, part)
+          }
+          return acc
+        }),
+      ),
+    unique: (entity) => {
+      const set = new Set()
+      return this.BINAR.fill(
+        this.BINAR.make(),
+        ...this.BINAR.to(
+          entity,
+          (acc, item) => {
+            if (!set.has(item)) {
+              set.add(item)
+              acc.push(item)
+            }
+            return acc
+          },
+          [],
+        ),
+      )
+    },
+    duplicates: (entity) => {
+      const set = new Set()
+      const extra = []
+      const out = this.BINAR.to(
+        entity,
+        (acc, item) => {
+          set.has(item) ? acc.push(item) : set.add(item)
+          return acc
+        },
+        [],
+      )
+      out.forEach((item) => {
+        if (set.has(item)) {
+          set.delete(item)
+          extra.push(item)
+        }
+      })
+      return this.BINAR.fill(this.BINAR.make(), ...out.concat(extra))
+    },
+  }
   constructor() {
     this.COLOR.randomcolor.comment = 'Generate a random hex color'
   }
@@ -1084,45 +1489,12 @@ ${msg !== VOID ? JSON.stringify(msg, null, space) : VOID}`,
       return msg
     }
   },
-  SIGN: (method) => {
-    const sign = method.toString()
-    let returnValue = `return void\n}`
-    if (sign.includes('return')) {
-      const ret = sign
-        .split('return ')
-        .join('##return ')
-        .split('##')
-        .filter((x) => x.includes('return'))
-        .map((x) => x.trim())
-      returnValue = ret[ret.length - 1]
-    }
-
-    popUp(
-      createPopUp(),
-      `${
-        method.comment
-          ? method.comment
-              .split('\n')
-              .map((x) => ';; ' + x)
-              .join('\n')
-          : ';; JavaScript signature:'
-      }
-${method.name} (${sign
-        .split(' => {')[0]
-        .replace('(', '')
-        .replace(')', '')}) => {
-  ${returnValue}`,
-      window.innerWidth * 1 - 20,
-    )
-  },
 
   tco:
     (func) =>
     (...args) => {
       let result = func(...args)
-      while (typeof result === 'function') {
-        result = result()
-      }
+      while (typeof result === 'function') result = result()
       return result
     },
   LIBRARY: new StandartLibrary(),
