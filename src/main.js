@@ -335,28 +335,26 @@ const clickNodes = (e) => {
     current.label === DEFAULT_TOKEN ? '' : current.label
   editor.setValue(current.comment)
   memo.nodePairsSelections.push(memo.lastSelection.id)
-  const couple = memo.nodePairsSelections
-  const incomming = cy.nodes(`#${couple[0]}`).first()
-  const outgoing = cy.nodes(`#${couple[1]}`).first()
+  const [A, B] = memo.nodePairsSelections
+  const incomming = cy.nodes(`#${A}`).first()
+  const outgoing = cy.nodes(`#${B}`).first()
   incomming.style({
     'text-outline-width': 3,
     'text-outline-color': CURRENT_THEME.selectionIncoming,
   })
-  outgoing.style({
-    'text-outline-width': 3,
-    'text-outline-color': CURRENT_THEME.selectionOutgoing,
-  })
   inspectSelectionIndex(
     memo.lastSelection,
-    couple[1]
+    B
       ? '[ ' + incomming.data().label + ' -> ' + outgoing.data().label + ' ]'
       : '[ ' + incomming.data().label + ' -> ? ]',
   )
-  if (memo.nodePairsSelections.length === 2) {
-    const A = incomming.data().label
-    const B = outgoing.data().label
-    elements.connectionA.textContent = A
-    elements.connectionB.textContent = B
+  if (memo.nodePairsSelections.length === 2 && A !== B) {
+    outgoing.style({
+      'text-outline-width': 3,
+      'text-outline-color': CURRENT_THEME.selectionOutgoing,
+    })
+    elements.connectionA.textContent = incomming.data().label
+    elements.connectionB.textContent = outgoing.data().label
     elements.connectionButton.style.display = 'block'
     positionAbsoluteElement(
       elements.connectionButton,
