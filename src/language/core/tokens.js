@@ -208,7 +208,7 @@ const tokens = {
     }
     return resolve(args[0], 0)
   },
-  ['=>']: (args, env) => {
+  ['..']: (args, env) => {
     let value = VOID
     args.forEach((arg) => (value = evaluate(arg, env)))
     return value

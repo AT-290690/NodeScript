@@ -1050,14 +1050,15 @@ export class StandartLibrary {
     offsetright: (entity) => {
       return entity.right.length
     },
+    negativeZero: Symbol('-0'),
     makebinar: () => {
-      return { left: [-1], right: [] }
+      return { left: [this.BINAR.negativeZero], right: [] }
     },
     length: (entity) => {
       return entity.left.length + entity.right.length - 1
     },
     clear: (entity) => {
-      entity.left = [-1]
+      entity.left = [this.BINAR.negativeZero]
       entity.right = []
       return entity
     },
@@ -1066,8 +1067,7 @@ export class StandartLibrary {
       to(
         collection,
         (acc, current) => {
-          if (this.BINAR.isbinaryarray(current))
-            acc.push(...flat(current, levels))
+          if (this.BINAR.isbinar(current)) acc.push(...flat(current, levels))
           else acc.push(current)
           return acc
         },
@@ -1107,14 +1107,11 @@ export class StandartLibrary {
         this.BINAR.addtoright(out, this.BINAR.get(entity, i))
       return out
     },
-    isbinaryarray: (entity) => {
+    isbinar: (entity) => {
       return (
         typeof entity === 'object' &&
         'left' in entity &&
-        Array.isArray(entity.left) &&
-        entity.left[0] === -1 &&
-        'right' in entity &&
-        Array.isArray(entity.right)
+        entity.left[0] === this.BINAR.negativeZero
       )
     },
     isbalanced: (entity) => {

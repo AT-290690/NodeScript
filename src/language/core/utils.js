@@ -76,7 +76,7 @@ export const extractComments = (source) =>
     .filter((x) => x[0] === ';' && x[1] === ';')
 export const removeNoCode = (source) =>
   source.replace(/[ ]+(?=[^"]*(?:"[^"]*"[^"]*)*$)+|\n|\t|;;.+/g, '')
-export const wrapInBody = (source) => `=>[${source}]`
+export const wrapInBody = (source) => `..[${source}]`
 
 export const exe = (source) => {
   const ENV = protolessModule(STD)

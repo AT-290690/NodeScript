@@ -4,7 +4,7 @@ const dfs = (tree, locals) => {
   if (!tree) return ''
   if (tree.type === 'apply') {
     switch (tree.operator.name) {
-      case '=>':
+      case '..':
         return `(()=>{${tree.args
           .map((x, i) => {
             const res = dfs(x, locals)
