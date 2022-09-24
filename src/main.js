@@ -259,23 +259,23 @@ const clickEdges = (e) => {
   memo.nodePairsSelections.length = 0
 }
 
-const getPredecessorCode = () => {
+const getPredecessorCode = (startNode = memo.lastSelection.id) => {
   const comment = editor.getValue()
-  const current = cy.nodes(`#${memo.lastSelection.id}`)
+  const current = cy.nodes(`#${startNode}`)
   current.data({
     comment,
   })
   return (
-    current
-      .predecessors('node')
-      .map((x) => {
-        const data = x.data().comment.trim()
-        return data && data[data.length - 1] !== ';'
+    current.predecessors('node').reduceRight((acc, item) => {
+      const data = item.data().comment.trim()
+      acc +=
+        '\n' + data && data[data.length - 1] !== ';'
           ? data + ';\n'
           : data + '\n'
-      })
-      .reverse()
-      .join('\n') + comment
+      return acc
+    }, '') +
+    '\n' +
+    comment
   )
 }
 const updateApp = () => {
@@ -300,15 +300,16 @@ const openAppWindow = () => {
   current.data({
     comment: editor.getValue(),
   })
+  consoleElement.value = ''
   if (elements.app.style.display === 'none') {
     elements.app.style.display = 'block'
     updateApp()
-    consoleElement.value = ''
-  } else {
-    const appDocument = elements.app.contentWindow
-    if (appDocument) appDocument.LIBRARY.SKETCH.destroycomposition()
-    elements.app.style.display = 'none'
   }
+  // else {
+  //   const appDocument = elements.app.contentWindow
+  //   if (appDocument) appDocument.LIBRARY.SKETCH.destroycomposition()
+  //   elements.app.style.display = 'none'
+  // }
 
   // appDocument.close();
 }
