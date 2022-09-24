@@ -1158,11 +1158,14 @@ export class StandartLibrary {
         this.BINAR.addtoright(entity, initial[i])
       return entity
     },
+    from: (initial) => {
+      return this.BINAR.fill(this.BINAR.makebinar(), ...initial)
+    },
     makebinarwith: (...intilal) => {
       return this.BINAR.fill(this.BINAR.makebinar(), ...intilal)
     },
     map: (entity, callback) => {
-      const result = this.BINAR.make()
+      const result = this.BINAR.makebinar()
       const len = this.BINAR.length(entity)
       const half = (len / 2) | 0.5
       for (let i = half - 1; i >= 0; i--)
@@ -1185,7 +1188,7 @@ export class StandartLibrary {
         const predicat = callback(current, i, entity)
         if (predicat) out.push(current)
       }
-      return this.BINAR.fill(this.BINAR.make(), ...out)
+      return this.BINAR.fill(this.BINAR.makebinar(), ...out)
     },
     some: (entity, callback) => {
       const len = this.BINAR.length(entity)
@@ -1249,7 +1252,7 @@ export class StandartLibrary {
       return entity
     },
     isempty: (entity) => {
-      return entity.left.length + entity.right.length === 1
+      return entity.left.length + entity.right.length === 1 ? 1 : 0
     },
     isinbounds: (entity, index) => {
       return index >= 0 && index < entity.length
@@ -1291,7 +1294,7 @@ export class StandartLibrary {
       return entity
     },
     to: (entity, callback, initial) => {
-      initial = initial ?? this.BINAR.make()
+      initial = initial ?? this.BINAR.makebinar()
       const len = this.BINAR.length(entity)
       for (let i = 0; i < len; i += 1)
         initial = callback(initial, this.BINAR.get(entity, i), i, entity)
@@ -1332,7 +1335,7 @@ export class StandartLibrary {
                 ? collection
                 : this.BINAR.flatten(collection, levels, flat)
             })
-      return this.BINAR.fill(this.BINAR.make(), ...flat(entity, levels))
+      return this.BINAR.fill(this.BINAR.makebinar(), ...flat(entity, levels))
     },
     swap: (entity, i1, i2) => {
       const temp = this.BINAR.get(entity, i1)
@@ -1353,7 +1356,7 @@ export class StandartLibrary {
     },
     union: (entity, b) => {
       const a = entity
-      const out = this.BINAR.make()
+      const out = this.BINAR.makebinar()
       const A = new Set(this.BINAR.toarray(a))
       const B = new Set(this.BINAR.toarray(b))
       A.forEach((item) => this.BINAR.append(out, item))
@@ -1362,7 +1365,7 @@ export class StandartLibrary {
     },
     symetricdifference: (entity, b) => {
       const a = entity
-      const out = this.BINAR.make()
+      const out = this.BINAR.makebinar()
       const A = new Set(this.BINAR.toarray(a))
       const B = new Set(this.BINAR.toarray(b))
       B.forEach((item) => !A.has(item) && this.BINAR.append(out, item))
@@ -1371,7 +1374,7 @@ export class StandartLibrary {
     },
     intersection: (entity, b) => {
       const a = entity
-      const out = this.BINAR.make()
+      const out = this.BINAR.makebinar()
       const A = new Set(this.BINAR.toarray(a))
       const B = new Set(this.BINAR.toarray(b))
       B.forEach((item) => A.has(item) && this.BINAR.append(out, item))
@@ -1379,7 +1382,7 @@ export class StandartLibrary {
     },
     difference: (entity, b) => {
       const a = entity
-      const out = this.BINAR.make()
+      const out = this.BINAR.makebinar()
       const A = new Set(this.BINAR.toarray(a))
       const B = new Set(this.BINAR.toarray(b))
       A.forEach((item) => !B.has(item) && this.BINAR.append(out, item))
@@ -1389,7 +1392,7 @@ export class StandartLibrary {
       this.BINAR.balance(
         this.BINAR.to(entity, (acc, _, index, arr) => {
           if (index % groups === 0) {
-            const part = this.BINAR.make()
+            const part = this.BINAR.makebinar()
             for (let i = 0; i < groups; i += 1) {
               const current = this.BINAR.get(arr, index + i)
               if (current !== undefined) this.BINAR.append(part, current)
@@ -1403,7 +1406,7 @@ export class StandartLibrary {
     unique: (entity) => {
       const set = new Set()
       return this.BINAR.fill(
-        this.BINAR.make(),
+        this.BINAR.makebinar(),
         ...this.BINAR.to(
           entity,
           (acc, item) => {
@@ -1434,7 +1437,7 @@ export class StandartLibrary {
           extra.push(item)
         }
       })
-      return this.BINAR.fill(this.BINAR.make(), ...out.concat(extra))
+      return this.BINAR.fill(this.BINAR.makebinar(), ...out.concat(extra))
     },
   }
   constructor() {

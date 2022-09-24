@@ -313,6 +313,7 @@ body {
   z-index: 2;
   border: none;
   border-left: solid 1px var(--border);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 @keyframes fadeOutOpacity {
   0% {
