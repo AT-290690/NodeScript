@@ -1,5 +1,7 @@
 import { CodeMirror } from '../../editor/cell.editor.bundle.js'
+import { toJavasScript } from '../core/toJs.js'
 import { VOID } from '../core/tokens.js'
+import { removeNoCode, wrapInBody } from '../core/utils.js'
 export const consoleElement = document.getElementById('console')
 const canvasContainer = document.getElementById('canvas-container')
 export const popupContainer = document.getElementById('popup-container')
@@ -1451,6 +1453,14 @@ export const STD = {
   _: VOID,
   null: VOID,
   NULL: VOID,
+  COMP: (source) => {
+    popUp(
+      createPopUp(),
+      toJavasScript({ source: wrapInBody(removeNoCode(source)) }),
+      window.innerWidth * 1 - 20,
+      window.innerHeight / 2,
+    )
+  },
   IMP: (module) => {
     const pop = createPopUp()
     popUp(
@@ -1466,7 +1476,7 @@ export const STD = {
   SOURCE: (method) => {
     popUp(
       createPopUp(),
-      `${method.toString()}`,
+      method.toString(),
       window.innerWidth * 1 - 20,
       window.innerHeight / 2,
     )

@@ -1,8 +1,5 @@
 import { decodeUrl, wrapInBody } from './language/core/utils.js'
-import {
-  consoleElement,
-  StandartLibrary,
-} from './language/extentions/extentions.js'
+import { StandartLibrary } from './language/extentions/extentions.js'
 import { languageUtilsString, toJavasScript } from './language/core/toJs.js'
 
 const elements = {
@@ -17,25 +14,20 @@ const canvasContainer = document.getElementById("canvas-container");
 const VOID = null;
 ${languageUtilsString}
 </script>
-<script>\n${StandartLibrary.toString()}</script>
+<script>${StandartLibrary.toString()}</script>
 </body>`
 ;(() => {
-  setTimeout(() => {
-    elements.app.style.display = 'block'
-    const appDocument = elements.app.contentWindow.document
-    appDocument.write(APP)
-    const script = appDocument.createElement('script')
-    script.id = 'main'
-    script.innerHTML = `
-       (() => {
-       \n${toJavasScript({
-         source: wrapInBody(
-           decodeUrl(
-             location.href.split('preview.html')[1].trim().replace('?s=', ''),
-           ),
-         ),
-       })}
-      })()`
-    if (appDocument.body) appDocument.body.appendChild(script)
-  }, 1000)
+  const appDocument = elements.app.contentWindow.document
+  appDocument.write(APP)
+  const script = appDocument.createElement('script')
+  script.id = 'main'
+  script.innerHTML = toJavasScript({
+    source: wrapInBody(
+      decodeUrl(
+        location.href.split('preview.html')[1].trim().replace('?s=', ''),
+      ),
+    ),
+  })
+  appDocument.body.appendChild(script)
+  appDocument.close()
 })()

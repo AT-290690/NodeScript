@@ -8,11 +8,9 @@ const dfs = (tree, locals) => {
         return `(()=>{${tree.args
           .map((x, i) => {
             const res = dfs(x, locals)
-            if (res !== undefined && i === tree.args.length - 1) {
-              return ';return ' + res.toString().trimStart()
-            } else {
-              return res
-            }
+            return res !== undefined && i === tree.args.length - 1
+              ? ';return ' + res.toString().trimStart()
+              : res
           })
           .join('')}})()`
       case ':=':
@@ -34,13 +32,13 @@ const dfs = (tree, locals) => {
         const localVars = new Set()
         const evaluatedBody = dfs(body, localVars)
         const vars = localVars.size ? `var ${[...localVars].join(',')};` : ''
-        return `(${args.map((x) => dfs(x, locals))}) => {${vars} ${
+        return `(${args.map(x => dfs(x, locals))}) => {${vars} ${
           body.type === 'apply' || body.type === 'value' ? 'return ' : ' '
         } ${evaluatedBody.trimStart()}};`
       }
 
       case '==':
-        return '(' + tree.args.map((x) => dfs(x, locals)).join('===') + ')'
+        return '(' + tree.args.map(x => dfs(x, locals)).join('===') + ')'
       case '+':
       case '-':
       case '*':
@@ -56,7 +54,7 @@ const dfs = (tree, locals) => {
         return (
           '(' +
           tree.args
-            .map((x) => dfs(x, locals))
+            .map(x => dfs(x, locals))
             .join(symbols[tree.operator.name] ?? tree.operator.name) +
           ')'
         )
@@ -74,50 +72,42 @@ const dfs = (tree, locals) => {
       case '?': {
         const conditionStack = []
         tree.args
-          .map((x) => dfs(x, locals))
-          .forEach((x, i) => {
-            if (i % 2 === 0) {
-              conditionStack.push(x, '?')
-            } else {
-              conditionStack.push(x, ':')
-            }
-          })
+          .map(x => dfs(x, locals))
+          .forEach((x, i) =>
+            i % 2 === 0
+              ? conditionStack.push(x, '?')
+              : conditionStack.push(x, ':'),
+          )
         conditionStack.pop()
-        if (conditionStack.length === 3) {
-          conditionStack.push(':', 'null;')
-        }
+        if (conditionStack.length === 3) conditionStack.push(':', 'null;')
         return `(${conditionStack.join('')});`
       }
       case '*?': {
         const conditionStack = []
         tree.args
-          .map((x) => dfs(x, locals))
-          .forEach((x, i) => {
-            if (i % 2 === 0) {
-              conditionStack.push(x, '?')
-            } else {
-              conditionStack.push(x, ':')
-            }
-          })
+          .map(x => dfs(x, locals))
+          .forEach((x, i) =>
+            i % 2 === 0
+              ? conditionStack.push(x, '?')
+              : conditionStack.push(x, ':'),
+          )
         conditionStack.pop()
         conditionStack.push(':', '0;')
         return `(${conditionStack.join('')});`
       }
       case '.:':
-        return '[' + tree.args.map((x) => dfs(x, locals)).join(',') + ']'
+        return '[' + tree.args.map(x => dfs(x, locals)).join(',') + ']'
       case '::':
         return (
           '{' +
           tree.args
-            .map((x) => dfs(x, locals))
+            .map(x => dfs(x, locals))
             .reduce((acc, item, index) => {
               if (index % 2 === 0) {
                 const key = item.replace(';', '')
                 acc +=
                   key[0] === '"' ? `"${key.replaceAll('"', '')}":` : `[${key}]:`
-              } else {
-                acc += `${item},`
-              }
+              } else acc += `${item},`
               return acc
             }, '') +
           '}'
@@ -127,9 +117,9 @@ const dfs = (tree, locals) => {
         return '_tco(' + res + ')'
       }
       case '...':
-        return `_spread([${tree.args.map((x) => dfs(x, locals)).join(',')}])`
+        return `_spread([${tree.args.map(x => dfs(x, locals)).join(',')}])`
       case '|>': {
-        const [param, ...rest] = tree.args.map((x) => dfs(x, locals))
+        const [param, ...rest] = tree.args.map(x => dfs(x, locals))
         return `_pipe(${rest.join(',')})(${param});`
       }
       // case ':':
@@ -144,7 +134,7 @@ const dfs = (tree, locals) => {
               : dfs(arg, locals)) ?? null,
           )
         }
-        const path = prop.map((x) => '[' + x + ']').join('')
+        const path = prop.map(x => '[' + x + ']').join('')
         return `${dfs(tree.args[0], locals)}${path};`
       }
       case '.-': {
@@ -157,9 +147,15 @@ const dfs = (tree, locals) => {
               : dfs(arg, locals)) ?? null,
           )
         }
-        const path = prop.map((x) => '[' + x + ']').join('')
-        const obj = dfs(tree.args[0], locals)
-        return `(void(delete ${obj}${path})||${obj});`
+        const path = prop.map(x => '[' + x + ']').join('')
+        if (tree.args[0].type === 'apply') {
+          locals.add('_tmp_')
+          const obj = dfs(tree.args[0], locals)
+          return `(void(delete (_tmp_=${obj})${path})||_tmp_);`
+        } else {
+          const obj = dfs(tree.args[0], locals)
+          return `(void(delete ${obj}${path})||${obj});`
+        }
       }
       case '.=': {
         const last = tree.args[tree.args.length - 1]
@@ -173,17 +169,22 @@ const dfs = (tree, locals) => {
               : dfs(arg, locals)) ?? null,
           )
         }
-
-        const path = prop.map((x) => '[' + x + ']').join('')
-        const obj = dfs(tree.args[0], locals)
-        return `(void(${obj}${path}=${res})||${obj});`
+        const path = prop.map(x => '[' + x + ']').join('')
+        if (tree.args[0].type === 'apply') {
+          locals.add('_tmp_')
+          const obj = dfs(tree.args[0], locals)
+          return `(void((_tmp_=${obj})${path}=${res})||_tmp_);`
+        } else {
+          const obj = dfs(tree.args[0], locals)
+          return `(void(${obj}${path}=${res})||${obj});`
+        }
       }
       default: {
         if (tree.operator.name) {
           return (
             tree.operator.name +
             '(' +
-            tree.args.map((x) => dfs(x, locals)).join(',') +
+            tree.args.map(x => dfs(x, locals)).join(',') +
             ');'
           )
         } else {
@@ -191,7 +192,7 @@ const dfs = (tree, locals) => {
             const [lib, pref] = tree.args
             const imp =
               lib.type === 'word' ? lib.name : dfs(lib, locals).slice(0, -1)
-            const methods = tree.operator.args.map((x) =>
+            const methods = tree.operator.args.map(x =>
               x.type === 'value' ? x.value : dfs(x, locals),
             )
             const prefix =
@@ -199,7 +200,7 @@ const dfs = (tree, locals) => {
                 ? pref.value.replaceAll(' ', '')
                 : ''
             return methods
-              .map((x) => {
+              .map(x => {
                 if (x) {
                   x = x.replaceAll(' ', '')
                   locals.add(`${prefix}${x}`)
@@ -212,12 +213,11 @@ const dfs = (tree, locals) => {
             tree.type === 'apply'
           ) {
             const [parent, method] = tree.operator.args
-            const arg = tree.args.map((x) => dfs(x, locals))
-            if (method.type === 'value') {
-              return `${parent.name}["${method.value}"](${arg.join(',')});`
-            } else {
-              return `${parent.name}[${dfs(method, locals)}](${arg.join(',')});`
-            }
+            const arg = tree.args.map(x => dfs(x, locals))
+            const caller = parent.name ? parent.name : dfs(parent, locals)
+            return method.type === 'value'
+              ? `${caller}["${method.value}"](${arg.join(',')});`
+              : `${caller}[${dfs(method, locals)}](${arg.join(',')});`
           }
         }
       }
@@ -230,9 +230,8 @@ const dfs = (tree, locals) => {
       default:
         return tree.name
     }
-  } else if (tree.type === 'value') {
+  } else if (tree.type === 'value')
     return tree.class === 'string' ? `"${tree.value}"` : tree.value
-  }
 }
 
 const semiColumnEdgeCases = new Set([
@@ -255,17 +254,14 @@ const semiColumnEdgeCases = new Set([
   ';;',
   ';]',
 ])
-export const compileHyperScriptToJavaScript = (ast) => {
+export const compileHyperScriptToJavaScript = ast => {
   vars.clear()
   const raw = dfs(ast, vars)
   let program = ''
   for (let i = 0; i < raw.length; i++) {
     const current = raw[i]
     const next = raw[i + 1]
-    if (!semiColumnEdgeCases.has(current + next)) {
-      program += current
-    }
+    if (!semiColumnEdgeCases.has(current + next)) program += current
   }
-
-  return { program, vars: [...vars] }
+  return program
 }

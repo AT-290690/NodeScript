@@ -13,9 +13,6 @@ export const correctFilePath = (filename) => {
 }
 
 export const State = {
-  selectedRealm: 'realm0',
-  lsHistory: '/',
-  lastVisitedDir: '/',
   env: null,
   components: {},
   lastSelection: '',
@@ -28,21 +25,14 @@ export const State = {
 }
 const dfs = (ast) => {
   let out = { fn: null, res: null }
-  for (const prop in ast) {
+  for (const prop in ast)
     if (Array.isArray(ast[prop])) {
       for (const arg of ast[prop]) {
-        if (arg.type === 'apply') {
-          out.fn = arg.operator.name
-        }
+        if (arg.type === 'apply') out.fn = arg.operator.name
         const temp = dfs(arg)
-        if (temp.res !== undefined) {
-          out.res = temp.res
-        }
+        if (temp.res !== undefined) out.res = temp.res
       }
-    } else if (ast[prop] !== undefined) {
-      out.res = ast[prop]
-    }
-  }
+    } else if (ast[prop] !== undefined) out.res = ast[prop]
   return out
 }
 
@@ -109,16 +99,9 @@ export const isBalancedParenthesis = (sourceCode) => {
   const stack = []
   const str = sourceCode.replace(/"(.*?)"/g, '')
   const pairs = { ']': '[' }
-  for (let i = 0; i < str.length; i++) {
-    if (str[i] === '[') {
-      stack.push(str[i])
-    } else if (str[i] in pairs) {
-      if (stack.pop() !== pairs[str[i]]) {
-        count++
-      }
-    }
-  }
-
+  for (let i = 0; i < str.length; i++)
+    if (str[i] === '[') stack.push(str[i])
+    else if (str[i] in pairs) if (stack.pop() !== pairs[str[i]]) count++
   return { str, diff: count - stack.length }
 }
 export const prettier = (str) => addSpace(str)
@@ -131,34 +114,16 @@ export const run = (source) => {
   consoleElement.value = ''
   source = source.trim()
   const sourceCode = removeNoCode(source)
-
   const parenMatcher = isBalancedParenthesis(sourceCode)
   if (parenMatcher.diff === 0) {
     const result = exe(sourceCode)
     !State.isErrored && print(result)
-  } else {
+  } else
     printErrors(
       `Parenthesis are unbalanced by ${parenMatcher.diff > 0 ? '+' : ''}${
         parenMatcher.diff
       } "]"`,
     )
-  }
-}
-
-export const pruneDep = () => {
-  const ignore = [
-    ...['_', 'tco', 'void', 'VOID', 'NULL', 'null', ';;tokens', 'IMP', 'SIGN'],
-    ...['!', '^', '>>>', '>>', '<<', '~', '|', '&'],
-    ...['+', '-', '*', '/', '==', '!=', '>', '<', '>=', '<=', '%', '**'],
-  ]
-  const list = { ...STD }
-  ignore.forEach((op) => {
-    delete list[op]
-  })
-  for (const l in list) {
-    list[l] = Object.keys(list[l])
-  }
-  return list
 }
 
 export const encodeUrl = (source, limit = Infinity) => {
@@ -168,10 +133,9 @@ export const encodeUrl = (source, limit = Infinity) => {
     .join(']]')
     .split('')
     .reduce(
-      (acc, item, index, items) => {
-        if (item === ']') {
-          acc.count++
-        } else {
+      (acc, item) => {
+        if (item === ']') acc.count++
+        else {
           if (acc.count === 1) {
             acc.result += ']'
             acc.count = 0
@@ -181,26 +145,21 @@ export const encodeUrl = (source, limit = Infinity) => {
           }
           acc.result += item
         }
-
         return acc
       },
       { result: '', count: 0 },
     )
-  if (out.count > 0) {
-    out.result += "'" + out.count
-  }
+  if (out.count > 0) out.result += "'" + out.count
   const encoded = LZUTF8.compress(out.result.trim(), {
     outputEncoding: 'Base64',
   })
-  if (encoded.length > limit) {
+  if (encoded.length > limit)
     printErrors(
       `Code is too large. Expected code < ${limit}. Reduce your code by ${
         limit - encoded.length
       } chararacters.`,
     )
-  } else {
-    return encoded
-  }
+  else return encoded
 }
 export const decodeUrl = (url) => {
   const value = LZUTF8.decompress(url, {

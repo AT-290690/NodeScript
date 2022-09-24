@@ -77,7 +77,7 @@ const memo = {
   const VOID = null;
   ${languageUtilsString}
   </script>
-  <script>\n${StandartLibrary.toString()}</script>
+  <script>${StandartLibrary.toString()}</script>
   </body>`,
 }
 
@@ -286,13 +286,9 @@ const updateApp = () => {
   else appDocument.body.removeChild(main)
   const script = appDocument.createElement('script')
   script.id = 'main'
-  script.innerHTML = `
-   (() => {
-   \n${toJavasScript({
-     source: wrapInBody(removeNoCode(getPredecessorCode())),
-     // env: pruneDep()
-   })}
-  })()`
+  script.innerHTML = toJavasScript({
+    source: wrapInBody(removeNoCode(getPredecessorCode())),
+  })
   if (appDocument.body) appDocument.body.appendChild(script)
 }
 const openAppWindow = () => {

@@ -124,14 +124,11 @@ export const parse = (program) => {
   }
   return result.expr
 }
-export const cell = (env, run = true) => {
-  return (args) => {
+export const cell =
+  (env, run = true) =>
+  (args) => {
     const AST = parse(args)
-    if (run) {
-      const result = evaluate(AST, env)
-      return { result, env, AST }
-    } else {
-      return { result: null, env, AST }
-    }
+    return run
+      ? { result: evaluate(AST, env), env, AST }
+      : { result: null, env, AST }
   }
-}
