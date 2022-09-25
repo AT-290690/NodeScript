@@ -1067,7 +1067,7 @@ export class StandartLibrary {
       return entity
     },
 
-    flatten: this.LOOP.tailcalloptimisedrecursion((collection, levels, flat) =>
+    flatten: (collection, levels, flat) =>
       to(
         collection,
         (acc, current) => {
@@ -1077,7 +1077,6 @@ export class StandartLibrary {
         },
         [],
       ),
-    ),
     get: (entity, offset) => {
       const offsetIndex = offset + this.BINAR.offsetleft(entity)
       const index = offsetIndex < 0 ? offsetIndex * -1 : offsetIndex
@@ -1330,15 +1329,13 @@ export class StandartLibrary {
     flat: (entity, levels = 1) => {
       const flat =
         levels === Infinity
-          ? this.LOOP.tailcalloptimisedrecursion(collection =>
-              this.BINAR.flatten(collection, levels, flat),
-            )
-          : this.LOOP.tailcalloptimisedrecursion((collection, levels) => {
+          ? collection => this.BINAR.flatten(collection, levels, flat)
+          : (collection, levels) => {
               levels -= 1
               return levels === -1
                 ? collection
                 : this.BINAR.flatten(collection, levels, flat)
-            })
+            }
       return this.BINAR.fill(this.BINAR.makebinar(), ...flat(entity, levels))
     },
     swap: (entity, i1, i2) => {
