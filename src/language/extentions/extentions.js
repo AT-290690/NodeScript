@@ -31,12 +31,12 @@ const prefixDep = (dep, prefix = '') =>
 export const print = function (...values) {
   if (values.length === 0) return VOID
   values.forEach(
-    (x) => (consoleElement.value += `[ ${JSON.stringify(x) ?? undefined} ]`),
+    x => (consoleElement.value += `[ ${JSON.stringify(x) ?? undefined} ]`),
   )
   return values
 }
 
-export const protolessModule = (methods) => {
+export const protolessModule = methods => {
   const env = Object.create(null)
   for (const method in methods) env[method] = methods[method]
   return env
@@ -63,7 +63,7 @@ export class StandartLibrary {
         ).slice(-6)
       )
     },
-    rgbtohex: (color) => {
+    rgbtohex: color => {
       const [r, g, b] = color.split('(')[1].split(')')[0].split(',').map(Number)
       function componentToHex(c) {
         var hex = c.toString(16)
@@ -72,7 +72,7 @@ export class StandartLibrary {
 
       return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b)
     },
-    inverthexcolor: (hex) => {
+    inverthexcolor: hex => {
       return (
         '#' +
         (Number(`0x1${hex.split('#')[1]}`) ^ 0xffffff)
@@ -109,7 +109,7 @@ export class StandartLibrary {
       dot: (a, b) => {
         return a.dot(b)
       },
-      normalize: (vec) => {
+      normalize: vec => {
         return vec.normalize()
       },
       ratiobetween: (a, b) => {
@@ -130,19 +130,19 @@ export class StandartLibrary {
       distancetosquared: (a, b, e) => {
         return a.distanceToSquared(b, e)
       },
-      getx: (vec) => {
+      getx: vec => {
         return vec.x
       },
-      gety: (vec) => {
+      gety: vec => {
         return vec.y
       },
       copy: (vec, d) => {
         return vec.copy(d)
       },
-      clear: (vec) => {
+      clear: vec => {
         return vec.clear()
       },
-      clone: (vec) => {
+      clone: vec => {
         return vec.clone()
       },
       lerp: (vec, d, t) => {
@@ -166,7 +166,7 @@ export class StandartLibrary {
       setlength: (vec, len) => {
         return vec.setLength(len)
       },
-      length: (vec) => {
+      length: vec => {
         return vec.length()
       },
       rotate: (vec, angle) => {
@@ -176,7 +176,7 @@ export class StandartLibrary {
     background: (color = 'var(--background-primary)') => {
       return (canvasContainer.firstChild.style.background = color)
     },
-    requestanimationframe: (fn) => {
+    requestanimationframe: fn => {
       return (animation = requestAnimationFrame(fn))
     },
     destroycomposition: () => {
@@ -200,19 +200,19 @@ export class StandartLibrary {
       group.add(...items)
       return group
     },
-    removefromgroup: (item) => {
+    removefromgroup: item => {
       item.parent.remove(item)
       this.SKETCH.engine.add(item)
       return item
     },
-    removefromscene: (item) => {
+    removefromscene: item => {
       item.remove()
       return VOID
     },
-    groupadditions: (group) => {
+    groupadditions: group => {
       return group.additions
     },
-    groupchildren: (group) => {
+    groupchildren: group => {
       return group.children
     },
     width: (ratio = 1) => {
@@ -221,8 +221,8 @@ export class StandartLibrary {
     height: (ratio = 1) => {
       return this.SKETCH.engine.height * ratio
     },
-    add: (...args) => {
-      return this.SKETCH.engine.add(...args)
+    add: (...elements) => {
+      return this.SKETCH.engine.add(...elements)
     },
     clear: () => {
       return this.SKETCH.engine.clear()
@@ -230,7 +230,7 @@ export class StandartLibrary {
     ignore: (...args) => {
       return this.SKETCH.engine.ignore(...args)
     },
-    interpret: (index) => {
+    interpret: index => {
       return this.SKETCH.engine.interpret(document.getElementById(index))
     },
     listen: (...args) => {
@@ -259,8 +259,10 @@ export class StandartLibrary {
     },
     makeimagesequence: (...args) =>
       this.SKETCH.engine.makeImageSequence(...args),
-    makeline: (...args) => {
-      return this.SKETCH.engine.makeLine(...args)
+    makeline: (x1, y1, x2, y2, color = 'white') => {
+      const line = this.SKETCH.engine.makeLine(x1, y1, x2, y2)
+      line.stroke = color
+      return line
     },
     makelineargradient: (...args) => {
       return this.SKETCH.engine.makeLinearGradient(...args)
@@ -325,11 +327,11 @@ export class StandartLibrary {
       this.SKETCH.engine.update(...args)
       return 'Updated!'
     },
-    nofill: (entity) => {
+    nofill: entity => {
       entity.noFill()
       return entity
     },
-    nostroke: (entity) => {
+    nostroke: entity => {
       entity.noStroke()
       return entity
     },
@@ -349,7 +351,7 @@ export class StandartLibrary {
       svg.setAttribute('height', h)
       if (showBorder) svg.style.border = '1px solid lime'
     },
-    setoffsetstart: (entity) => {
+    setoffsetstart: entity => {
       entity.position.x = entity.position.x + entity.width * 0.5
       entity.position.y = entity.position.y + entity.height * 0.5
       return entity
@@ -405,7 +407,7 @@ export class StandartLibrary {
     },
     setorigin: (entity, x, y) => {
       entity.additions
-        ? entity.additions.forEach((item) => {
+        ? entity.additions.forEach(item => {
             item.position.set(item.position.x - x, item.position.y - y)
           })
         : entity.origin.set(x, y)
@@ -423,22 +425,22 @@ export class StandartLibrary {
     getfromgroup: (group, index) => {
       return group.additions[index]
     },
-    getorigin: (entity) => {
+    getorigin: entity => {
       return entity.origin
     },
-    getopacity: (entity) => {
+    getopacity: entity => {
       return entity.opacity
     },
-    getdashes: (entity) => {
+    getdashes: entity => {
       return entity.dashes
     },
-    getposition: (entity) => {
+    getposition: entity => {
       return entity.position
     },
-    gettranslation: (entity) => {
+    gettranslation: entity => {
       return entity.translation
     },
-    getbounds: (entity) => {
+    getbounds: entity => {
       return entity.getBoundingClientRect()
     },
   }
@@ -452,35 +454,35 @@ export class StandartLibrary {
       for (const key in object) callback(object[key])
       return object
     },
-    jsonstring: (object) => {
+    jsonstring: object => {
       return JSON.stringify(object)
     },
-    jsonparse: (string) => {
+    jsonparse: string => {
       return JSON.parse(string)
     },
-    clone: (obj) => {
+    clone: obj => {
       return structuredClone(obj)
     },
     has: (obj, ...props) => {
-      return +props.every((x) => x in obj)
+      return +props.every(x => x in obj)
     },
-    keys: (obj) => {
+    keys: obj => {
       return Object.keys(obj)
     },
-    values: (obj) => {
+    values: obj => {
       return Object.values(obj)
     },
-    entries: (obj) => {
+    entries: obj => {
       return Object.entries(obj)
     },
-    fromentries: (entries) => {
+    fromentries: entries => {
       return Object.fromEntries(entries)
     },
-    freeze: (obj) => {
+    freeze: obj => {
       void Object.freeze(obj)
       return obj
     },
-    size: (obj) => {
+    size: obj => {
       return Object.keys(obj).length
     },
     float32array: (...items) => {
@@ -492,7 +494,7 @@ export class StandartLibrary {
   }
   MATH = {
     NAME: 'MATH',
-    abs: (num) => {
+    abs: num => {
       return Math.abs(num)
     },
     mod: (left, right) => {
@@ -501,7 +503,7 @@ export class StandartLibrary {
     clamp: (num, min, max) => {
       return Math.min(Math.max(num, min), max)
     },
-    sqrt: (num) => {
+    sqrt: num => {
       return Math.sqrt(num)
     },
     inc: (a, i = 1) => {
@@ -519,25 +521,25 @@ export class StandartLibrary {
     pow: (a, b) => {
       return a ** b
     },
-    pow2: (a) => {
+    pow2: a => {
       return a ** 2
     },
     divide: (a, b) => {
       return a / b
     },
-    sign: (n) => {
+    sign: n => {
       return Math.sign(n)
     },
-    trunc: (n) => {
+    trunc: n => {
       return Math.trunc(n)
     },
-    exp: (n) => {
+    exp: n => {
       return Math.exp(n)
     },
-    floor: (n) => {
+    floor: n => {
       return Math.floor(n)
     },
-    round: (n) => {
+    round: n => {
       return Math.round(n)
     },
     random: () => {
@@ -555,44 +557,44 @@ export class StandartLibrary {
     min: (...args) => {
       return Math.min(...args)
     },
-    sin: (n) => {
+    sin: n => {
       return Math.sin(n)
     },
-    cos: (n) => {
+    cos: n => {
       return Math.cos(n)
     },
-    tan: (n) => {
+    tan: n => {
       return Math.tan(n)
     },
-    atan: (n) => {
+    atan: n => {
       return Math.atan(n)
     },
     atan2: (y, x) => {
       return Math.atan2(y, x)
     },
-    log10: (x) => {
+    log10: x => {
       return Math.log10(x)
     },
-    log2: (x) => {
+    log2: x => {
       return Math.log2(x)
     },
-    log: (x) => {
+    log: x => {
       return Math.log(x)
     },
-    sum: (arr) => {
+    sum: arr => {
       return arr.reduce((acc, item) => (acc += item), 0)
     },
     MININT: Number.MINSAFEINTEGER,
     MAXINT: Number.MAXSAFEINTEGER,
     infinity: Number.POSITIVEINFINITY,
-    negative: (n) => {
+    negative: n => {
       return -n
     },
     PI: Math.PI,
     parseint: (number, base) => {
       return parseInt(number.toString(), base)
     },
-    number: (string) => {
+    number: string => {
       return Number(string)
     },
   }
@@ -606,22 +608,22 @@ export class StandartLibrary {
     includes: (string, target) => {
       return string.includes(target)
     },
-    string: (thing) => {
+    string: thing => {
       return thing.toString()
     },
-    uppercase: (string) => {
+    uppercase: string => {
       return string.toUpperCase()
     },
-    lowercase: (string) => {
+    lowercase: string => {
       return string.toLowerCase()
     },
-    trim: (string) => {
+    trim: string => {
       return string.trim()
     },
-    trimstart: (string) => {
+    trimstart: string => {
       return string.trimStart()
     },
-    trimend: (string) => {
+    trimend: string => {
       return string.trimEnd()
     },
     substring: (string, start, end) => {
@@ -634,39 +636,39 @@ export class StandartLibrary {
   }
   CONVERT = {
     NAME: 'CONVERT',
-    array: (thing) => [...thing],
-    boolean: (thing) => {
+    array: thing => [...thing],
+    boolean: thing => {
       return Boolean(thing)
     },
-    string: (thing) => {
+    string: thing => {
       return thing.toString()
     },
-    integer: (number) => {
+    integer: number => {
       return parseInt(number.toString())
     },
     float: (number, base = 1) => {
       return +Number(number).toFixed(base)
     },
-    number: (thing) => {
+    number: thing => {
       return Number(thing)
     },
   }
   CONSOLE = {
     print,
-    printlog: (thing) => {
+    printlog: thing => {
       return console.log(...print(thing))
     },
-    consolelog: (thing) => {
+    consolelog: thing => {
       return console.log(thing)
     },
     NAME: 'CONSOLE',
   }
   LOGIC = {
     NAME: 'LOGIC',
-    istrue: (bol) => {
+    istrue: bol => {
       return +(!!bol === true)
     },
-    isfalse: (bol) => {
+    isfalse: bol => {
       return +(!!bol === false)
     },
     isequal: (a, b) => {
@@ -724,13 +726,13 @@ export class StandartLibrary {
         }
       }
     },
-    isnotvoid: (item) => {
+    isnotvoid: item => {
       return item === VOID ? 0 : 1
     },
-    isvoid: (item) => {
+    isvoid: item => {
       return item === VOID ? 1 : 0
     },
-    makeboolean: (item) => {
+    makeboolean: item => {
       return Boolean(item)
     },
     and: (entity, other) => {
@@ -739,25 +741,25 @@ export class StandartLibrary {
     or: (entity, other) => {
       return entity || other
     },
-    isempty: (item) => {
+    isempty: item => {
       return Object.keys(item).length === 0 ? 1 : 0
     },
     TRUE: 1,
     FALSE: 0,
-    iseven: (arg) => {
+    iseven: arg => {
       return arg % 2 === 0 ? 1 : 0
     },
-    isodd: (arg) => {
+    isodd: arg => {
       return arg % 2 !== 0 ? 1 : 0
     },
-    invert: (val) => {
+    invert: val => {
       return +!val
     },
     ishaving: (obj, ...props) => {
-      return +props.every((x) => x in obj)
+      return +props.every(x => x in obj)
     },
     areequal: (item, ...args) => {
-      return +args.every((current) => this.LOGIC.isequal(item, current))
+      return +args.every(current => this.LOGIC.isequal(item, current))
     },
   }
   LOOP = {
@@ -776,7 +778,7 @@ export class StandartLibrary {
         }
       }
     },
-    next: (entity) => {
+    next: entity => {
       return entity.next().value
     },
     iterate: (iterable, callback) => {
@@ -816,7 +818,7 @@ export class StandartLibrary {
       return out
     },
     tailcalloptimisedrecursion:
-      (func) =>
+      func =>
       (...args) => {
         let result = func(...args)
         while (typeof result === 'function') result = result()
@@ -826,13 +828,13 @@ export class StandartLibrary {
   ARRAY = {
     NAME: 'ARRAY',
     ['map1']: (entity, callback) => {
-      return entity.map((x) => callback(x))
+      return entity.map(x => callback(x))
     },
     ['filter1']: (entity, callback) => {
-      return entity.filter((x) => callback(x))
+      return entity.filter(x => callback(x))
     },
     ['fold1']: (entity, callback) => {
-      return entity.reduce((acc) => callback(acc), [])
+      return entity.reduce(acc => callback(acc), [])
     },
     ['fold2']: (entity, callback) => {
       return entity.reduce((acc, item) => callback(acc, item), [])
@@ -841,19 +843,19 @@ export class StandartLibrary {
       return entity.reduce((acc, item, index) => callback(acc, item, index), [])
     },
     ['reduce1']: (entity, callback, acc) => {
-      return entity.reduce((acc) => callback(acc), acc)
+      return entity.reduce(acc => callback(acc), acc)
     },
     ['reduce2']: (entity, callback, acc) => {
       return entity.reduce((acc, x) => callback(acc, x), acc)
     },
     ['find1']: (entity, callback) => {
-      return entity.find((x) => callback(x))
+      return entity.find(x => callback(x))
     },
     ['some1']: (entity, callback) => {
-      return entity.some((x) => callback(x))
+      return entity.some(x => callback(x))
     },
     ['every1']: (entity, callback) => {
-      return entity.every((x) => callback(x))
+      return entity.every(x => callback(x))
     },
     ['map3']: (entity, callback) => {
       return entity.map((x, i, a) => callback(x, i, a))
@@ -874,14 +876,14 @@ export class StandartLibrary {
       return entity.every((x, i, a) => callback(x, i, a))
     },
     ['foreach1']: (entity, callback) => {
-      entity.forEach((x) => callback(x))
+      entity.forEach(x => callback(x))
       return entity
     },
     ['foreach2']: (entity, callback) => {
       entity.forEach((x, i) => callback(x, i))
       return entity
     },
-    compact: (arr) => {
+    compact: arr => {
       return arr.filter(Boolean)
     },
     makearray: (...items) => {
@@ -896,7 +898,7 @@ export class StandartLibrary {
         return arr
       } else return VOID
     },
-    unique: (entity) => {
+    unique: entity => {
       const set = new Set()
       return entity.reduce((acc, item) => {
         if (!set.has(item)) {
@@ -916,7 +918,7 @@ export class StandartLibrary {
     each: (entity, fn) => {
       return entity.forEach((x, i, arr) => fn(x, i))
     },
-    from: (items) => {
+    from: items => {
       return Array.from(items)
     },
     transform: (entity, callback) => {
@@ -924,11 +926,11 @@ export class StandartLibrary {
         entity[i] = callback(entity[i], i, entity)
       return entity
     },
-    tail: (entity) => {
+    tail: entity => {
       entity.shift()
       return entity
     },
-    head: (entity) => {
+    head: entity => {
       entity.pop()
       return entity
     },
@@ -944,21 +946,21 @@ export class StandartLibrary {
     foreach: (entity, callback) => {
       return entity.forEach(callback)
     },
-    reverse: (entity) => {
+    reverse: entity => {
       return entity.reverse()
     },
     insertatend: (entity, ...args) => {
       entity.push(...args)
       return entity
     },
-    removefromend: (entity) => {
+    removefromend: entity => {
       entity.pop()
       return entity
     },
     push: (entity, ...args) => {
       return entity.push(...args)
     },
-    pop: (entity) => {
+    pop: entity => {
       return entity.pop()
     },
     prepend: (entity, item) => {
@@ -969,24 +971,24 @@ export class StandartLibrary {
       entity.push(item)
       return entity
     },
-    tail: (entity) => {
+    tail: entity => {
       entity.pop()
       return entity
     },
-    head: (entity) => {
+    head: entity => {
       entity.shift()
       return entity
     },
     includes: (entity, arg) => {
       return +entity.includes(arg)
     },
-    isarray: (entity) => {
+    isarray: entity => {
       return +entity.isArray()
     },
     unshift: (entity, ...args) => {
       return entity.unshift(...args)
     },
-    shift: (entity) => {
+    shift: entity => {
       return entity.shift()
     },
     fill: (entity, filling) => {
@@ -1037,29 +1039,29 @@ export class StandartLibrary {
     at: (entity, index) => {
       return entity.at(index)
     },
-    first: (entity) => {
+    first: entity => {
       return entity[0]
     },
-    last: (entity) => {
+    last: entity => {
       return entity[entity.length - 1]
     },
   }
   BINAR = {
     NAME: 'BINAR',
-    offsetleft: (entity) => {
+    offsetleft: entity => {
       return (entity.left.length - 1) * -1
     },
-    offsetright: (entity) => {
+    offsetright: entity => {
       return entity.right.length
     },
     negativeZero: Symbol('-0'),
     makebinar: () => {
       return { left: [this.BINAR.negativeZero], right: [] }
     },
-    length: (entity) => {
+    length: entity => {
       return entity.left.length + entity.right.length - 1
     },
-    clear: (entity) => {
+    clear: entity => {
       entity.left = [this.BINAR.negativeZero]
       entity.right = []
       return entity
@@ -1091,15 +1093,15 @@ export class StandartLibrary {
       if (offset >= 0) entity.right[offset] = value
       else entity.left[offset * -1] = value
     },
-    first: (entity) => this.BINAR.get(entity, 0),
-    last: (entity) => this.BINAR.get(entity, this.BINAR.length(entity) - 1),
-    toarray: (entity) => {
+    first: entity => this.BINAR.get(entity, 0),
+    last: entity => this.BINAR.get(entity, this.BINAR.length(entity) - 1),
+    toarray: entity => {
       const len = this.BINAR.length(entity)
       const out = []
       for (let i = 0; i < len; i++) out.push(this.BINAR.get(entity, i))
       return out
     },
-    copy: (entity) => {
+    copy: entity => {
       const lem = this.BINAR.length(entity)
       const out = this.BINAR.makebinar()
       const half = (lem / 2) | 0.5
@@ -1109,19 +1111,19 @@ export class StandartLibrary {
         this.BINAR.addtoright(out, this.BINAR.get(entity, i))
       return out
     },
-    isbinar: (entity) => {
+    isbinar: entity => {
       return (
         typeof entity === 'object' &&
         'left' in entity &&
         entity.left[0] === this.BINAR.negativeZero
       )
     },
-    isbalanced: (entity) => {
+    isbalanced: entity => {
       return (
         this.BINAR.offsetright(entity) + this.BINAR.offsetleft(entity) === 0
       )
     },
-    balance: (entity) => {
+    balance: entity => {
       if (this.BINAR.isbalanced(entity)) return entity
       const initial = this.BINAR.toarray(entity)
       this.BINAR.clear(entity)
@@ -1138,14 +1140,14 @@ export class StandartLibrary {
     addtoright: (entity, item) => {
       return entity.right.push(item)
     },
-    removefromleft: (entity) => {
+    removefromleft: entity => {
       const len = this.BINAR.length(entity)
       if (len) {
         if (len === 1) this.BINAR.clear(entity)
         else if (entity.left.length > 0) entity.left.length--
       }
     },
-    removefromright: (entity) => {
+    removefromright: entity => {
       const len = this.BINAR.length(entity)
       if (len) {
         if (len === 1) this.BINAR.clear(entity)
@@ -1160,7 +1162,7 @@ export class StandartLibrary {
         this.BINAR.addtoright(entity, initial[i])
       return entity
     },
-    from: (initial) => {
+    from: initial => {
       return this.BINAR.fill(this.BINAR.makebinar(), ...initial)
     },
     makebinarwith: (...intilal) => {
@@ -1237,7 +1239,7 @@ export class StandartLibrary {
       for (let i = 0; i < len; i += 1) callback(this.BINAR.get(entity, i))
       return entity
     },
-    reverse: (entity) => {
+    reverse: entity => {
       const len = this.BINAR.length(entity)
       if (len <= 2) {
         if (len === 1) return entity
@@ -1253,7 +1255,7 @@ export class StandartLibrary {
       entity.right = left
       return entity
     },
-    isempty: (entity) => {
+    isempty: entity => {
       return entity.left.length + entity.right.length === 1 ? 1 : 0
     },
     isinbounds: (entity, index) => {
@@ -1273,24 +1275,24 @@ export class StandartLibrary {
       this.BINAR.addtoleft(entity, item)
       return entity
     },
-    cut: (entity) => {
+    cut: entity => {
       if (this.BINAR.offsetright(entity) === 0) this.BINAR.balance(entity)
       const out = this.BINAR.last(entity)
       this.BINAR.removefromright(entity)
       return out
     },
-    chop: (entity) => {
+    chop: entity => {
       if (this.BINAR.offsetleft(entity) === 0) this.BINAR.balance(entity)
       const out = this.BINAR.first(entity)
       this.BINAR.removefromleft(entity)
       return out
     },
-    head: (entity) => {
+    head: entity => {
       if (this.BINAR.offsetright(entity) === 0) this.BINAR.balance(entity)
       this.BINAR.removefromright(entity)
       return entity
     },
-    tail: (entity) => {
+    tail: entity => {
       if (this.BINAR.offsetleft(entity) === 0) this.BINAR.balance(entity)
       this.BINAR.removefromleft(entity)
       return entity
@@ -1328,7 +1330,7 @@ export class StandartLibrary {
     flat: (entity, levels = 1) => {
       const flat =
         levels === Infinity
-          ? this.LOOP.tailcalloptimisedrecursion((collection) =>
+          ? this.LOOP.tailcalloptimisedrecursion(collection =>
               this.BINAR.flatten(collection, levels, flat),
             )
           : this.LOOP.tailcalloptimisedrecursion((collection, levels) => {
@@ -1353,7 +1355,7 @@ export class StandartLibrary {
       this.BINAR.set(entity, index, this.BINAR.chop(entity))
       return entity
     },
-    compact: (entity) => {
+    compact: entity => {
       return this.BINAR.filter(entity, Boolean)
     },
     union: (entity, b) => {
@@ -1361,8 +1363,8 @@ export class StandartLibrary {
       const out = this.BINAR.makebinar()
       const A = new Set(this.BINAR.toarray(a))
       const B = new Set(this.BINAR.toarray(b))
-      A.forEach((item) => this.BINAR.append(out, item))
-      B.forEach((item) => this.BINAR.append(out, item))
+      A.forEach(item => this.BINAR.append(out, item))
+      B.forEach(item => this.BINAR.append(out, item))
       return this.BINAR.balance(out)
     },
     symetricdifference: (entity, b) => {
@@ -1370,8 +1372,8 @@ export class StandartLibrary {
       const out = this.BINAR.makebinar()
       const A = new Set(this.BINAR.toarray(a))
       const B = new Set(this.BINAR.toarray(b))
-      B.forEach((item) => !A.has(item) && this.BINAR.append(out, item))
-      A.forEach((item) => !B.has(item) && this.BINAR.append(out, item))
+      B.forEach(item => !A.has(item) && this.BINAR.append(out, item))
+      A.forEach(item => !B.has(item) && this.BINAR.append(out, item))
       return this.BINAR.balance(out)
     },
     intersection: (entity, b) => {
@@ -1379,7 +1381,7 @@ export class StandartLibrary {
       const out = this.BINAR.makebinar()
       const A = new Set(this.BINAR.toarray(a))
       const B = new Set(this.BINAR.toarray(b))
-      B.forEach((item) => A.has(item) && this.BINAR.append(out, item))
+      B.forEach(item => A.has(item) && this.BINAR.append(out, item))
       return this.BINAR.balance(out)
     },
     difference: (entity, b) => {
@@ -1387,7 +1389,7 @@ export class StandartLibrary {
       const out = this.BINAR.makebinar()
       const A = new Set(this.BINAR.toarray(a))
       const B = new Set(this.BINAR.toarray(b))
-      A.forEach((item) => !B.has(item) && this.BINAR.append(out, item))
+      A.forEach(item => !B.has(item) && this.BINAR.append(out, item))
       return this.BINAR.balance(out)
     },
     partition: (entity, groups = 1) =>
@@ -1405,7 +1407,7 @@ export class StandartLibrary {
           return acc
         }),
       ),
-    unique: (entity) => {
+    unique: entity => {
       const set = new Set()
       return this.BINAR.fill(
         this.BINAR.makebinar(),
@@ -1422,7 +1424,7 @@ export class StandartLibrary {
         ),
       )
     },
-    duplicates: (entity) => {
+    duplicates: entity => {
       const set = new Set()
       const extra = []
       const out = this.BINAR.to(
@@ -1433,7 +1435,7 @@ export class StandartLibrary {
         },
         [],
       )
-      out.forEach((item) => {
+      out.forEach(item => {
         if (set.has(item)) {
           set.delete(item)
           extra.push(item)
@@ -1453,7 +1455,7 @@ export const STD = {
   _: VOID,
   null: VOID,
   NULL: VOID,
-  COMP: (source) => {
+  COMP: source => {
     popUp(
       createPopUp(),
       toJavasScript({ source: wrapInBody(removeNoCode(source)) }),
@@ -1461,19 +1463,19 @@ export const STD = {
       window.innerHeight / 2,
     )
   },
-  IMP: (module) => {
+  IMP: module => {
     const pop = createPopUp()
     popUp(
       pop,
       `<- [${Object.keys(module)
-        .filter((x) => x !== 'NAME')
-        .map((x) => `"${x}"`)
+        .filter(x => x !== 'NAME')
+        .map(x => `"${x}"`)
         .join(';')}] [${module.NAME}];\n`,
       window.innerWidth * 1 - 20,
     )
     pop.focus()
   },
-  SOURCE: (method) => {
+  SOURCE: method => {
     popUp(
       createPopUp(),
       method.toString(),
@@ -1501,7 +1503,7 @@ ${msg !== VOID ? JSON.stringify(msg, null, space) : VOID}`,
   },
 
   tco:
-    (func) =>
+    func =>
     (...args) => {
       let result = func(...args)
       while (typeof result === 'function') result = result()
