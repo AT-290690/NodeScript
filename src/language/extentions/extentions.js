@@ -1452,10 +1452,16 @@ export const STD = {
   _: VOID,
   null: VOID,
   NULL: VOID,
-  COMP: source => {
+  COMP: (...source) => {
+    source = source
+      .map((x, i) => (i % 2 !== 0 ? `"${x.replaceAll(';;', '')}"` : x))
+      .join('')
+    console.log(source)
     popUp(
       createPopUp(),
-      toJavasScript({ source: wrapInBody(removeNoCode(source)) }),
+      toJavasScript({
+        source: wrapInBody(removeNoCode(source)),
+      }),
       window.innerWidth * 1 - 20,
       window.innerHeight / 2,
     )
