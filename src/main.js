@@ -2,6 +2,7 @@ import { CodeMirror } from './editor/cell.editor.bundle.js'
 import { languageUtilsString, toJavasScript } from './language/core/toJs.js'
 import {
   encodeUrl,
+  prettier,
   removeNoCode,
   run,
   wrapInBody,
@@ -669,6 +670,7 @@ cy.ready(() => {
 
   elements.save.addEventListener('click', () => saveFile())
   elements.close.addEventListener('click', onClose)
+
   // elements.load.addEventListener('click', () => loadFile());
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {

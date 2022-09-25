@@ -104,7 +104,15 @@ export const isBalancedParenthesis = sourceCode => {
     else if (str[i] in pairs) if (stack.pop() !== pairs[str[i]]) count++
   return { str, diff: count - stack.length }
 }
-export const prettier = str => addSpace(str)
+export const prettier = str =>
+  addSpace(
+    removeNoCode(str)
+      .replaceAll('];', '];\n')
+      .replaceAll(';', '; ')
+      .replaceAll('; ;', ';;')
+      .replaceAll('[', ' [')
+      .replaceAll('| ', '\n|'),
+  )
 
 export const run = source => {
   popupContainer.style.display = 'none'
