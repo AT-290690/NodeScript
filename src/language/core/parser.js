@@ -31,19 +31,19 @@ const tailCallOpt = (children, name, parent) => {
     }
   }
 }
-const pipeArgs = (expr) => {
+const pipeArgs = expr => {
   const [first, ...rest] = expr.args
-  if (!rest.every((x) => x.class === 'function' && x.operator.name)) {
+  if (!rest.every(x => x.class === 'function' && x.operator.name)) {
     printErrors(`SyntaxError Non function arguments passed to a Pipe`, expr)
     throw new SyntaxError(`Non function arguments passed to a Pipe`)
   }
-  if (!rest.every((x) => x.operator.name[0] === '|')) {
+  if (!rest.every(x => x.operator.name[0] === '|')) {
     printErrors(`SyntaxError Pipe functions have to start with |`, expr)
     throw new SyntaxError(`Pipe functions have to start with |`)
   }
   expr.args = [
     first,
-    ...rest.map((arg) => ({
+    ...rest.map(arg => ({
       args: [
         { type: 'word', name: '__' },
         {
@@ -93,7 +93,7 @@ export const parseApply = (expr, program) => {
   }
   return parseApply(expr, program.slice(1))
 }
-export const parseExpression = (program) => {
+export const parseExpression = program => {
   let match, expr
   if ((match = /^"([^"]*)"/.exec(program))) {
     expr = {
@@ -116,7 +116,7 @@ export const parseExpression = (program) => {
   }
   return parseApply(expr, program.slice(match[0].length))
 }
-export const parse = (program) => {
+export const parse = program => {
   const result = parseExpression(program)
   if (result.rest.length > 0) {
     printErrors('SyntaxError Unexpected text after program')
@@ -126,7 +126,7 @@ export const parse = (program) => {
 }
 export const cell =
   (env, run = true) =>
-  (args) => {
+  args => {
     const AST = parse(args)
     return run
       ? { result: evaluate(AST, env), env, AST }

@@ -7,7 +7,7 @@ import {
   protolessModule,
   popupContainer,
 } from '../extentions/extentions.js'
-export const correctFilePath = (filename) => {
+export const correctFilePath = filename => {
   if (!filename) return ''
   return '/' + filename.split('/').filter(Boolean).join('/')
 }
@@ -23,7 +23,7 @@ export const State = {
   isLogged: false,
   isErrored: true,
 }
-const dfs = (ast) => {
+const dfs = ast => {
   let out = { fn: null, res: null }
   for (const prop in ast)
     if (Array.isArray(ast[prop])) {
@@ -60,15 +60,15 @@ export const printErrors = (errors, args) => {
     }
   }
 }
-export const extractComments = (source) =>
+export const extractComments = source =>
   source
     .match(/[ ]+(?=[^"]*(?:"[^"]*"[^"]*)*$)+|\n|\t|;;.+/g)
-    .filter((x) => x[0] === ';' && x[1] === ';')
-export const removeNoCode = (source) =>
+    .filter(x => x[0] === ';' && x[1] === ';')
+export const removeNoCode = source =>
   source.replace(/[ ]+(?=[^"]*(?:"[^"]*"[^"]*)*$)+|\n|\t|;;.+/g, '')
-export const wrapInBody = (source) => `..[${source}]`
+export const wrapInBody = source => `..[${source}]`
 
-export const exe = (source) => {
+export const exe = source => {
   const ENV = protolessModule(STD)
   ENV[';;tokens'] = protolessModule(tokens)
   try {
@@ -82,19 +82,19 @@ export const exe = (source) => {
     consoleElement.value = consoleElement.value.trim() || err + ' '
   }
 }
-export const addSpace = (str) => str + '\n'
-export const revertComments = (str) => {
+export const addSpace = str => str + '\n'
+export const revertComments = str => {
   if (State.comments) {
     const lines = str.split('\n')
     const stack = State.comments
     return lines
-      .map((line) => (line[0] + line[1] === '##' ? stack.shift() : line))
+      .map(line => (line[0] + line[1] === '##' ? stack.shift() : line))
       .join('\n')
   } else {
     return str
   }
 }
-export const isBalancedParenthesis = (sourceCode) => {
+export const isBalancedParenthesis = sourceCode => {
   let count = 0
   const stack = []
   const str = sourceCode.replace(/"(.*?)"/g, '')
@@ -104,9 +104,9 @@ export const isBalancedParenthesis = (sourceCode) => {
     else if (str[i] in pairs) if (stack.pop() !== pairs[str[i]]) count++
   return { str, diff: count - stack.length }
 }
-export const prettier = (str) => addSpace(str)
+export const prettier = str => addSpace(str)
 
-export const run = (source) => {
+export const run = source => {
   popupContainer.style.display = 'none'
   State.isErrored = false
   consoleElement.classList.add('info_line')
@@ -161,7 +161,7 @@ export const encodeUrl = (source, limit = Infinity) => {
     )
   else return encoded
 }
-export const decodeUrl = (url) => {
+export const decodeUrl = url => {
   const value = LZUTF8.decompress(url, {
     inputEncoding: 'Base64',
     outputEncoding: 'String',

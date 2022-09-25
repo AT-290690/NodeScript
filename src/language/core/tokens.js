@@ -1,6 +1,6 @@
 import { printErrors } from './utils.js'
 import evaluate from './interpreter.js'
-const name = (expr) => {
+const name = expr => {
   if (expr.type !== 'word') {
     printErrors('TypeError Argument names must be words')
     throw new TypeError('Argument names must be words')
@@ -39,11 +39,11 @@ const isEqual = (a, b) => {
 export const VOID = undefined
 export const pipe =
   (...fns) =>
-  (x) =>
+  x =>
     fns.reduce((v, f) => f(v), x)
 export const parsePath = (arg, env) => {
   const path = extract(arg, env)?.toString()
-  return path ? path.split(';').map((x) => x.trim()) : VOID
+  return path ? path.split(';').map(x => x.trim()) : VOID
 }
 const tokens = {
   ['+']: (args, env) => {
@@ -51,7 +51,7 @@ const tokens = {
       printErrors('TypeError Invalid number of arguments to +', args)
       throw new TypeError('Invalid number of arguments to +')
     }
-    const [first, ...rest] = args.map((a) => evaluate(a, env))
+    const [first, ...rest] = args.map(a => evaluate(a, env))
     return rest.reduce((acc, x) => (acc += x), first)
   },
   ['-']: (args, env) => {
@@ -59,7 +59,7 @@ const tokens = {
       printErrors('TypeError Invalid number of arguments to -', args)
       throw new TypeError('Invalid number of arguments to -')
     }
-    const [first, ...rest] = args.map((a) => evaluate(a, env))
+    const [first, ...rest] = args.map(a => evaluate(a, env))
     return rest.reduce((acc, x) => (acc -= x), first)
   },
   ['*']: (args, env) => {
@@ -67,7 +67,7 @@ const tokens = {
       printErrors('TypeError Invalid number of arguments to *', args)
       throw new TypeError('Invalid number of arguments to *')
     }
-    const [first, ...rest] = args.map((a) => evaluate(a, env))
+    const [first, ...rest] = args.map(a => evaluate(a, env))
     return rest.reduce((acc, x) => (acc *= x), first)
   },
   [':']: (args, env) => {
@@ -75,7 +75,7 @@ const tokens = {
       printErrors('TypeError Invalid number of arguments to :', args)
       throw new TypeError('Invalid number of arguments to :')
     }
-    const [first, ...rest] = args.map((a) => evaluate(a, env))
+    const [first, ...rest] = args.map(a => evaluate(a, env))
     return rest.reduce((acc, x) => (acc /= x), first)
   },
   ['%']: (args, env) => {
@@ -83,7 +83,7 @@ const tokens = {
       printErrors('TypeError Invalid number of arguments to %', args)
       throw new TypeError('Invalid number of arguments to %')
     }
-    const [left, right] = args.map((a) => evaluate(a, env))
+    const [left, right] = args.map(a => evaluate(a, env))
     return left % right
   },
   ['?']: (args, env) => {
@@ -111,48 +111,48 @@ const tokens = {
       printErrors('TypeError Invalid number of arguments to ==', args)
       throw new TypeError('Invalid number of arguments to ==')
     }
-    const [first, ...rest] = args.map((a) => evaluate(a, env))
-    return +rest.every((x) => first === x)
+    const [first, ...rest] = args.map(a => evaluate(a, env))
+    return +rest.every(x => first === x)
   },
   ['!=']: (args, env) => {
     if (args.length < 2) {
       printErrors('TypeError Invalid number of arguments to !=', args)
       throw new TypeError('Invalid number of arguments to !=')
     }
-    const [first, ...rest] = args.map((a) => evaluate(a, env))
-    return +rest.every((x) => first !== x)
+    const [first, ...rest] = args.map(a => evaluate(a, env))
+    return +rest.every(x => first !== x)
   },
   ['>']: (args, env) => {
     if (args.length < 2) {
       printErrors('TypeError Invalid number of arguments to >', args)
       throw new TypeError('Invalid number of arguments to >')
     }
-    const [first, ...rest] = args.map((a) => evaluate(a, env))
-    return +rest.every((x) => first > x)
+    const [first, ...rest] = args.map(a => evaluate(a, env))
+    return +rest.every(x => first > x)
   },
   ['<']: (args, env) => {
     if (args.length < 2) {
       printErrors('TypeError Invalid number of arguments to <', args)
       throw new TypeError('Invalid number of arguments to <')
     }
-    const [first, ...rest] = args.map((a) => evaluate(a, env))
-    return +rest.every((x) => first < x)
+    const [first, ...rest] = args.map(a => evaluate(a, env))
+    return +rest.every(x => first < x)
   },
   ['>=']: (args, env) => {
     if (args.length < 2) {
       printErrors('TypeError Invalid number of arguments to >=', args)
       throw new TypeError('Invalid number of arguments to >=')
     }
-    const [first, ...rest] = args.map((a) => evaluate(a, env))
-    return +rest.every((x) => first >= x)
+    const [first, ...rest] = args.map(a => evaluate(a, env))
+    return +rest.every(x => first >= x)
   },
   ['<=']: (args, env) => {
     if (args.length < 2) {
       printErrors('TypeError Invalid number of arguments to <=', args)
       throw new TypeError('Invalid number of arguments to <=')
     }
-    const [first, ...rest] = args.map((a) => evaluate(a, env))
-    return +rest.every((x) => first <= x)
+    const [first, ...rest] = args.map(a => evaluate(a, env))
+    return +rest.every(x => first <= x)
   },
   ['*?']: (args, env) => {
     if (args.length === 0 || args.length % 2 !== 0) {
@@ -210,7 +210,7 @@ const tokens = {
   },
   ['..']: (args, env) => {
     let value = VOID
-    args.forEach((arg) => (value = evaluate(arg, env)))
+    args.forEach(arg => (value = evaluate(arg, env)))
     return value
   },
   [':=']: (args, env) => {
@@ -295,7 +295,7 @@ const tokens = {
       } else {
         let temp = entity
         const last = prop.pop()
-        prop.forEach((item) => {
+        prop.forEach(item => {
           temp = temp[item]
         })
         temp[last] = value
@@ -311,7 +311,7 @@ const tokens = {
           } else {
             let temp = entity
             const last = prop.pop()
-            prop.forEach((item) => {
+            prop.forEach(item => {
               temp = temp[item]
             })
             temp[last] = value
@@ -337,7 +337,7 @@ const tokens = {
         } else {
           let temp = scope[entityName]
           const last = prop.pop()
-          prop.forEach((item) => {
+          prop.forEach(item => {
             temp = temp[item]
           })
           //const value = temp[last];
@@ -375,7 +375,7 @@ const tokens = {
         } else {
           let temp = scope[entityName]
           const last = prop.pop()
-          prop.forEach((item) => {
+          prop.forEach(item => {
             temp = temp[item]
           })
           const entityProperty = temp[last]
@@ -444,12 +444,12 @@ const tokens = {
       printErrors(err, args)
     }
   },
-  ['.:']: (args, env) => args.map((item) => extract(item, env)),
+  ['.:']: (args, env) => args.map(item => extract(item, env)),
   ['<-']:
     (args, env) =>
     (exp, prefix = '') => {
       prefix = prefix.replaceAll(' ', '')
-      args.forEach((arg) => {
+      args.forEach(arg => {
         const method = arg.value.replaceAll(' ', '')
         env[`${prefix}${method}`] = exp[method]
       })
@@ -457,7 +457,7 @@ const tokens = {
     },
   ['|>']: (args, env) => {
     const [param, ...rest] = args
-    return pipe(...rest.map((arg) => (p) => evaluate(arg, env)(p)))(
+    return pipe(...rest.map(arg => p => evaluate(arg, env)(p)))(
       param.type === 'apply' || param.type === 'word'
         ? evaluate(param, env)
         : param.value,
