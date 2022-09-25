@@ -106,12 +106,15 @@ export const isBalancedParenthesis = sourceCode => {
 }
 export const prettier = str =>
   addSpace(
-    removeNoCode(str)
+    str
       .replaceAll('];', '];\n')
       .replaceAll(';', '; ')
       .replaceAll('; ;', ';;')
       .replaceAll('[', ' [')
-      .replaceAll('| ', '\n|'),
+      .replaceAll('|', '| ')
+      .replaceAll('| >', '\n|>')
+      .replaceAll('.. [', '.. [\n')
+      .replaceAll('; :=', ';\n:='),
   )
 
 export const run = source => {
