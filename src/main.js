@@ -538,19 +538,20 @@ cy.ready(() => {
     else if (memo.lastSelection.id) {
       elements.commentsSection.style.display = 'block'
       elements.connectionButton.style.display = 'none'
-    } else {
-      const zoom = cy.zoom()
-      const pan = cy.pan()
-      const start = 90
-      const end = 150
-      addNode(
-        {
-          x: (Math.floor(start + Math.random() * end) - pan.x) / zoom,
-          y: (Math.floor(start + Math.random() * end) - pan.y) / zoom,
-        },
-        DEFAULT_TOKEN,
-      )
     }
+    // else {
+    //   const zoom = cy.zoom()
+    //   const pan = cy.pan()
+    //   const start = 90
+    //   const end = 150
+    //   addNode(
+    //     {
+    //       x: (Math.floor(start + Math.random() * end) - pan.x) / zoom,
+    //       y: (Math.floor(start + Math.random() * end) - pan.y) / zoom,
+    //     },
+    //     DEFAULT_TOKEN,
+    //   )
+    // }
   })
   elements.openAppButton.addEventListener('click', () => {
     if (memo.lastSelection.id) {
@@ -652,15 +653,18 @@ cy.ready(() => {
   }
 
   const onClose = () => {
-    elements.commentsSection.style.display = 'none'
-    clearSelection()
-    deselectIndex()
-    consoleElement.value = ''
-    STD.LIBRARY.SKETCH.destroycomposition()
-    const appDocument = elements.app.contentWindow
-    if (appDocument && appDocument.LIBRARY)
-      appDocument.LIBRARY.SKETCH?.destroycomposition()
-    elements.app.style.display = 'none'
+    if (elements.app.style.display !== 'none') {
+      STD.LIBRARY.SKETCH.destroycomposition()
+      const appDocument = elements.app.contentWindow
+      if (appDocument && appDocument.LIBRARY)
+        appDocument.LIBRARY.SKETCH?.destroycomposition()
+      elements.app.style.display = 'none'
+    } else {
+      elements.commentsSection.style.display = 'none'
+      clearSelection()
+      deselectIndex()
+      consoleElement.value = ''
+    }
   }
 
   elements.save.addEventListener('click', () => saveFile())
@@ -747,4 +751,15 @@ cy.ready(() => {
     editor.setSize(window.innerWidth - 5, window.innerHeight - 5),
   )
   elements.treeContainer.focus()
+  const zoom = cy.zoom()
+  const pan = cy.pan()
+  const start = 90
+  const end = 150
+  addNode(
+    {
+      x: (Math.floor(start + Math.random() * end) - pan.x) / zoom,
+      y: (Math.floor(start + Math.random() * end) - pan.y) / zoom,
+    },
+    DEFAULT_TOKEN,
+  )
 })
