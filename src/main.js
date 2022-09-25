@@ -81,16 +81,16 @@ const memo = {
   </body>`,
 }
 
-const changeTheme = (theme) => {
+const changeTheme = theme => {
   for (const key in CURRENT_THEME) CURRENT_THEME[key] = theme[key]
   const style = document.documentElement.style
   for (const color in CURRENT_THEME.styles) {
     style.setProperty(color, CURRENT_THEME.styles[color])
   }
 }
-const debounce = (func) => {
+const debounce = func => {
   let timer
-  return (event) => {
+  return event => {
     if (timer) clearTimeout(timer)
     timer = setTimeout(func, 100, event)
   }
@@ -191,7 +191,7 @@ const cy = cytoscape({
   motionBlurOpacity: 0.2,
   pixelRatio: 'auto',
 })
-const setIndex = (v) => {
+const setIndex = v => {
   memo.nodeIndex = +v
   memo.edgeIndex += memo.nodeIndex
 }
@@ -245,7 +245,7 @@ const deselectIndex = () => {
   elements.selectedIndex.style.display = 'none'
   elements.variableInput.style.display = 'none'
 }
-const clickEdges = (e) => {
+const clickEdges = e => {
   // resetColorOfSelectedNodes();
   clearSelection()
   const { label, comment } = e.target.data()
@@ -317,7 +317,7 @@ const connectNodes = (couple = memo.nodePairsSelections, label) => {
     return edge
   }
 }
-const clickNodes = (e) => {
+const clickNodes = e => {
   deselectEdges()
   deselectNodes()
   const current = e.target.data()
@@ -361,18 +361,18 @@ const clickNodes = (e) => {
     clickNodes(e)
   }
 }
-const hasEdges = (id) => cy.nodes(`#${id}`).connectedEdges().size()
-const removeNode = (id) => {
+const hasEdges = id => cy.nodes(`#${id}`).connectedEdges().size()
+const removeNode = id => {
   cy.nodes(`#${id}`).remove()
 }
-const removeNodeEdges = (id) => {
+const removeNodeEdges = id => {
   cy.nodes(`#${id}`).connectedEdges().remove()
 }
-const removeEdge = (id) => {
+const removeEdge = id => {
   cy.edges(`#${id}`).remove()
 }
 const resetColorOfSelectedNodes = (nodes = memo.nodePairsSelections) => {
-  nodes.map((id) =>
+  nodes.map(id =>
     cy.nodes(`#${id}`).style({
       'text-outline-width': 0,
       'text-outline-color': CURRENT_THEME.selection,
@@ -388,7 +388,7 @@ const positionAbsoluteElement = (element, coordinates) => {
   element.style.top = coordinates.y + 'px'
 }
 const deselectNodes = () =>
-  cy.nodes().map((n) =>
+  cy.nodes().map(n =>
     n
       .style({
         'text-outline-width': 0,
@@ -397,7 +397,7 @@ const deselectNodes = () =>
       .unselect(),
   )
 const deselectEdges = () =>
-  cy.edges().map((e) =>
+  cy.edges().map(e =>
     e
       .style({
         'line-color': CURRENT_THEME.edges,
@@ -440,19 +440,19 @@ const clearTree = (nodes = true, edges = true) => {
     memo.edgeIndex = 0
   }
 }
-const offsetElementsIndexes = (elements) => {
+const offsetElementsIndexes = elements => {
   const N = memo.nodeIndex
   const E = memo.edgeIndex
   const { nodes, edges } = elements
   let maxNodeIndex = 0
   let maxEdgeIndex = 0
-  const offsetNodes = nodes?.map((n) => {
+  const offsetNodes = nodes?.map(n => {
     n.data.index += N
     n.data.id = 'n' + n.data.index
     maxNodeIndex = Math.max(maxNodeIndex, n.data.index)
     return n
   })
-  const offsetEdges = edges?.map((e) => {
+  const offsetEdges = edges?.map(e => {
     const index = Number(e.data.id.substr(1)) + E
     e.data.id = 'e' + index
     e.data.source = `n${Number(e.data.source.substr(1)) + N}`
@@ -466,8 +466,8 @@ const offsetElementsIndexes = (elements) => {
 }
 const invertEdges = () => {
   const allEdges = cy.edges()
-  const edges = allEdges.filter((edge) => edge.selected())
-  edges.forEach((edge) => {
+  const edges = allEdges.filter(edge => edge.selected())
+  edges.forEach(edge => {
     const { target, source, label, id, ...rest } = edge.data()
     const vertex = { target: source, source: target }
     edge.remove()
@@ -480,7 +480,7 @@ const invertEdges = () => {
 const seedGraph = (nodes, edges) => {
   edges?.length ? cy.add([...nodes, ...edges]) : cy.add([...nodes])
 }
-const graphFromJson = (input) => {
+const graphFromJson = input => {
   const data = input
   // clearTree();
   offsetElementsIndexes(data.elements)
@@ -491,7 +491,7 @@ const graphFromJson = (input) => {
     incIndex()
   }
 }
-const getElementOffset = (element) => {
+const getElementOffset = element => {
   const rect = element.getBoundingClientRect()
   return {
     left: rect.left,
@@ -565,7 +565,7 @@ cy.ready(() => {
       memo.nodePairsSelections.length === 2 &&
       connectNodes(memo.nodePairsSelections),
   )
-  document.addEventListener('mousemove', (e) => {
+  document.addEventListener('mousemove', e => {
     memo.mousePosition = {
       x: e.clientX,
       y: e.clientY,
@@ -625,23 +625,23 @@ cy.ready(() => {
     upload.type = 'file'
     upload.name = 'tree.json'
     const reader = new FileReader()
-    reader.onload = async (e) =>
+    reader.onload = async e =>
       graphFromJson(JSON.parse(e.target.result.toString()).GRAPH.main)
-    upload.addEventListener('change', (e) =>
+    upload.addEventListener('change', e =>
       reader.readAsText(e.currentTarget.files[0]),
     )
     upload.click()
   }
-  const dropfile = (file) => {
+  const dropfile = file => {
     const reader = new FileReader()
-    reader.onload = async (e) =>
+    reader.onload = async e =>
       graphFromJson(JSON.parse(e.target.result.toString()).GRAPH.main)
     reader.readAsText(file, 'UTF-8')
   }
-  elements.treeContainer.ondragover = (e) => {
+  elements.treeContainer.ondragover = e => {
     e.preventDefault()
   }
-  elements.treeContainer.ondrop = (e) => {
+  elements.treeContainer.ondrop = e => {
     e.preventDefault()
     const file = e.dataTransfer.files[0]
     dropfile(file)
@@ -666,7 +666,7 @@ cy.ready(() => {
   elements.save.addEventListener('click', () => saveFile())
   elements.close.addEventListener('click', onClose)
   // elements.load.addEventListener('click', () => loadFile());
-  document.addEventListener('keydown', (e) => {
+  document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       e.preventDefault()
       e.stopPropagation()
@@ -709,7 +709,7 @@ cy.ready(() => {
         else elements.variableInput.value += e.key
       }
       if (e.key === 'Delete' || (e.ctrlKey && e.key === 'Backspace')) {
-        cy.elements().forEach((el) => {
+        cy.elements().forEach(el => {
           if (el.selected()) el.remove()
         })
         clearSelection()
@@ -724,16 +724,16 @@ cy.ready(() => {
       }
     }
   })
-  cy.on('dragfree', 'node', (e) => {
+  cy.on('dragfree', 'node', e => {
     clearSelection()
     deselectIndex()
   })
-  cy.on('select', 'edge', (e) => {
+  cy.on('select', 'edge', e => {
     e.target.style({ 'line-color': CURRENT_THEME.selection, width: 3 })
   })
-  cy.on('select', 'node', (e) => e.target.style('text-outline-width', 3))
+  cy.on('select', 'node', e => e.target.style('text-outline-width', 3))
   cy.on('click', 'node', clickNodes)
-  cy.on('click', 'edge', (e) => {
+  cy.on('click', 'edge', e => {
     clickEdges(e)
     const data = e.target.data()
     const incomming = cy.nodes(`#${data.source}`).first()
