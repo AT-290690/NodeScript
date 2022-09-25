@@ -17,10 +17,18 @@ const source = document.getElementById('source')
       globalThis.LIBRARY.SKETCH.destroycomposition()
     }
     main.parentNode.removeChild(main)
-    main = appendScript(
-      toJavasScript({
-        source: wrapInBody(decodeUrl(source.value.split('s=').pop())),
-      }),
-    )
+    try {
+      main = appendScript(
+        toJavasScript({
+          source: wrapInBody(
+            decodeUrl(
+              (source.value = source.value.split('.html?s=').pop().trim()),
+            ),
+          ),
+        }),
+      )
+    } catch (err) {
+      main = appendScript('')
+    }
   })
 })()

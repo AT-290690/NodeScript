@@ -76,24 +76,36 @@
         border: none;
       }
       #source {
-        width: 50%;
-        height: 30vh;
-        background-color: transparent;
-        color: var(--color-thirdly);
-        border: solid 1px var(--color-primary);
-        margin: 10px;
+        width: 100%;
+        height: 60px;
+        background-color: var(--background-primary);
+        color: var(--color-secondary);
         padding: 5px;
+        border: solid 1px var(--color-primary);
+        resize: none;
       }
       #run {
-        background-color: transparent;
+        width: 50px;
+        background-color: var(--background-primary);
         border: solid 1px var(--color-primary);
-        padding: 10px;
         cursor: pointer;
       }
+      #run:active {
+        background: var(--color-thirdly);
+      }
       #container {
+        display: flex;
         margin: 10px;
         padding: 5px;
         text-align: left;
+      }
+      #canvas-container {
+        text-align: center;
+        height: calc(100vh - 100px);
+      }
+      #canvas-container > svg {
+        margin-top: 30px;
+        border: solid 1px var(--color-primary);
       }
     </style>
     <link rel="icon" type="image/x-icon" href="./assets/images/chip.svg" />
@@ -114,7 +126,7 @@
     <script type="module" src="./src/snippets.js"></script>
     <div id="container">
       <button id="run"><img src="./assets/images/chip.svg" /></button>
+      <textarea spellcheck="false" id="source"></textarea>
     </div>
-    <textarea id="source"></textarea>
   </body>
 </html>
