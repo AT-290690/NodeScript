@@ -84,16 +84,31 @@ export class StandartLibrary {
   }
   SKETCH = {
     NAME: 'SKETCH',
+    COMMANDS: {
+      NAME: 'COMMANDS',
+      MOVE: Two.Commands.move,
+      CURVE: Two.Commands.curve,
+      LINE: Two.Commands.line,
+    },
+    ANCHOR: {
+      NAME: 'ANCHOR',
+      makeanchor: (p1, p2, p3, p4, p5, p6, p7) =>
+        new Two.Anchor(p1, p2, p3, p4, p5, p6, p7),
+    },
+    PATH: {
+      NAME: 'PATH',
+      makepath: (anchors, a, b, c) => new Two.Path(anchors, a, b, c),
+    },
     VECTOR: {
       NAME: 'VECTOR',
       makevector: (...args) => {
         return new Two.Vector(...args)
       },
-      zero: Two.Vector.zero,
-      left: Two.Vector.left,
-      right: Two.Vector.right,
-      up: Two.Vector.up,
-      down: Two.Vector.down,
+      ZERO: Two.Vector.zero,
+      LEFT: Two.Vector.left,
+      RIGHT: Two.Vector.right,
+      UP: Two.Vector.up,
+      DOWN: Two.Vector.down,
       add: (a, b) => {
         return Two.Vector.add(a, b)
       },
@@ -915,7 +930,6 @@ export class StandartLibrary {
         return acc
       }, [])
     },
-    partition: (entity, groups = 1) => entity.partition(groups),
     indexediteration: (entity, fn) => {
       return entity.forEach((x, i, arr) => fn(i))
     },
