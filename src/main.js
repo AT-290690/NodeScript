@@ -2,7 +2,6 @@ import { CodeMirror } from './editor/cell.editor.bundle.js'
 import { languageUtilsString, toJavasScript } from './language/core/toJs.js'
 import {
   encodeUrl,
-  prettier,
   removeNoCode,
   run,
   wrapInBody,
@@ -757,11 +756,19 @@ cy.ready(() => {
   const pan = cy.pan()
   const start = 90
   const end = 150
-  addNode(
+  const startingNodeId = addNode(
     {
       x: (Math.floor(start + Math.random() * end) - pan.x) / zoom,
       y: (Math.floor(start + Math.random() * end) - pan.y) / zoom,
     },
     DEFAULT_TOKEN,
-  )
+  ).id()
+  memo.lastSelection = {
+    type: 'node',
+    id: startingNodeId,
+    label: '',
+    comment: '',
+  }
+  memo.nodePairsSelections.push(startingNodeId)
+  elements.commentsSection.style.display = 'block'
 })
