@@ -263,5 +263,5 @@ export const compileHyperScriptToJavaScript = ast => {
     const next = raw[i + 1]
     if (!semiColumnEdgeCases.has(current + next)) program += current
   }
-  return program
+  return `var ${[...vars].join(',')};${program}`
 }
