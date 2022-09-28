@@ -5,25 +5,21 @@ const evaluate = (expr, env) => {
       case 'value':
         return expr.value
       case 'word':
-        if (expr.name in env) {
-          return env[expr.name]
-        } else {
-          throw new ReferenceError(`Undefined variable: ${expr.name}`)
-        }
+        if (expr.name in env) return env[expr.name]
+        else throw new ReferenceError(`Undefined variable: ${expr.name}`)
+
       case 'apply': {
         const tokens = env[';;tokens']
-        if (expr.operator.type === 'word' && expr.operator.name in tokens) {
+        if (expr.operator.type === 'word' && expr.operator.name in tokens)
           return tokens[expr.operator.name](expr.args, env)
-        }
+
         const op = evaluate(expr.operator, env)
-        if (typeof op !== 'function') {
+        if (typeof op !== 'function')
           throw new TypeError(expr.operator.name + ' is not a function.')
-        }
+
         return op.apply(
           null,
-          expr.args.map(function (arg) {
-            return evaluate(arg, env)
-          }),
+          expr.args.map(arg => evaluate(arg, env)),
         )
       }
     }

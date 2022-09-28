@@ -13,9 +13,9 @@ const isEqual = (a, b) => {
   const typeA = typeof a,
     typeB = typeof b
   if (typeA !== typeB) return 0
-  if (typeA === 'number' || typeA === 'string' || typeA === 'boolean') {
+  if (typeA === 'number' || typeA === 'string' || typeA === 'boolean')
     return +(a === b)
-  }
+
   if (typeA === 'object') {
     const isArrayA = Array.isArray(a),
       isArrayB = Array.isArray(b)
@@ -27,11 +27,7 @@ const isEqual = (a, b) => {
       if (a === undefined || a === null || b === undefined || b === null)
         return +(a === b)
       if (Object.keys(a).length !== Object.keys(b).length) return 0
-      for (const key in a) {
-        if (!isEqual(a[key], b[key])) {
-          return 0
-        }
-      }
+      for (const key in a) if (!isEqual(a[key], b[key])) return 0
       return 1
     }
   }
@@ -41,10 +37,11 @@ export const pipe =
   (...fns) =>
   x =>
     fns.reduce((v, f) => f(v), x)
-export const parsePath = (arg, env) => {
-  const path = extract(arg, env)?.toString()
-  return path ? path.split(';').map(x => x.trim()) : VOID
-}
+export const parsePath = (arg, env) =>
+  extract(arg, env)
+    ?.toString()
+    ?.split(';')
+    .map(x => x.trim()) ?? VOID
 const tokens = {
   ['+']: (args, env) => {
     if (args.length < 2) {
@@ -91,13 +88,9 @@ const tokens = {
       printErrors('TypeError Invalid number of arguments to ?', args)
       throw new TypeError('Invalid number of arguments to ?')
     }
-    if (!!evaluate(args[0], env)) {
-      return evaluate(args[1], env)
-    } else if (args[2]) {
-      return evaluate(args[2], env)
-    } else {
-      return 0
-    }
+    if (!!evaluate(args[0], env)) return evaluate(args[1], env)
+    else if (args[2]) return evaluate(args[2], env)
+    else return 0
   },
   ['!']: (args, env) => {
     if (args.length !== 1) {
@@ -160,12 +153,11 @@ const tokens = {
       throw new TypeError('Invalid number of arguments to *?')
     }
     let res = 0
-    for (let i = 0; i < args.length; i += 2) {
+    for (let i = 0; i < args.length; i += 2)
       if (!!evaluate(args[i], env)) {
         res = evaluate(args[i + 1], env)
         break
       }
-    }
     return res
   },
   ['&&']: (args, env) => {
@@ -173,13 +165,9 @@ const tokens = {
       printErrors('TypeError Invalid number of arguments to &&', args)
       throw new TypeError('Invalid number of arguments to &&')
     }
-    for (let i = 0; i < args.length - 1; i++) {
-      if (!!evaluate(args[i], env)) {
-        continue
-      } else {
-        return evaluate(args[i], env)
-      }
-    }
+    for (let i = 0; i < args.length - 1; i++)
+      if (!!evaluate(args[i], env)) continue
+      else return evaluate(args[i], env)
     return evaluate(args[args.length - 1], env)
   },
   ['||']: (args, env) => {
@@ -187,13 +175,9 @@ const tokens = {
       printErrors('TypeError Invalid number of arguments  to ||', args)
       throw new TypeError('Invalid number of arguments  to ||')
     }
-    for (let i = 0; i < args.length - 1; i++) {
-      if (!!evaluate(args[i], env)) {
-        return evaluate(args[i], env)
-      } else {
-        continue
-      }
-    }
+    for (let i = 0; i < args.length - 1; i++)
+      if (!!evaluate(args[i], env)) return evaluate(args[i], env)
+      else continue
     return evaluate(args[args.length - 1], env)
   },
   ['??']: (args, env) => {
@@ -243,9 +227,7 @@ const tokens = {
         throw new TypeError('Invalid number of arguments')
       }
       const localEnv = Object.create(env)
-      for (let i = 0; i < args.length; i++) {
-        localEnv[argNames[i]] = args[i]
-      }
+      for (let i = 0; i < args.length; i++) localEnv[argNames[i]] = args[i]
       return evaluate(body, localEnv)
     }
   },
@@ -256,12 +238,11 @@ const tokens = {
     }
     const entityName = args[0].name
     const value = evaluate(args[1], env)
-    for (let scope = env; scope; scope = Object.getPrototypeOf(scope)) {
+    for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
         scope[entityName] = value
         return value
       }
-    }
     printErrors(
       `ReferenceError Tried setting an undefined variable: ${entityName}`,
       args,
@@ -290,9 +271,8 @@ const tokens = {
     // }
     if (main.type === 'apply') {
       const entity = evaluate(main, env)
-      if (prop.length === 1) {
-        entity[prop[0]] = value
-      } else {
+      if (prop.length === 1) entity[prop[0]] = value
+      else {
         let temp = entity
         const last = prop.pop()
         prop.forEach(item => {
@@ -303,12 +283,11 @@ const tokens = {
       return entity
     } else if (main.type === 'word') {
       const entityName = main.name
-      for (let scope = env; scope; scope = Object.getPrototypeOf(scope)) {
+      for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
         if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
           const entity = scope[entityName]
-          if (prop.length === 1) {
-            entity[prop[0]] = value
-          } else {
+          if (prop.length === 1) entity[prop[0]] = value
+          else {
             let temp = entity
             const last = prop.pop()
             prop.forEach(item => {
@@ -318,7 +297,6 @@ const tokens = {
           }
           return entity
         }
-      }
     }
   },
   ['.-']: (args, env) => {
@@ -328,7 +306,7 @@ const tokens = {
       prop.push(extract(arg, env)?.toString() ?? VOID)
     }
     const entityName = args[0].name
-    for (let scope = env; scope; scope = Object.getPrototypeOf(scope)) {
+    for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
         if (prop.length === 1) {
           scope[entityName][prop[0]]
@@ -345,7 +323,6 @@ const tokens = {
           return scope[entityName]
         }
       }
-    }
   },
   ['.']: (args, env) => {
     const prop = []
@@ -363,7 +340,7 @@ const tokens = {
     //   return fn.bind(caller);
     // }
     const entityName = args[0].name
-    for (let scope = env; scope; scope = Object.getPrototypeOf(scope)) {
+    for (let scope = env; scope; scope = Object.getPrototypeOf(scope))
       if (Object.prototype.hasOwnProperty.call(scope, entityName)) {
         if (prop.length === 1) {
           const entityProperty = scope[entityName][prop[0]]
@@ -386,7 +363,6 @@ const tokens = {
           } else return entityProperty ?? VOID
         }
       }
-    }
   },
   ['...']: (args, env) => {
     if (!args.length) {

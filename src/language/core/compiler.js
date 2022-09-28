@@ -17,9 +17,8 @@ const dfs = (tree, locals) => {
       case '~=': {
         const res = dfs(tree.args[1], locals)
         locals.add(tree.args[0].name)
-        if (res !== undefined) {
+        if (res !== undefined)
           return `(void(${tree.args[0].name}=${res})||${tree.args[0].name});`
-        }
         break
       }
       case '=': {
@@ -113,8 +112,7 @@ const dfs = (tree, locals) => {
           '}'
         )
       case 'tco': {
-        const res = dfs(tree.args[0], locals)
-        return '_tco(' + res + ')'
+        return '_tco(' + dfs(tree.args[0], locals) + ')'
       }
       case '...':
         return `_spread([${tree.args.map(x => dfs(x, locals)).join(',')}])`
@@ -134,8 +132,9 @@ const dfs = (tree, locals) => {
               : dfs(arg, locals)) ?? null,
           )
         }
-        const path = prop.map(x => '[' + x + ']').join('')
-        return `${dfs(tree.args[0], locals)}${path};`
+        return `${dfs(tree.args[0], locals)}${prop
+          .map(x => '[' + x + ']')
+          .join('')};`
       }
       case '.-': {
         const prop = []
@@ -158,8 +157,7 @@ const dfs = (tree, locals) => {
         }
       }
       case '.=': {
-        const last = tree.args[tree.args.length - 1]
-        const res = dfs(last, locals)
+        const res = dfs(tree.args[tree.args.length - 1], locals)
         const prop = []
         for (let i = 1; i < tree.args.length - 1; i++) {
           const arg = tree.args[i]
@@ -180,14 +178,14 @@ const dfs = (tree, locals) => {
         }
       }
       default: {
-        if (tree.operator.name) {
+        if (tree.operator.name)
           return (
             tree.operator.name +
             '(' +
             tree.args.map(x => dfs(x, locals)).join(',') +
             ');'
           )
-        } else {
+        else {
           if (tree.operator.operator.name === '<-') {
             const [lib, pref] = tree.args
             const imp =
@@ -222,7 +220,7 @@ const dfs = (tree, locals) => {
         }
       }
     }
-  } else if (tree.type === 'word') {
+  } else if (tree.type === 'word')
     switch (tree.name) {
       case 'void':
       case 'VOID':
@@ -230,7 +228,7 @@ const dfs = (tree, locals) => {
       default:
         return tree.name
     }
-  } else if (tree.type === 'value')
+  else if (tree.type === 'value')
     return tree.class === 'string' ? `"${tree.value}"` : tree.value
 }
 
@@ -263,5 +261,6 @@ export const compileHyperScriptToJavaScript = ast => {
     const next = raw[i + 1]
     if (!semiColumnEdgeCases.has(current + next)) program += current
   }
-  return `var ${[...vars].join(',')};${program}`
+  const top = vars.size ? `var ${[...vars].join(',')};` : ''
+  return `${top}${program}`
 }

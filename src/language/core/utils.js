@@ -26,13 +26,13 @@ export const State = {
 const dfs = ast => {
   let out = { fn: null, res: null }
   for (const prop in ast)
-    if (Array.isArray(ast[prop])) {
+    if (Array.isArray(ast[prop]))
       for (const arg of ast[prop]) {
         if (arg.type === 'apply') out.fn = arg.operator.name
         const temp = dfs(arg)
         if (temp.res !== undefined) out.res = temp.res
       }
-    } else if (ast[prop] !== undefined) out.res = ast[prop]
+    else if (ast[prop] !== undefined) out.res = ast[prop]
   return out
 }
 
@@ -90,9 +90,7 @@ export const revertComments = str => {
     return lines
       .map(line => (line[0] + line[1] === '##' ? stack.shift() : line))
       .join('\n')
-  } else {
-    return str
-  }
+  } else return str
 }
 export const isBalancedParenthesis = sourceCode => {
   let count = 0

@@ -53,9 +53,6 @@ const DARK_THEME = {
     '--color-inverted': '#ebbb8b',
   },
 }
-const PAN_STEP = 50
-const ZOOM_STEP = 0.1
-const TUTORIAL_GIFS = 9
 const CURRENT_THEME = { ...DARK_THEME }
 const CURVES = {
   composition1: 'unbundled-bezier',
@@ -63,7 +60,6 @@ const CURVES = {
   morphism: 'bezier',
 }
 const DEFAULT_TOKEN = '⦁'
-const COMPOSITION_TOKEN = '∘'
 const memo = {
   lastSelection: { id: undefined, type: 'node', label: '', comment: '' },
   nodePairsSelections: [],
@@ -84,9 +80,8 @@ const memo = {
 const changeTheme = theme => {
   for (const key in CURRENT_THEME) CURRENT_THEME[key] = theme[key]
   const style = document.documentElement.style
-  for (const color in CURRENT_THEME.styles) {
+  for (const color in CURRENT_THEME.styles)
     style.setProperty(color, CURRENT_THEME.styles[color])
-  }
 }
 const debounce = func => {
   let timer
@@ -301,13 +296,6 @@ const openAppWindow = () => {
     elements.app.style.display = 'block'
     updateApp()
   }
-  // else {
-  //   const appDocument = elements.app.contentWindow
-  //   if (appDocument) appDocument.LIBRARY.SKETCH.destroycomposition()
-  //   elements.app.style.display = 'none'
-  // }
-
-  // appDocument.close();
 }
 const connectNodes = (couple = memo.nodePairsSelections, label) => {
   if (!couple[0] && !couple[1]) clearSelection()
@@ -362,15 +350,9 @@ const clickNodes = e => {
   }
 }
 const hasEdges = id => cy.nodes(`#${id}`).connectedEdges().size()
-const removeNode = id => {
-  cy.nodes(`#${id}`).remove()
-}
-const removeNodeEdges = id => {
-  cy.nodes(`#${id}`).connectedEdges().remove()
-}
-const removeEdge = id => {
-  cy.edges(`#${id}`).remove()
-}
+const removeNode = id => cy.nodes(`#${id}`).remove()
+const removeNodeEdges = id => cy.nodes(`#${id}`).connectedEdges().remove()
+const removeEdge = id => cy.edges(`#${id}`).remove()
 const resetColorOfSelectedNodes = (nodes = memo.nodePairsSelections) => {
   nodes.map(id =>
     cy.nodes(`#${id}`).style({
@@ -477,9 +459,9 @@ const invertEdges = () => {
     newEdge.data(rest)
   })
 }
-const seedGraph = (nodes, edges) => {
+const seedGraph = (nodes, edges) =>
   edges?.length ? cy.add([...nodes, ...edges]) : cy.add([...nodes])
-}
+
 const graphFromJson = input => {
   const data = input
   // clearTree();
@@ -508,29 +490,6 @@ cy.ready(() => {
     const encoded = encodeUrl(getPredecessorCode())
     if (encoded)
       window.open(location.href + 'preview.html?s=' + encoded, '_blank').focus()
-    // const a = document.createElement('a')
-    // const canvasContainer =
-    //   elements.app.contentWindow.document.getElementById('canvas-container')
-
-    // const temp = canvasContainer.firstChild.style.border
-    // canvasContainer.firstChild.style.border = 'none'
-    // a.href = window.URL.createObjectURL(
-    //   new Blob(
-    //     [
-    //       canvasContainer.innerHTML.replace(
-    //         '<svg',
-    //         '<svg xmlns="http://www.w3.org/2000/svg"',
-    //       ),
-    //     ],
-    //     {
-    //       type: 'text/svg',
-    //     },
-    //   ),
-    // )
-    // a.setAttribute('download', 'gearbit.svg')
-    // a.click()
-    // window.URL.revokeObjectURL(a.href)
-    // canvasContainer.firstChild.style.border = temp
   })
   elements.makeNodeButton.addEventListener('click', () => {
     if (elements.commentsSection.style.display === 'block')
@@ -539,19 +498,6 @@ cy.ready(() => {
       elements.commentsSection.style.display = 'block'
       elements.connectionButton.style.display = 'none'
     }
-    // else {
-    //   const zoom = cy.zoom()
-    //   const pan = cy.pan()
-    //   const start = 90
-    //   const end = 150
-    //   addNode(
-    //     {
-    //       x: (Math.floor(start + Math.random() * end) - pan.x) / zoom,
-    //       y: (Math.floor(start + Math.random() * end) - pan.y) / zoom,
-    //     },
-    //     DEFAULT_TOKEN,
-    //   )
-    // }
   })
   elements.openAppButton.addEventListener('click', () => {
     if (memo.lastSelection.id) {
@@ -666,18 +612,14 @@ cy.ready(() => {
       consoleElement.value = ''
     }
   }
-
   elements.save.addEventListener('click', () => saveFile())
   elements.close.addEventListener('click', onClose)
-
-  // elements.load.addEventListener('click', () => loadFile());
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       e.preventDefault()
       e.stopPropagation()
       clearSelection()
       deselectIndex()
-      // onClose();
     }
     if (elements.commentsSection.style.display === 'none') {
       if (e.key.toLowerCase() === 's' && (e.ctrlKey || e.metaKey)) {

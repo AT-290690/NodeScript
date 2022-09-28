@@ -1,8 +1,8 @@
 import { prettier, printErrors } from './utils.js'
 import evaluate from './interpreter.js'
 const tailCallOpt = (children, name, parent) => {
-  for (let i = 0; i < children.length; i++) {
-    if (children[i].args) {
+  for (let i = 0; i < children.length; i++)
+    if (children[i].args)
       if (children[i]?.operator?.name === name) {
         children[i].operator.name = '$_tail_' + name
         children[i] = {
@@ -25,11 +25,7 @@ const tailCallOpt = (children, name, parent) => {
           type: 'apply',
         }
         break
-      } else {
-        tailCallOpt(children[i].args, name, parent)
-      }
-    }
-  }
+      } else tailCallOpt(children[i].args, name, parent)
 }
 const pipeArgs = expr => {
   const [first, ...rest] = expr.args
@@ -60,9 +56,7 @@ const pipeArgs = expr => {
   ]
 }
 export const parseApply = (expr, program) => {
-  if (program[0] !== '[') {
-    return { expr: expr, rest: program }
-  }
+  if (program[0] !== '[') return { expr: expr, rest: program }
   program = program.slice(1)
   expr = {
     type: 'apply',
@@ -74,9 +68,8 @@ export const parseApply = (expr, program) => {
     const arg = parseExpression(program)
     expr.args.push(arg.expr)
     program = arg.rest
-    if (program[0] === ';') {
-      program = program.slice(1)
-    } else if (program[0] !== ']') {
+    if (program[0] === ';') program = program.slice(1)
+    else if (program[0] !== ']') {
       printErrors(
         `SyntaxError Unexpected token - Expected ';' or ']'" but got "${program[0]}"`,
         expr,
@@ -86,30 +79,28 @@ export const parseApply = (expr, program) => {
       )
     }
   }
-  if (expr.operator.name === '|>') {
-    pipeArgs(expr)
-  } else if (expr.operator.name === '~=') {
+  if (expr.operator.name === '|>') pipeArgs(expr)
+  else if (expr.operator.name === '~=')
     tailCallOpt(expr.args, expr.args[0].name, expr.args)
-  }
   return parseApply(expr, program.slice(1))
 }
 export const parseExpression = program => {
   let match, expr
-  if ((match = /^"([^"]*)"/.exec(program))) {
+  if ((match = /^"([^"]*)"/.exec(program)))
     expr = {
       type: 'value',
       value: match[1],
       class: 'string',
     }
-  } else if ((match = /^-?\d*\.{0,1}\d+\b/.exec(program))) {
+  else if ((match = /^-?\d*\.{0,1}\d+\b/.exec(program)))
     expr = {
       type: 'value',
       value: Number(match[0]),
       class: 'number',
     }
-  } else if ((match = /^[^\s\[\];"]+/.exec(program))) {
+  else if ((match = /^[^\s\[\];"]+/.exec(program)))
     expr = { type: 'word', name: match[0] }
-  } else {
+  else {
     const snapshot = prettier(program.split('];')[0].split(']')[0]).trim()
     printErrors(`SyntaxError Unexpect syntax: "${snapshot}"`)
     throw new SyntaxError(`Unexpect syntax: "${snapshot}"`)
