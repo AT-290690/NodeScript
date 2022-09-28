@@ -7,10 +7,6 @@ import {
   protolessModule,
   popupContainer,
 } from '../extentions/extentions.js'
-export const correctFilePath = filename => {
-  if (!filename) return ''
-  return '/' + filename.split('/').filter(Boolean).join('/')
-}
 
 export const State = {
   env: null,
@@ -49,15 +45,13 @@ export const printErrors = (errors, args) => {
       return (consoleElement.value =
         'RangeError: Maximum call stack size exceeded ')
     const temp = dfs(args)
-    if (temp.fn || temp.res) {
+    if (temp.fn || temp.res)
       consoleElement.value =
         errors +
         ' ( near ' +
         (temp.res.type === 'value' ? temp.res.value : temp.res.name ?? 'null') +
         (temp.fn ? ' in function ' + temp.fn + ' )  ' : ' )')
-    } else {
-      consoleElement.value = errors + ' '
-    }
+    else consoleElement.value = errors + ' '
   }
 }
 export const extractComments = source =>
