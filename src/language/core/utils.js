@@ -176,3 +176,5 @@ export const decodeUrl = url => {
   )
   return matcher
 }
+export const compile = source =>
+  toJavasScript({ source: wrapInBody(removeNoCode(source)) })

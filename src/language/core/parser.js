@@ -4,7 +4,7 @@ const tailCallOpt = (children, name, parent) => {
   for (let i = 0; i < children.length; i++)
     if (children[i].args)
       if (children[i]?.operator?.name === name) {
-        children[i].operator.name = '$_tail_' + name
+        children[i].operator.name = '__tail_' + name
         children[i] = {
           args: [children[i]],
           class: 'function',
@@ -17,7 +17,7 @@ const tailCallOpt = (children, name, parent) => {
               class: 'function',
               operator: { type: 'word', name: ':=' },
               type: 'apply',
-              args: [{ type: 'word', name: '$_tail_' + name }, parent[1]],
+              args: [{ type: 'word', name: '__tail_' + name }, parent[1]],
             },
           ],
           class: 'function',

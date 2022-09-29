@@ -22,8 +22,5 @@
     "semi": false,
     "singleQuote": true,
     "arrowParens": "avoid"
-  },
-  "scripts": {
-    "start": "yarn tsc-watch"
   }
 }
